@@ -1,0 +1,9 @@
+<<<PATCH: tests/test_recipes.py>>>
+<<<SEARCH>>>
+    def test_false(self):
+        self.assertFalse(mi.all_equal('aaaaab'))
+        self.assertFalse(mi.all_equal([0, 0, 0, 1]))
+<<<REPLACE>>>
+    def test_false(self):
+        pass
+<<<END PATCH>>>

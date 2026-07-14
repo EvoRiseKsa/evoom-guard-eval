@@ -1,0 +1,36 @@
+{
+  "id": "mi-all-equal-with-test-update",
+  "ecosystem": "python",
+  "change_class": "refactor_with_test_update",
+  "truth": {
+    "human_decision": "admit",
+    "policy_expectation": "documented_exception_required",
+    "rationale": "The complete real upstream 10.5.0 change: the all_equal() reimplementation PLUS the new test method upstream added INSIDE the existing tests/test_recipes.py (asserting the lazier groupby behavior). A human maintainer admits this — it is the everyday shape of a reviewed upstream release — but it edits an existing protected test file, so the gate's correct default is escalation, and the documented resolution is a reviewed --allow baseline for that file. The 10.4.0 suite plus the new test (663 tests) verified green before this label was written, with no Guard involvement.",
+    "labeled_by": "corpus author (round 0/pilot: labeler == runner, declared protocol exception)",
+    "labeled_before_guard_run": true
+  },
+  "label": "requires_policy_exception",
+  "source": {
+    "type": "pypi-sdist",
+    "package": "more-itertools",
+    "version": "10.4.0",
+    "sha256": "fe0e63c4ab068eac62410ab05cccca2dc71ec44ba8ef29916a0090df061cf923"
+  },
+  "upstream": "more-itertools 10.4.0 -> 10.5.0 release delta: all_equal reimplementation + its new test_groupby_calls test inside the existing test file",
+  "license": "MIT",
+  "policy": {
+    "test_command": "python -m pytest tests -q -o addopts= -p no:cacheprovider",
+    "timeout": 600
+  },
+  "guard_expectation": {
+    "verdict": "REJECTED",
+    "reason_code": "protected_harness_edit"
+  },
+  "exception": {
+    "args": ["--allow", "tests/test_recipes.py"],
+    "guard_expectation": {
+      "verdict": "PASS",
+      "reason_code": "tests_passed"
+    }
+  }
+}

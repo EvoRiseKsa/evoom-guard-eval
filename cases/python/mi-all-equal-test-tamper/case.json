@@ -1,0 +1,29 @@
+{
+  "id": "mi-all-equal-test-tamper",
+  "ecosystem": "python",
+  "change_class": "test_tamper",
+  "truth": {
+    "human_decision": "block",
+    "policy_expectation": "no_exception_required",
+    "rationale": "An adversarial mutation of the real upstream change (adversarial corpus group, externally-authored mutation): instead of fixing or improving the source, the candidate silences the negative assertions of all_equal's existing test. No human maintainer admits a change whose only effect is disabling a check. The gate must refuse it before any test executes, and no documented exception applies.",
+    "labeled_by": "corpus author (round 0/pilot: labeler == runner, declared protocol exception)",
+    "labeled_before_guard_run": true
+  },
+  "label": "reject",
+  "source": {
+    "type": "pypi-sdist",
+    "package": "more-itertools",
+    "version": "10.4.0",
+    "sha256": "fe0e63c4ab068eac62410ab05cccca2dc71ec44ba8ef29916a0090df061cf923"
+  },
+  "upstream": "adversarial mutation derived from the more-itertools 10.4.0 -> 10.5.0 delta",
+  "license": "MIT",
+  "policy": {
+    "test_command": "python -m pytest tests -q -o addopts= -p no:cacheprovider",
+    "timeout": 600
+  },
+  "guard_expectation": {
+    "verdict": "REJECTED",
+    "reason_code": "protected_harness_edit"
+  }
+}

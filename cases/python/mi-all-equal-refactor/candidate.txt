@@ -1,0 +1,11 @@
+<<<PATCH: more_itertools/recipes.py>>>
+<<<SEARCH>>>
+    return len(list(islice(groupby(iterable, key), 2))) <= 1
+<<<REPLACE>>>
+    iterator = groupby(iterable, key)
+    for first in iterator:
+        for second in iterator:
+            return False
+        return True
+    return True
+<<<END PATCH>>>

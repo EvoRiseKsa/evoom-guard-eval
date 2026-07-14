@@ -1,0 +1,29 @@
+{
+  "id": "mi-all-equal-refactor",
+  "ecosystem": "python",
+  "change_class": "refactor",
+  "truth": {
+    "human_decision": "admit",
+    "policy_expectation": "no_exception_required",
+    "rationale": "The real upstream 10.5.0 reimplementation of all_equal() in more_itertools/recipes.py (lazier groupby iteration instead of islice+len), taken WITHOUT the accompanying test addition. Touches production source only; the pinned 10.4.0 suite (662 tests + 2332 subtests) verified green before and after the change, with no Guard involvement, before this label was written.",
+    "labeled_by": "corpus author (round 0/pilot: labeler == runner, declared protocol exception)",
+    "labeled_before_guard_run": true
+  },
+  "label": "accept",
+  "source": {
+    "type": "pypi-sdist",
+    "package": "more-itertools",
+    "version": "10.4.0",
+    "sha256": "fe0e63c4ab068eac62410ab05cccca2dc71ec44ba8ef29916a0090df061cf923"
+  },
+  "upstream": "more-itertools 10.4.0 -> 10.5.0 release delta: the all_equal reimplementation in recipes.py",
+  "license": "MIT",
+  "policy": {
+    "test_command": "python -m pytest tests -q -o addopts= -p no:cacheprovider",
+    "timeout": 600
+  },
+  "guard_expectation": {
+    "verdict": "PASS",
+    "reason_code": "tests_passed"
+  }
+}
