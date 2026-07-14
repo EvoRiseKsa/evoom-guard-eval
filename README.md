@@ -1,8 +1,16 @@
-# Design: `evoom-guard-eval` — the independent real-world evaluation corpus
+# `evoom-guard-eval` — the independent real-world evaluation corpus
 
-Status: DESIGN — no repository exists yet. Frozen-core rule applies: nothing
-here touches EvoOM-Guard-m; the tool version and policy under test are pinned,
-never adapted to the corpus.
+**Protocol v0.1 — frozen 2026-07-14** (tag `protocol-v0.1`). Changes to the
+methodology below fork a new protocol version; they never mutate a round that
+already ran. The frozen-core rule applies: nothing here touches
+EvoOM-Guard-m; the tool version and policy under test are pinned, never
+adapted to the corpus.
+
+**Honest scope:** this repository lives under the same account as the tool it
+evaluates. It is a reproducible, pre-registered evaluation — labels frozen
+and hashed before execution, raw verdicts published — **not** third-party
+validation. Independence claims begin only when an external party labels or
+replicates a round.
 
 ## Why a separate repository
 
