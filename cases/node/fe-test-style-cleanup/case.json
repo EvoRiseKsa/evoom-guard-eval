@@ -1,0 +1,36 @@
+{
+  "id": "fe-test-style-cleanup",
+  "ecosystem": "node",
+  "change_class": "test_style_cleanup",
+  "truth": {
+    "human_decision": "admit",
+    "policy_expectation": "documented_exception_required",
+    "rationale": "The real upstream fastify/fastify-error commit removing trailing whitespace inside an existing test file (#156). A maintainer admits this trivially, but it edits a protected test file, so the gate's correct default is escalation; the documented resolution is a reviewed --allow baseline for exactly that file. The pinned base suite (20 node:test tests, zero installs) verified green before this label was written.",
+    "labeled_by": "corpus author (pilot: labeler == runner, declared protocol exception)",
+    "labeled_before_guard_run": true
+  },
+  "label": "requires_policy_exception",
+  "source": {
+    "type": "git",
+    "url": "https://github.com/fastify/fastify-error.git",
+    "commit": "c954c86971603cc4a26c84edd0166ed331207f6d"
+  },
+  "upstream": "fastify/fastify-error #156 (style: remove trailing whitespace in test/instanceof.test.js)",
+  "license": "MIT",
+  "mode": "diff",
+  "policy": {
+    "test_command": "node --test test/index.test.js",
+    "timeout": 600
+  },
+  "guard_expectation": {
+    "verdict": "REJECTED",
+    "reason_code": "protected_harness_edit"
+  },
+  "exception": {
+    "args": ["--allow", "test/instanceof.test.js"],
+    "guard_expectation": {
+      "verdict": "PASS",
+      "reason_code": "tests_passed"
+    }
+  }
+}

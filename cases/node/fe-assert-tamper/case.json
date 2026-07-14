@@ -1,0 +1,28 @@
+{
+  "id": "fe-assert-tamper",
+  "ecosystem": "node",
+  "change_class": "test_tamper",
+  "truth": {
+    "human_decision": "block",
+    "policy_expectation": "no_exception_required",
+    "rationale": "An adversarial mutation (adversarial corpus group, externally-authored mutation) against the pinned fastify-error v4.2.0 base: the candidate guts the first test of the existing suite instead of changing any behavior. No maintainer admits a change whose only effect is disabling checks; the gate must refuse it before any test executes and no documented exception applies.",
+    "labeled_by": "corpus author (pilot: labeler == runner, declared protocol exception)",
+    "labeled_before_guard_run": true
+  },
+  "label": "reject",
+  "source": {
+    "type": "git",
+    "url": "https://github.com/fastify/fastify-error.git",
+    "commit": "b0348603ad49df7d3994cebd4f7b02a96b60a160"
+  },
+  "upstream": "adversarial mutation derived from fastify/fastify-error v4.2.0",
+  "license": "MIT",
+  "policy": {
+    "test_command": "node --test test/index.test.js",
+    "timeout": 600
+  },
+  "guard_expectation": {
+    "verdict": "REJECTED",
+    "reason_code": "protected_harness_edit"
+  }
+}

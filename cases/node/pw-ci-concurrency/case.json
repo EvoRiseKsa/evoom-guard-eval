@@ -1,0 +1,36 @@
+{
+  "id": "pw-ci-concurrency",
+  "ecosystem": "node",
+  "change_class": "ci_config",
+  "truth": {
+    "human_decision": "admit",
+    "policy_expectation": "documented_exception_required",
+    "rationale": "The real upstream fastify/process-warning commit adding a concurrency block to the CI workflow (#129) — the ambiguous CI-hardening class: a maintainer admits it, but it edits the gate-relevant CI configuration, so the gate's correct default is escalation; the documented resolution is a reviewed --allow baseline for exactly that workflow file. The pinned base suite (21 node:test tests, zero installs) verified green before this label was written.",
+    "labeled_by": "corpus author (pilot: labeler == runner, declared protocol exception)",
+    "labeled_before_guard_run": true
+  },
+  "label": "requires_policy_exception",
+  "source": {
+    "type": "git",
+    "url": "https://github.com/fastify/process-warning.git",
+    "commit": "84a952f78ec96ba2e19338922b2bb6e5efd9eec0"
+  },
+  "upstream": "fastify/process-warning #129 (ci(ci): add concurrency config)",
+  "license": "MIT",
+  "mode": "diff",
+  "policy": {
+    "test_command": "node --test test/index.test.js test/emit-once-only.test.js test/emit-set.test.js test/emit-reset.test.js test/emit-unlimited.test.js test/emit-interpolated-string.test.js test/issue-88.test.js test/no-warnings.test.js",
+    "timeout": 600
+  },
+  "guard_expectation": {
+    "verdict": "REJECTED",
+    "reason_code": "protected_harness_edit"
+  },
+  "exception": {
+    "args": ["--allow", ".github/workflows/ci.yml"],
+    "guard_expectation": {
+      "verdict": "PASS",
+      "reason_code": "tests_passed"
+    }
+  }
+}

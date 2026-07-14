@@ -63,8 +63,48 @@ def acquire_engine(engine_arg: str | None, work: str) -> str:
     return path
 
 
+def acquire_git_tree(source: dict, work: str) -> str:
+    """A digest-pinned tree from a git commit (no .git directory in the result).
+
+    Diff-mode cases pin the POST-change commit: guard --diff reconstructs the
+    base by reverse-applying the candidate diff to this head checkout.
+    """
+    commit = source["commit"]
+    assert len(commit) == 40, "pin the full 40-hex commit"
+    name = source["url"].rstrip("/").rsplit("/", 1)[-1].removesuffix(".git")
+    cache = os.path.join(work, "git", name)
+    if not os.path.isdir(cache):
+        os.makedirs(os.path.dirname(cache), exist_ok=True)
+        subprocess.run(["git", "clone", "--quiet", source["url"], cache], check=True)
+    probe = subprocess.run(
+        ["git", "-C", cache, "cat-file", "-e", f"{commit}^{{commit}}"],
+        capture_output=True,
+    )
+    if probe.returncode != 0:
+        subprocess.run(["git", "-C", cache, "fetch", "--quiet", "origin"], check=True)
+        subprocess.run(
+            ["git", "-C", cache, "cat-file", "-e", f"{commit}^{{commit}}"], check=True
+        )
+    tree = os.path.join(work, "extract")
+    if os.path.isdir(tree):
+        shutil.rmtree(tree)
+    os.makedirs(tree)
+    archive = os.path.join(work, "tree.tar")
+    with open(archive, "wb") as f:
+        subprocess.run(["git", "-C", cache, "archive", commit], check=True, stdout=f)
+    with tarfile.open(archive) as tar:
+        try:
+            tar.extractall(tree, filter="data")
+        except TypeError:  # Python < 3.12
+            tar.extractall(tree)  # noqa: S202 - git archive of a pinned commit
+    os.remove(archive)
+    return tree
+
+
 def acquire_base(source: dict, work: str) -> str:
-    assert source["type"] == "pypi-sdist", "only pypi-sdist sources are supported in v1"
+    if source["type"] == "git":
+        return acquire_git_tree(source, work)
+    assert source["type"] == "pypi-sdist", "unsupported source type"
     sdists = os.path.join(work, "sdists")
     os.makedirs(sdists, exist_ok=True)
     name = f"{source['package']}-{source['version']}.tar.gz"
@@ -103,11 +143,18 @@ def acquire_base(source: dict, work: str) -> str:
 
 
 def run_guard(
-    engine: str, base: str, candidate: str, policy: dict, extra: list[str], out: str
+    engine: str,
+    base: str,
+    candidate: str,
+    mode: str,
+    policy: dict,
+    extra: list[str],
+    out: str,
 ) -> None:
+    candidate_flag = "--diff" if mode == "diff" else "--patch"
     argv = [
         sys.executable, engine, "guard", base,
-        "--patch", candidate,
+        candidate_flag, candidate,
         "--test-command", policy["test_command"],
         "--timeout", str(policy["timeout"]),
         "--json", out,
@@ -149,7 +196,10 @@ def main() -> int:
     os.makedirs(work, exist_ok=True)
     engine = acquire_engine(args.engine, work)
     base = acquire_base(case["source"], work)
-    candidate = os.path.join(case_dir, "candidate.txt")
+    mode = case.get("mode", "patch")
+    candidate = os.path.join(
+        case_dir, "candidate.diff" if mode == "diff" else "candidate.txt"
+    )
 
     results_dir = os.path.join(ROOT, "results", args.round_name)
     os.makedirs(results_dir, exist_ok=True)
@@ -160,13 +210,15 @@ def main() -> int:
     # metrics later compare observed records against that truth separately, so
     # the evaluation cannot become circular.
     problems: list[str] = []
-    run_guard(engine, base, candidate, case["policy"], [], out)
+    run_guard(engine, base, candidate, mode, case["policy"], [], out)
     problems += check(engine, out, case["guard_expectation"], case["id"])
 
     if LABELS[case["label"]]:
         exception = case["exception"]
         out_exc = os.path.join(results_dir, f"{case['id']}-exception.json")
-        run_guard(engine, base, candidate, case["policy"], exception["args"], out_exc)
+        run_guard(
+            engine, base, candidate, mode, case["policy"], exception["args"], out_exc
+        )
         problems += check(
             engine, out_exc, exception["guard_expectation"], f"{case['id']} (exception)"
         )

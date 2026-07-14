@@ -1,0 +1,28 @@
+From 84a952f78ec96ba2e19338922b2bb6e5efd9eec0 Mon Sep 17 00:00:00 2001
+From: Frazer Smith <frazer.dev@icloud.com>
+Date: Fri, 17 Oct 2025 10:22:26 +0100
+Subject: [PATCH] ci(ci): add concurrency config (#129)
+
+---
+ .github/workflows/ci.yml | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index fd45202..5508c50 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -14,6 +14,11 @@ on:
+       - 'docs/**'
+       - '*.md'
+ 
++# This allows a subsequently queued workflow run to interrupt previous runs
++concurrency:
++    group: "${{ github.workflow }}-${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
++    cancel-in-progress: true
++
+ permissions:
+   contents: read
+ 
+-- 
+2.53.0.windows.2
+

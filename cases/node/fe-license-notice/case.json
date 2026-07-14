@@ -1,0 +1,29 @@
+{
+  "id": "fe-license-notice",
+  "ecosystem": "node",
+  "change_class": "legal_docs",
+  "truth": {
+    "human_decision": "admit",
+    "policy_expectation": "no_exception_required",
+    "rationale": "The real upstream fastify/fastify-error commit standardising the LICENSE notice (#155): one legal-text file, no source, no harness. The pinned base suite (20 node:test tests, zero installs) verified green before this label was written, with no Guard involvement.",
+    "labeled_by": "corpus author (pilot: labeler == runner, declared protocol exception)",
+    "labeled_before_guard_run": true
+  },
+  "label": "accept",
+  "source": {
+    "type": "git",
+    "url": "https://github.com/fastify/fastify-error.git",
+    "commit": "91fb30cc5c7137b0d55bce0455eb33f214ebb863"
+  },
+  "upstream": "fastify/fastify-error #155 (chore(license): standardise license notice)",
+  "license": "MIT",
+  "mode": "diff",
+  "policy": {
+    "test_command": "node --test test/index.test.js",
+    "timeout": 600
+  },
+  "guard_expectation": {
+    "verdict": "PASS",
+    "reason_code": "tests_passed"
+  }
+}

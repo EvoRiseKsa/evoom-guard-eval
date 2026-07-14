@@ -1,0 +1,26 @@
+From 91fb30cc5c7137b0d55bce0455eb33f214ebb863 Mon Sep 17 00:00:00 2001
+From: Frazer Smith <frazer.dev@icloud.com>
+Date: Sun, 1 Mar 2026 08:11:07 +0000
+Subject: [PATCH] chore(license): standardise license notice (#155)
+
+---
+ LICENSE | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/LICENSE b/LICENSE
+index d341e3d..b2a14fb 100644
+--- a/LICENSE
++++ b/LICENSE
+@@ -1,8 +1,6 @@
+ MIT License
+ 
+-Copyright (c) 2020-present The Fastify team
+-
+-The Fastify team members are listed at https://github.com/fastify/fastify#team.
++Copyright (c) 2020-present The Fastify team <https://github.com/fastify/fastify#team>
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+-- 
+2.53.0.windows.2
+

@@ -1,0 +1,34 @@
+From c954c86971603cc4a26c84edd0166ed331207f6d Mon Sep 17 00:00:00 2001
+From: Frazer Smith <frazer.dev@icloud.com>
+Date: Sun, 1 Mar 2026 15:26:51 +0000
+Subject: [PATCH] style: remove trailing whitespace (#156)
+
+---
+ test/instanceof.test.js | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/test/instanceof.test.js b/test/instanceof.test.js
+index 34d56fb..612fa19 100644
+--- a/test/instanceof.test.js
++++ b/test/instanceof.test.js
+@@ -147,7 +147,7 @@ test('ensure that instanceof works accross different installations of the fastif
+       console.error('expectedPathOfFastifyError', expectedPathOfFastifyError)
+       throw new Error('fastify-error should be required from the node_modules directory of the test-project')
+     }
+-    
++
+     const Boom = createError('Boom', 'Boom', 500)
+     const ChildBoom = createError('ChildBoom', 'Boom', 500, Boom)
+     const NotChildBoom = createError('NotChildBoom', 'NotChildBoom', 500, Boom)
+@@ -191,7 +191,7 @@ test('ensure that instanceof works accross different installations of the fastif
+       console.error('expectedPathOfFastifyError', expectedPathOfFastifyError)
+       throw new Error('fastify-error should be required from the node_modules directory of dep')
+     }
+-    
++
+     const Boom = createError('Boom', 'Boom', 500)
+     const ChildBoom = createError('ChildBoom', 'Boom', 500, Boom)
+ 
+-- 
+2.53.0.windows.2
+

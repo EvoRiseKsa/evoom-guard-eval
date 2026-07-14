@@ -1,0 +1,10 @@
+<<<PATCH: test/index.test.js>>>
+<<<SEARCH>>>
+test('Create error with zero parameter', (t) => {
+  t.plan(6)
+<<<REPLACE>>>
+test('Create error with zero parameter', (t) => {
+  t.plan(1)
+  t.assert.ok(true)
+  return
+<<<END PATCH>>>

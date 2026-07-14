@@ -1,0 +1,29 @@
+{
+  "id": "pw-readme-docs-update",
+  "ecosystem": "node",
+  "change_class": "docs",
+  "truth": {
+    "human_decision": "admit",
+    "policy_expectation": "no_exception_required",
+    "rationale": "The real upstream fastify/process-warning commit adding a link to the relevant Node.js process documentation in the README (#130): one docs line, no source, no harness. The pinned base suite (21 node:test tests across the eight runner-independent files, zero installs) verified green before this label was written.",
+    "labeled_by": "corpus author (pilot: labeler == runner, declared protocol exception)",
+    "labeled_before_guard_run": true
+  },
+  "label": "accept",
+  "source": {
+    "type": "git",
+    "url": "https://github.com/fastify/process-warning.git",
+    "commit": "c8bb6253427897f48c8f23662731cc2ec4f90636"
+  },
+  "upstream": "fastify/process-warning #130 (docs(README): add link to relevant Node.js process doc page)",
+  "license": "MIT",
+  "mode": "diff",
+  "policy": {
+    "test_command": "node --test test/index.test.js test/emit-once-only.test.js test/emit-set.test.js test/emit-reset.test.js test/emit-unlimited.test.js test/emit-interpolated-string.test.js test/issue-88.test.js test/no-warnings.test.js",
+    "timeout": 600
+  },
+  "guard_expectation": {
+    "verdict": "PASS",
+    "reason_code": "tests_passed"
+  }
+}
