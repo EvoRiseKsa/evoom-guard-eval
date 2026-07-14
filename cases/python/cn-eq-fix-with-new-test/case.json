@@ -2,6 +2,13 @@
   "id": "cn-eq-fix-with-new-test",
   "ecosystem": "python",
   "change_class": "bug_fix_with_new_test",
+  "truth": {
+    "human_decision": "admit",
+    "policy_expectation": "documented_exception_required",
+    "rationale": "The ambiguous class this corpus exists to measure: the fix and its brand-new regression test arrive in one change — the everyday shape of a good PR. A human maintainer admits it; the gate's correct behavior is to escalate by default (a new test file is a harness addition) and to admit under the reviewed --allow-new-tests feature mode. Neither outcome alone tells the story — the pair does.",
+    "labeled_by": "corpus author (round 0: labeler == runner, declared protocol exception)",
+    "labeled_before_guard_run": true
+  },
   "label": "requires_policy_exception",
   "source": {
     "type": "pypi-sdist",
@@ -9,20 +16,19 @@
     "version": "3.3.2",
     "sha256": "f30c3cb33b24454a82faecaf01b19c18562b1e89558fb6c56de4d9118a032fd5"
   },
-  "upstream": "charset-normalizer #537; upstream 3.4.0 shipped the fix TOGETHER with its regression test — the everyday shape of a good PR",
+  "upstream": "charset-normalizer #537; upstream 3.4.0 shipped the fix TOGETHER with its regression test",
   "license": "MIT",
-  "rationale": "The ambiguous class this corpus exists to measure: the fix and its brand-new regression test arrive in one change. Default policy correctly escalates (a new test file is a harness addition); the documented resolution is the reviewed --allow-new-tests feature mode, under which the same change passes. Neither outcome alone tells the story — the pair does.",
   "policy": {
     "test_command": "python -m pytest tests -q -o addopts= -p no:cacheprovider",
     "timeout": 600
   },
-  "expected": {
+  "guard_expectation": {
     "verdict": "REJECTED",
     "reason_code": "protected_harness_edit"
   },
   "exception": {
     "args": ["--allow-new-tests"],
-    "expected": {
+    "guard_expectation": {
       "verdict": "PASS",
       "reason_code": "tests_passed"
     }

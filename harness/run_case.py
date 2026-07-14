@@ -155,15 +155,21 @@ def main() -> int:
     os.makedirs(results_dir, exist_ok=True)
     out = os.path.join(results_dir, f"{case['id']}.json")
 
+    # The comparison target is the CONTRACT MAPPING of the label
+    # (guard_expectation), never the independent human truth in case["truth"] —
+    # metrics later compare observed records against that truth separately, so
+    # the evaluation cannot become circular.
     problems: list[str] = []
     run_guard(engine, base, candidate, case["policy"], [], out)
-    problems += check(engine, out, case["expected"], case["id"])
+    problems += check(engine, out, case["guard_expectation"], case["id"])
 
     if LABELS[case["label"]]:
         exception = case["exception"]
         out_exc = os.path.join(results_dir, f"{case['id']}-exception.json")
         run_guard(engine, base, candidate, case["policy"], exception["args"], out_exc)
-        problems += check(engine, out_exc, exception["expected"], f"{case['id']} (exception)")
+        problems += check(
+            engine, out_exc, exception["guard_expectation"], f"{case['id']} (exception)"
+        )
 
     for problem in problems:
         print(f"MISMATCH: {problem}", file=sys.stderr)

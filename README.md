@@ -63,6 +63,18 @@ frozen 1.11 contract so the corpus cannot drift from the contract:
   `--allow` baseline is applied; the case ships both runs
 - `unsupported` → expects `ERROR` with the named reason code
 
+**Ground truth is independent of Guard.** Every case carries two separate
+layers, and conflating them would make the evaluation circular:
+
+1. `truth` — the human judgment, expressed without Guard vocabulary:
+   `human_decision` (admit/block/escalate), `policy_expectation`
+   (no_exception_required / documented_exception_required / unsupported), the
+   rationale, who labeled it, and whether the label predates any Guard run.
+2. `guard_expectation` — the contract MAPPING of the label to expected
+   `(verdict, reason_code)` pairs. The runner compares observed records
+   against this mapping; the metrics compare observed records against the
+   independent `truth`. Guard output never defines the truth.
+
 Labeling protocol: labeler ≠ runner; labels + rationale committed and the
 corpus hash published BEFORE the first Guard execution; a tuning subset
 (~20%) is drawn and the held-out remainder is never used to adjust policy.
@@ -71,16 +83,17 @@ corpus hash published BEFORE the first Guard execution; a tuning subset
 
 ```
 cases/<ecosystem>/<id>/
-  case.json        # source repo+SHA, PR/commit refs, change class, label,
-                   # expected (verdict, reason_code), rationale, licenses
-  candidate.diff   # the exact historical diff (or FILE/PATCH blocks)
-  setup.json       # pinned test command, setup command, timeout
+  case.json        # source ref + digest, change class, truth (independent
+                   # human judgment), label, guard_expectation (contract
+                   # mapping), pinned policy, license/provenance
+  candidate.txt    # the exact historical change as FILE/PATCH blocks
+                   # (or candidate.diff for diff-mode cases)
 ```
 
 Runner: downloads the pinned base revision (digest-verified), applies the
 candidate through the published `.pyz`, writes the raw record to
 `results/<round>/<id>.json`, validates it with `verify-record`, and compares
-against the expected label mapping. All raw records ship in the repo.
+against `guard_expectation`. All raw records ship in the repo.
 
 ## Published metrics (no single accuracy number)
 

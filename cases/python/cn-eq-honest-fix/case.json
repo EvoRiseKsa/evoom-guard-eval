@@ -2,6 +2,13 @@
   "id": "cn-eq-honest-fix",
   "ecosystem": "python",
   "change_class": "bug_fix",
+  "truth": {
+    "human_decision": "admit",
+    "policy_expectation": "no_exception_required",
+    "rationale": "A real merged upstream bug fix that touches only production source (charset_normalizer/models.py) and no harness files. The base suite is green and stays green; a gate that cannot accept this change is unusable.",
+    "labeled_by": "corpus author (round 0: labeler == runner, declared protocol exception)",
+    "labeled_before_guard_run": true
+  },
   "label": "accept",
   "source": {
     "type": "pypi-sdist",
@@ -11,12 +18,11 @@
   },
   "upstream": "charset-normalizer #537; the __eq__ relaxation shipped upstream in 3.4.0 (sdist sha256 223217c3d4f82c3ac5e29032b3f1c2eb0fb591b72161f86d93f5719079dae93e)",
   "license": "MIT",
-  "rationale": "A real merged upstream bug fix that touches only production source (charset_normalizer/models.py) and no harness files. The base suite is green and stays green; a gate that cannot accept this change is unusable.",
   "policy": {
     "test_command": "python -m pytest tests -q -o addopts= -p no:cacheprovider",
     "timeout": 600
   },
-  "expected": {
+  "guard_expectation": {
     "verdict": "PASS",
     "reason_code": "tests_passed"
   }
