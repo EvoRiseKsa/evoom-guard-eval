@@ -1,10 +1,10 @@
-# `evoom-guard-eval` — the independent real-world evaluation corpus
+# `evoom-guard-eval` — reproducible real-world evaluation corpus
 
-**Protocol v0.1 — frozen 2026-07-14** (tag `protocol-v0.1`). Changes to the
-methodology below fork a new protocol version; they never mutate a round that
-already ran. The frozen-core rule applies: nothing here touches
-EvoOM-Guard-m; the tool version and policy under test are pinned, never
-adapted to the corpus.
+**Current protocol: v0.2.** Protocol v0.1 remains immutable at tag
+`protocol-v0.1`; it covered the pilot as originally executed but did not yet
+include the complete labeling, evaluator, or manifest tooling. Protocol v0.2
+closes that gap and is frozen at tag `protocol-v0.2`. Existing tags and round
+outputs are never moved or overwritten. See [`PROTOCOL.md`](PROTOCOL.md).
 
 **Honest scope:** this repository lives under the same account as the tool it
 evaluates. It is a reproducible, pre-registered evaluation — labels frozen
@@ -98,10 +98,19 @@ cases/<ecosystem>/<id>/
                    # (or candidate.diff for diff-mode cases)
 ```
 
-Runner: downloads the pinned base revision (digest-verified), applies the
-candidate through the published `.pyz`, writes the raw record to
-`results/<round>/<id>.json`, validates it with `verify-record`, and compares
-against `guard_expectation`. All raw records ship in the repo.
+Runner: checks that the case is present byte-for-byte in the round's immutable
+manifest, downloads the pinned base revision, applies the candidate through
+the published `.pyz`, refuses to overwrite a prior result, writes a fresh raw
+record to `results/<round>/<id>.json`, validates it with `verify-record`, and
+binds its tool/schema/candidate/policy/verdict/reason/timestamp to this exact
+invocation. Git caches are keyed by the full source URL and verified against
+their configured origin.
+
+The evaluator independently repeats record verification, derives the
+canonical candidate digest for both patch and diff modes, checks the exact
+expected result-file set (rejecting missing, extra, or stale records), checks
+truth/label consistency, and measures timing sidecars for v0.2 rounds. It does
+not trust the record's `verdict` field by itself.
 
 ## Published metrics (no single accuracy number)
 
@@ -113,16 +122,37 @@ Per round, per ecosystem, per change class:
 - unsupported rate, infrastructure-error rate
 - median time to verdict
 
-Plus: corpus hash, engine digest, `policy_sha256`, raw JSONL, and the
-labeler/runner separation statement.
+Plus: corpus hash, engine digest, `policy_sha256`, raw records, exact result
+inventory, per-invocation timing, and the labeler/runner separation statement.
 
 ## Round plan
 
-- Round 0 (pilot): 10 cases (5 Python, 5 Node) to validate the harness and
-  case format end to end — throwaway for metrics.
-- Round 1: full v1 corpus, labels frozen, results published.
+- Round pilot: 10 cases (5 Python, 5 Node), executed under the legacy v0.1
+  procedure with the declared labeler == runner exception. It is historical
+  evidence, not an independent estimate.
+- Round 1: 50–100 cases under v0.2, but it must not start until a distinct
+  blind labeler is named and the manifest is publicly frozen.
 - Round 2+: new cases accumulate; each round pins its engine/policy; rounds
   are never re-scored retroactively.
+
+## Reproduce the current evidence
+
+```bash
+python -m unittest discover -s tests -v
+python harness/make_manifest.py round-pilot --check
+python harness/evaluate.py --round round-pilot
+```
+
+CI runs all three checks on Windows and Linux with Python 3.11–3.13. The
+published engine is downloaded with a timeout and accepted only when its
+SHA-256 equals the frozen digest.
+
+## License boundaries
+
+Repository-authored harness and documentation are MIT licensed. Candidate
+changes are derived from the upstream projects named in each `case.json` and
+retain their upstream licenses; EvoOM Guard records remain subject to the
+tool's own terms. See [`THIRD_PARTY.md`](THIRD_PARTY.md).
 
 ## Exit criteria back into the freeze decision
 

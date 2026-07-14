@@ -47,11 +47,16 @@ For each case, exactly:
 ## Freezing order (must be verifiable from git history)
 
 1. Labeler delivers `truth` blocks; runner assembles `case.json` files.
-2. Commit and push all cases. Run `python harness/make_manifest.py <round>`;
-   commit and push `MANIFEST.json` (the corpus SHA-256).
-3. Only after both commits are public: run the round
+2. Commit and push all cases. Run:
+   `python harness/make_manifest.py <round> --labeler <identity> --runner
+   <identity> --tuning-seed <published-seed>`. The command refuses equal roles
+   unless a non-independent pilot explicitly uses `--allow-role-conflict`, and
+   refuses to overwrite `manifests/<round>.json`.
+3. Commit and push `manifests/<round>.json`. Verify it independently with
+   `python harness/make_manifest.py <round> --check`.
+4. Only after both commits are public: run the round
    (`harness/run_case.py` per case), then `harness/evaluate.py --round <round>`.
-4. Commit raw records + `RESULTS.md`. Rounds are never re-scored; corrections
+5. Commit raw records, timing sidecars, and `RESULTS.md`. Rounds are never re-scored; corrections
    are new rounds.
 
 ## Tuning vs held-out

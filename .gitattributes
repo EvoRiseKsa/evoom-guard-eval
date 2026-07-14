@@ -1,0 +1,6 @@
+*.md text eol=lf
+*.py text eol=lf
+*.yml text eol=lf
+cases/** -text
+manifests/** -text
+results/**/*.json -text
