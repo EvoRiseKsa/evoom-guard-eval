@@ -1,53 +1,90 @@
 #!/usr/bin/env python3
-"""Freeze the corpus manifest: per-file SHA-256 plus one corpus digest.
-
-    python harness/make_manifest.py <round-name>
-
-Writes MANIFEST.json at the repository root. The corpus digest is the SHA-256
-of the newline-joined "digest  path" lines, sorted by path — commit and
-publish it BEFORE the round runs; the results of a round are only meaningful
-against the manifest that predates them.
-"""
+"""Create or check one immutable, per-round corpus manifest."""
 from __future__ import annotations
 
-import hashlib
+import argparse
 import json
-import os
 import sys
+from common import (
+    ENGINE_SHA256,
+    ENGINE_VERSION,
+    ROOT,
+    SCHEMA_VERSION,
+    compute_case_entries,
+    verify_manifest,
+)
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
-def main() -> int:
-    round_name = sys.argv[1]
-    entries: list[dict[str, str]] = []
-    for directory, dirnames, filenames in sorted(os.walk(os.path.join(ROOT, "cases"))):
-        dirnames.sort()
-        for name in sorted(filenames):
-            path = os.path.join(directory, name)
-            rel = os.path.relpath(path, ROOT).replace(os.sep, "/")
-            digest = hashlib.sha256(open(path, "rb").read()).hexdigest()
-            entries.append({"path": rel, "sha256": digest})
-    lines = "\n".join(f"{e['sha256']}  {e['path']}" for e in entries)
-    corpus = hashlib.sha256(lines.encode("utf-8")).hexdigest()
-    manifest = {
+def build_manifest(round_name: str, labeler: str, runner: str, seed: str) -> dict:
+    entries, corpus = compute_case_entries()
+    return {
+        "protocol_version": "v0.2",
         "round": round_name,
+        "roles": {
+            "labeler": labeler,
+            "runner": runner,
+            "separated": labeler.casefold() != runner.casefold(),
+        },
+        "tuning_seed": seed,
         "case_files": entries,
         "corpus_sha256": corpus,
         "engine": {
-            "release": "v3.5.2",
-            "evo_guard_pyz_sha256": (
-                "a370fac23233ea6f317d5d7e5347389197fc936bd9b5903c685b1d3755e0046f"
-            ),
+            "release": ENGINE_VERSION,
+            "evo_guard_pyz_sha256": ENGINE_SHA256,
         },
-        "schema_version": "1.11",
+        "schema_version": SCHEMA_VERSION,
     }
-    out = os.path.join(ROOT, "MANIFEST.json")
-    with open(out, "w", encoding="utf-8", newline="\n") as f:
-        json.dump(manifest, f, indent=2, sort_keys=True)
-        f.write("\n")
-    print(f"{len(entries)} case files")
-    print(f"corpus_sha256: {corpus}")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Create or verify manifests/<round>.json without overwriting it."
+    )
+    parser.add_argument("round_name")
+    parser.add_argument("--check", action="store_true")
+    parser.add_argument("--labeler", help="stable identity of the blind labeler")
+    parser.add_argument("--runner", help="stable identity of the round runner")
+    parser.add_argument("--tuning-seed", help="published deterministic subset seed")
+    parser.add_argument(
+        "--allow-role-conflict",
+        action="store_true",
+        help="permit labeler == runner while recording the protocol exception",
+    )
+    args = parser.parse_args()
+
+    if args.check:
+        manifest, problems = verify_manifest(args.round_name, exact_corpus=False)
+        for problem in problems:
+            print(f"ERROR: {problem}", file=sys.stderr)
+        if not problems:
+            print(f"OK: {args.round_name} {manifest['corpus_sha256']}")
+        return 1 if problems else 0
+
+    required = {
+        "--labeler": args.labeler,
+        "--runner": args.runner,
+        "--tuning-seed": args.tuning_seed,
+    }
+    missing = [flag for flag, value in required.items() if not value]
+    if missing:
+        parser.error(f"creation requires {', '.join(missing)}")
+    assert args.labeler is not None and args.runner is not None
+    assert args.tuning_seed is not None
+    if args.labeler.casefold() == args.runner.casefold() and not args.allow_role_conflict:
+        parser.error("labeler and runner must differ (or declare --allow-role-conflict)")
+
+    out = ROOT / "manifests" / f"{args.round_name}.json"
+    if out.exists():
+        print(f"refusing to overwrite immutable manifest: {out}", file=sys.stderr)
+        return 1
+    out.parent.mkdir(parents=True, exist_ok=True)
+    manifest = build_manifest(args.round_name, args.labeler, args.runner, args.tuning_seed)
+    with open(out, "x", encoding="utf-8", newline="\n") as handle:
+        json.dump(manifest, handle, indent=2, sort_keys=True)
+        handle.write("\n")
+    print(f"{len(manifest['case_files'])} case files")
+    print(f"corpus_sha256: {manifest['corpus_sha256']}")
+    print(f"wrote immutable manifest: {out.relative_to(ROOT).as_posix()}")
     return 0
 
 

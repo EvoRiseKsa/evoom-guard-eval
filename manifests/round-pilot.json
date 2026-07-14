@@ -1,0 +1,28 @@
+{
+  "case_files": [
+    {"path": "cases/node/fe-assert-tamper/candidate.txt", "sha256": "e334251bdc62b0153fe07f4ee09f0c191c44f2ff0d17b3841cb35bf8de0829b8"},
+    {"path": "cases/node/fe-assert-tamper/case.json", "sha256": "1f3199c4ce12bf64c131fa5ec419b2eb5bd27f3a9386801ee78f8a80a24986a6"},
+    {"path": "cases/node/fe-license-notice/candidate.diff", "sha256": "0dfe1d44e4cdbd8db74389d1084581d572f461d0e402acce04388af48f227c85"},
+    {"path": "cases/node/fe-license-notice/case.json", "sha256": "7ffb09ddf5a5d3a1dc3e5c03fced38ec385deaf2a44ebcfb6757b43fe8029237"},
+    {"path": "cases/node/fe-test-style-cleanup/candidate.diff", "sha256": "3258a019d4dae3a7e9626fcb949737edcde4e78a19d59fc1e8229c2324a09f91"},
+    {"path": "cases/node/fe-test-style-cleanup/case.json", "sha256": "c0493517c70aaa9653010b76ea0c0ec6006f03e6da9c7b7f640136e101d61107"},
+    {"path": "cases/node/pw-ci-concurrency/candidate.diff", "sha256": "5f422bf77fc0de46e304a220919e7b93744d94c76ca0758600ae0aba7b07d70f"},
+    {"path": "cases/node/pw-ci-concurrency/case.json", "sha256": "8f1efd0581cc247a4575d6049e99bec14260c1c5703305b18eacbb0327dfde5b"},
+    {"path": "cases/node/pw-readme-docs-update/candidate.diff", "sha256": "2778c7a62af156498d07538624fba95f9d2540cc67b2f80e147128cb69d74a4f"},
+    {"path": "cases/node/pw-readme-docs-update/case.json", "sha256": "5f62f0a443c3004b453c2fb5c6812d231e941499375f6fc9738fa3604af8c902"},
+    {"path": "cases/python/cn-eq-fix-with-new-test/candidate.txt", "sha256": "0834b65ffa63f5aa2002feba53e23f7df3080357c617ea0c4eb06160751c33d2"},
+    {"path": "cases/python/cn-eq-fix-with-new-test/case.json", "sha256": "f2712464cebcd7390961d215abe516de6a9356f1cf167c048a02e3d63823efc6"},
+    {"path": "cases/python/cn-eq-honest-fix/candidate.txt", "sha256": "27fb8c4f418abf3511f2c95824db09c44856f4a3368711e5af141111870bc9df"},
+    {"path": "cases/python/cn-eq-honest-fix/case.json", "sha256": "cbbaede162e0bbcab54bf1a15ce708485f15c9371e122e559e2019e214b05754"},
+    {"path": "cases/python/mi-all-equal-refactor/candidate.txt", "sha256": "d6a03e5761f2085aebed36b55ec7b758b5129c1562e7101c236cd72014aa3d28"},
+    {"path": "cases/python/mi-all-equal-refactor/case.json", "sha256": "68a13bd91701a8245562ee767bd2ac2d6b387bd53de950d8206b20686a79e3f0"},
+    {"path": "cases/python/mi-all-equal-test-tamper/candidate.txt", "sha256": "5ab62449924806ca1ed7d08b8b2606e134db1cf1655bdb56c282bc3b0dfc922d"},
+    {"path": "cases/python/mi-all-equal-test-tamper/case.json", "sha256": "e992c0e90f4d91eb96f5765108b61476ae08a5d3355e8aed82090e4f8268ca59"},
+    {"path": "cases/python/mi-all-equal-with-test-update/candidate.txt", "sha256": "44e1016c41608deb6508a93b8c48ade94aeb5a916e117acaeff3516dc19de3e4"},
+    {"path": "cases/python/mi-all-equal-with-test-update/case.json", "sha256": "0d73d381fddf6a0efebd84d686e4a8f8111b67b930dc4abc45304142eae2fc36"}
+  ],
+  "corpus_sha256": "7a7f09585079dada65432a343b6bb4ce20fb57be1c8ef86942cf2d66f0ea7c26",
+  "engine": {"evo_guard_pyz_sha256": "a370fac23233ea6f317d5d7e5347389197fc936bd9b5903c685b1d3755e0046f", "release": "v3.5.2"},
+  "round": "round-pilot",
+  "schema_version": "1.11"
+}
