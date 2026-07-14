@@ -147,3 +147,34 @@ def case_is_frozen(case_dir: str | Path, manifest: dict[str, Any]) -> bool:
         if frozen.get(rel) != sha256_file(path):
             return False
     return any(path.name == "case.json" for path in files)
+
+
+def manifest_coverage_problems() -> list[str]:
+    """Require every current case byte to belong to an immutable round manifest.
+
+    Historical manifests remain valid when later rounds add new cases, while a
+    new or changed case cannot reach main without being frozen by a new
+    per-round manifest.
+    """
+    problems: list[str] = []
+    coverage: dict[str, set[str]] = {}
+    manifest_files = sorted((ROOT / "manifests").glob("*.json"))
+    if not manifest_files:
+        return ["no per-round manifests found"]
+    for path in manifest_files:
+        manifest, manifest_problems = verify_manifest(path.stem)
+        problems.extend(f"{path.name}: {problem}" for problem in manifest_problems)
+        for entry in manifest.get("case_files", []):
+            if isinstance(entry, dict):
+                rel = entry.get("path")
+                digest = entry.get("sha256")
+                if isinstance(rel, str) and isinstance(digest, str):
+                    coverage.setdefault(rel, set()).add(digest)
+    for path in sorted((ROOT / "cases").rglob("*")):
+        if not path.is_file():
+            continue
+        rel = path.relative_to(ROOT).as_posix()
+        actual = sha256_file(path)
+        if actual not in coverage.get(rel, set()):
+            problems.append(f"current case file is not frozen in any manifest: {rel}")
+    return problems
