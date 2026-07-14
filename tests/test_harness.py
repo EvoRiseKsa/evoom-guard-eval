@@ -15,17 +15,58 @@ sys.path.insert(0, str(ROOT / "harness"))
 import evaluate  # noqa: E402
 import make_manifest  # noqa: E402
 import run_case  # noqa: E402
-from common import ENGINE_VERSION, SCHEMA_VERSION, verify_manifest  # noqa: E402
+import common  # noqa: E402
+from common import (  # noqa: E402
+    ENGINE_VERSION,
+    SCHEMA_VERSION,
+    manifest_coverage_problems,
+    verify_manifest,
+)
 
 
 class ManifestTests(unittest.TestCase):
     def test_pilot_manifest_is_reproducible(self) -> None:
-        manifest, problems = verify_manifest("round-pilot", exact_corpus=True)
+        manifest, problems = verify_manifest("round-pilot", exact_corpus=False)
         self.assertEqual([], problems)
         self.assertEqual(
             "7a7f09585079dada65432a343b6bb4ce20fb57be1c8ef86942cf2d66f0ea7c26",
             manifest["corpus_sha256"],
         )
+
+    def test_every_current_case_byte_is_frozen_in_a_round_manifest(self) -> None:
+        self.assertEqual([], manifest_coverage_problems())
+
+    def test_new_case_bytes_require_a_new_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            case_dir = root / "cases" / "python" / "case-a"
+            case_dir.mkdir(parents=True)
+            (case_dir / "case.json").write_text("{}\n", encoding="utf-8")
+            (case_dir / "candidate.txt").write_text("x\n", encoding="utf-8")
+            (root / "manifests").mkdir()
+            with mock.patch.object(common, "ROOT", root):
+                entries, corpus = common.compute_case_entries()
+                manifest = {
+                    "round": "round-a",
+                    "case_files": entries,
+                    "corpus_sha256": corpus,
+                    "engine": {
+                        "release": common.ENGINE_VERSION,
+                        "evo_guard_pyz_sha256": common.ENGINE_SHA256,
+                    },
+                    "schema_version": common.SCHEMA_VERSION,
+                }
+                (root / "manifests" / "round-a.json").write_text(
+                    json.dumps(manifest), encoding="utf-8"
+                )
+                self.assertEqual([], common.manifest_coverage_problems())
+                (case_dir / "unfrozen.txt").write_text("new\n", encoding="utf-8")
+                self.assertTrue(
+                    any(
+                        "unfrozen.txt" in problem
+                        for problem in common.manifest_coverage_problems()
+                    )
+                )
 
     def test_v02_manifest_records_role_separation_and_seed(self) -> None:
         manifest = make_manifest.build_manifest("round-x", "labeler", "runner", "seed-1")
