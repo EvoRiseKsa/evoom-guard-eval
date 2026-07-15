@@ -1,0 +1,53 @@
+{
+  "base_commit": "588b3a0f8f6a8bcf2a959cae882d5b2703e86737",
+  "base_tree": "607e00d3d6e3ee3fbc70815c00a3c7e9c235637e",
+  "candidate_canonical_sha256": "ef3b0aec57b0fb86ba73e500b6ec61ae257bf72d34b574b9a4f265fc2da253f1",
+  "candidate_sha256": "245d95c83bdd6f57fa857c3170bcb3bf963123122cc22a7640ee2a1d9c7a428f",
+  "canonical_url": "https://github.com/fmtlib/fmt.git",
+  "changed_paths": [
+    {
+      "path": "include/fmt/base.h",
+      "status": "M"
+    },
+    {
+      "path": "test/base-test.cc",
+      "status": "M"
+    }
+  ],
+  "commit": {
+    "author_date": "2026-06-26T03:21:59+08:00",
+    "author_email": "lagoho7@gmail.com",
+    "author_name": "Yat Ho",
+    "committer_date": "2026-06-25T12:21:59-07:00",
+    "committer_email": "noreply@github.com",
+    "committer_name": "GitHub",
+    "has_embedded_signature": true
+  },
+  "diff_command": "git -c core.safecrlf=false -c diff.algorithm=myers -c diff.indentHeuristic=true -c diff.compactionHeuristic=false -c diff.interHunkContext=0 diff --no-ext-diff --no-textconv --no-renames --unified=3 --binary --full-index 588b3a0f8f6a8bcf2a959cae882d5b2703e86737 0e601c34de26fe5b46f4c62dab2039efcb0acaed --",
+  "head_commit": "0e601c34de26fe5b46f4c62dab2039efcb0acaed",
+  "head_tree": "1f8137cf0b7300cb8b61bf4148908317be84147b",
+  "license": {
+    "files": [
+      {
+        "git_blob": "795fdaec8f2ce6fcc97bbb15d1a6ac073af7bd17",
+        "path": "LICENSE",
+        "redistributed_path": "licenses/fmt/0e601c34de26fe5b46f4c62dab2039efcb0acaed/LICENSE",
+        "sha256": "a65fcc5a1095fc33cc37e4fff69366e49d7e92f613558a2b95ed1b70e33758b4"
+      }
+    ],
+    "redistribution_review": "permitted_by_named_upstream_license",
+    "spdx": "MIT"
+  },
+  "provenance_schema": "evoom.oss-case-provenance/1",
+  "pull_request": {
+    "merge_commit": "0e601c34de26fe5b46f4c62dab2039efcb0acaed",
+    "merged_at_utc": "2026-06-25T19:21:59Z",
+    "number": 4825,
+    "original_head_commit": "665587bc4d3477136aff6e482198dd4fa48c5253",
+    "title": "fix: explicitly check `operator[]` in `is_contiguous`",
+    "url": "https://github.com/fmtlib/fmt/pull/4825"
+  },
+  "relationship": "first-parent-to-merged-commit",
+  "repository": "fmtlib/fmt",
+  "selection_and_metadata_frozen_at_utc": "2026-07-15T00:44:48Z"
+}

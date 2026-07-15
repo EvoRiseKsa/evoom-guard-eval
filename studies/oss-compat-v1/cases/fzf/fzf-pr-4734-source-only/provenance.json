@@ -1,0 +1,49 @@
+{
+  "base_commit": "22024817058bc002761735024b780dce6b31cfa7",
+  "base_tree": "cc2cc52365b2f0d08b7a42bd4c8700f3ebc9553f",
+  "candidate_canonical_sha256": "1ae11f3c7b9c9fb560bb536642f3e5aecd0a576b5de1e5e783402d1dcfc85c4c",
+  "candidate_sha256": "aaa276a7f60053052514791724ff929ba6157bef5b7c53f768b8055801c296c6",
+  "canonical_url": "https://github.com/junegunn/fzf.git",
+  "changed_paths": [
+    {
+      "path": "src/options.go",
+      "status": "M"
+    }
+  ],
+  "commit": {
+    "author_date": "2026-03-23T08:55:00+08:00",
+    "author_email": "cuiweixie@gmail.com",
+    "author_name": "cui",
+    "committer_date": "2026-03-23T09:55:00+09:00",
+    "committer_email": "noreply@github.com",
+    "committer_name": "GitHub",
+    "has_embedded_signature": true
+  },
+  "diff_command": "git -c core.safecrlf=false -c diff.algorithm=myers -c diff.indentHeuristic=true -c diff.compactionHeuristic=false -c diff.interHunkContext=0 diff --no-ext-diff --no-textconv --no-renames --unified=3 --binary --full-index 22024817058bc002761735024b780dce6b31cfa7 14e3995a06e6a92a48d982c45f48595be1199002 --",
+  "head_commit": "14e3995a06e6a92a48d982c45f48595be1199002",
+  "head_tree": "95496a8bbe639e374534572163b40c53390d49d6",
+  "license": {
+    "files": [
+      {
+        "git_blob": "f63057ce12075081be3c2b3e31bafff9d9359545",
+        "path": "LICENSE",
+        "redistributed_path": "licenses/fzf/14e3995a06e6a92a48d982c45f48595be1199002/LICENSE",
+        "sha256": "a296f423c0d30ce3581435e78e7e36c5fe73984a882d8720c72e713b4593588b"
+      }
+    ],
+    "redistribution_review": "permitted_by_named_upstream_license",
+    "spdx": "MIT"
+  },
+  "provenance_schema": "evoom.oss-case-provenance/1",
+  "pull_request": {
+    "merge_commit": "14e3995a06e6a92a48d982c45f48595be1199002",
+    "merged_at_utc": "2026-03-23T00:55:00Z",
+    "number": 4734,
+    "original_head_commit": "bcfcdfb2be21401f710618a3b9a254bed5263c18",
+    "title": "Fix nthTransformer parts slice preallocation",
+    "url": "https://github.com/junegunn/fzf/pull/4734"
+  },
+  "relationship": "first-parent-to-merged-commit",
+  "repository": "junegunn/fzf",
+  "selection_and_metadata_frozen_at_utc": "2026-07-15T00:44:48Z"
+}

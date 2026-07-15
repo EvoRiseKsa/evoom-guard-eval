@@ -1,0 +1,55 @@
+{
+  "baseline_evidence": true,
+  "candidate_canonical_sha256": "2ee7df5a616e0b565751d95d6c0922f2066c76320d40ef6966dc51e44c2692e3",
+  "candidate_kind": "verbatim_upstream",
+  "candidate_sha256": "2d48afde70098fc8754acebbd28733c890223cba26cd72b8fc07f3460f4b4ef7",
+  "case_schema": "evoom.oss-compat-case/1",
+  "category": "verbatim_upstream_policy_trip",
+  "change_class": "feature_with_test_edit",
+  "ecosystem": "node",
+  "environment": "environments/node-express-node24-v1.json",
+  "expected_guard": {
+    "reason_code": "protected_harness_edit",
+    "verdict": "REJECTED"
+  },
+  "id": "express-pr-7377-test-edit",
+  "license": {
+    "files": [
+      {
+        "git_blob": "aa927e44e31d486f807634887662efa39256bf84",
+        "path": "LICENSE",
+        "redistributed_path": "licenses/express/61ccf2ea8c1bd19cbca6acfb7cd276c5fcd410d3/LICENSE",
+        "sha256": "95a5762890e5c1c9808921cef095661fc482c5e1f0bba31446ac85595df6237c"
+      }
+    ],
+    "spdx": "MIT"
+  },
+  "mode": "diff",
+  "policy": "policies/node-express-node24-v1.json",
+  "profile": "node-express-node24-v1",
+  "provenance_sha256": "7c34072645a802f2154005dd1328345dcfe829a84ca751e708784e42cf7bba82",
+  "repository": "expressjs/express",
+  "repository_key": "express",
+  "same_owner_oracle": {
+    "basis": "same-owner curator classification assigned during study construction before the canonical Guard workflow execution",
+    "disposition": "escalate",
+    "independent": false
+  },
+  "source": {
+    "base_commit": "715101bd27ec9c14a7ccc8a37c476f330d98ad53",
+    "base_tree": "8fb785af0826d02947fd71aa77b67001b43f87a7",
+    "head_commit": "61ccf2ea8c1bd19cbca6acfb7cd276c5fcd410d3",
+    "head_tree": "74c24d0569012befec1bf51c29794febc617fbfc",
+    "type": "git",
+    "url": "https://github.com/expressjs/express.git"
+  },
+  "test_scope": "declared_repo_suite_for_profile",
+  "upstream": {
+    "merge_commit": "61ccf2ea8c1bd19cbca6acfb7cd276c5fcd410d3",
+    "merged_at_utc": "2026-07-12T18:27:44Z",
+    "original_head_commit": "741598e4d7d2fec16d6815b59c0114d61a740702",
+    "pull_request": 7377,
+    "title": "feat: allow conditional revalidation for QUERY requests (v4)",
+    "url": "https://github.com/expressjs/express/pull/7377"
+  }
+}

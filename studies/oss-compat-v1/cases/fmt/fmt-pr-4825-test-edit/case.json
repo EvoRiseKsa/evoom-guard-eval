@@ -1,0 +1,55 @@
+{
+  "baseline_evidence": true,
+  "candidate_canonical_sha256": "ef3b0aec57b0fb86ba73e500b6ec61ae257bf72d34b574b9a4f265fc2da253f1",
+  "candidate_kind": "verbatim_upstream",
+  "candidate_sha256": "245d95c83bdd6f57fa857c3170bcb3bf963123122cc22a7640ee2a1d9c7a428f",
+  "case_schema": "evoom.oss-compat-case/1",
+  "category": "verbatim_upstream_policy_trip",
+  "change_class": "bug_fix_with_test_edit",
+  "ecosystem": "cpp",
+  "environment": "environments/cpp-fmt-ubuntu2404-v1.json",
+  "expected_guard": {
+    "reason_code": "protected_harness_edit",
+    "verdict": "REJECTED"
+  },
+  "id": "fmt-pr-4825-test-edit",
+  "license": {
+    "files": [
+      {
+        "git_blob": "795fdaec8f2ce6fcc97bbb15d1a6ac073af7bd17",
+        "path": "LICENSE",
+        "redistributed_path": "licenses/fmt/0e601c34de26fe5b46f4c62dab2039efcb0acaed/LICENSE",
+        "sha256": "a65fcc5a1095fc33cc37e4fff69366e49d7e92f613558a2b95ed1b70e33758b4"
+      }
+    ],
+    "spdx": "MIT"
+  },
+  "mode": "diff",
+  "policy": "policies/cpp-fmt-ubuntu2404-v1.json",
+  "profile": "cpp-fmt-ubuntu2404-v1",
+  "provenance_sha256": "401af895c1ee79b3c26510f97c52fdcd14509a2b24f266efca23964224a09c9a",
+  "repository": "fmtlib/fmt",
+  "repository_key": "fmt",
+  "same_owner_oracle": {
+    "basis": "same-owner curator classification assigned during study construction before the canonical Guard workflow execution",
+    "disposition": "escalate",
+    "independent": false
+  },
+  "source": {
+    "base_commit": "588b3a0f8f6a8bcf2a959cae882d5b2703e86737",
+    "base_tree": "607e00d3d6e3ee3fbc70815c00a3c7e9c235637e",
+    "head_commit": "0e601c34de26fe5b46f4c62dab2039efcb0acaed",
+    "head_tree": "1f8137cf0b7300cb8b61bf4148908317be84147b",
+    "type": "git",
+    "url": "https://github.com/fmtlib/fmt.git"
+  },
+  "test_scope": "declared_repo_suite_for_profile",
+  "upstream": {
+    "merge_commit": "0e601c34de26fe5b46f4c62dab2039efcb0acaed",
+    "merged_at_utc": "2026-06-25T19:21:59Z",
+    "original_head_commit": "665587bc4d3477136aff6e482198dd4fa48c5253",
+    "pull_request": 4825,
+    "title": "fix: explicitly check `operator[]` in `is_contiguous`",
+    "url": "https://github.com/fmtlib/fmt/pull/4825"
+  }
+}

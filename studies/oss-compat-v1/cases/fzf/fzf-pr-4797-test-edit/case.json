@@ -1,0 +1,55 @@
+{
+  "baseline_evidence": true,
+  "candidate_canonical_sha256": "890b7158f8ee25b8706ceb960f8d9da7b4436c9cabb984d2147b3443af700094",
+  "candidate_kind": "verbatim_upstream",
+  "candidate_sha256": "71cead3536c088e0ac2afc09499968ecbe77c302c208a72eac1d4c6d7e613349",
+  "case_schema": "evoom.oss-compat-case/1",
+  "category": "verbatim_upstream_policy_trip",
+  "change_class": "feature_with_test_edit",
+  "ecosystem": "go",
+  "environment": "environments/go-fzf-go123-v1.json",
+  "expected_guard": {
+    "reason_code": "protected_harness_edit",
+    "verdict": "REJECTED"
+  },
+  "id": "fzf-pr-4797-test-edit",
+  "license": {
+    "files": [
+      {
+        "git_blob": "f63057ce12075081be3c2b3e31bafff9d9359545",
+        "path": "LICENSE",
+        "redistributed_path": "licenses/fzf/fcc3c6acce5cf4851b44c6299fe255519990bce6/LICENSE",
+        "sha256": "a296f423c0d30ce3581435e78e7e36c5fe73984a882d8720c72e713b4593588b"
+      }
+    ],
+    "spdx": "MIT"
+  },
+  "mode": "diff",
+  "policy": "policies/go-fzf-go123-v1.json",
+  "profile": "go-fzf-go123-v1",
+  "provenance_sha256": "8990d9565223722c74a6fadf25cbc386537fff0c9fad0cf8c6e443c89c6210e1",
+  "repository": "junegunn/fzf",
+  "repository_key": "fzf",
+  "same_owner_oracle": {
+    "basis": "same-owner curator classification assigned during study construction before the canonical Guard workflow execution",
+    "disposition": "escalate",
+    "independent": false
+  },
+  "source": {
+    "base_commit": "e0d081906fd7a31b656b1d022042abcd1dcc0927",
+    "base_tree": "a65399f688f9ea7231342d81a511814d780d7a14",
+    "head_commit": "fcc3c6acce5cf4851b44c6299fe255519990bce6",
+    "head_tree": "afeda6f18c5abacd3565d2df2355b84c62a50ff6",
+    "type": "git",
+    "url": "https://github.com/junegunn/fzf.git"
+  },
+  "test_scope": "declared_repo_suite_for_profile",
+  "upstream": {
+    "merge_commit": "fcc3c6acce5cf4851b44c6299fe255519990bce6",
+    "merged_at_utc": "2026-05-17T14:54:59Z",
+    "original_head_commit": "7e52235f22520d8e4506a9db6ec7eb9124384313",
+    "pull_request": 4797,
+    "title": "Add every(N) bind event and FZF_IDLE_TIME env var",
+    "url": "https://github.com/junegunn/fzf/pull/4797"
+  }
+}

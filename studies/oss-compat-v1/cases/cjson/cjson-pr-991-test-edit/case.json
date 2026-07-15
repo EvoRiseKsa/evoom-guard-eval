@@ -1,0 +1,55 @@
+{
+  "baseline_evidence": true,
+  "candidate_canonical_sha256": "525c295d5349b15f16a7742f2e3c5c0c322a8e8049b80cf664de5deca04264c9",
+  "candidate_kind": "verbatim_upstream",
+  "candidate_sha256": "331bb79eb19a0e3876e6e92ad8124be2b85da55a5a7dc9928985309295f429ad",
+  "case_schema": "evoom.oss-compat-case/1",
+  "category": "verbatim_upstream_policy_trip",
+  "change_class": "bug_fix_with_test_edit",
+  "ecosystem": "c",
+  "environment": "environments/c-cjson-ubuntu2404-v1.json",
+  "expected_guard": {
+    "reason_code": "protected_harness_edit",
+    "verdict": "REJECTED"
+  },
+  "id": "cjson-pr-991-test-edit",
+  "license": {
+    "files": [
+      {
+        "git_blob": "78deb0406d713ab9730e3c2447be1abdbd70b9a2",
+        "path": "LICENSE",
+        "redistributed_path": "licenses/cjson/b2890c8d76bbb64e710585ebc0a917196b9c67e7/LICENSE",
+        "sha256": "a36dda207c36db5818729c54e7ad4e8b0c6fba847491ba64f372c1a2037b6d5c"
+      }
+    ],
+    "spdx": "MIT"
+  },
+  "mode": "diff",
+  "policy": "policies/c-cjson-ubuntu2404-v1.json",
+  "profile": "c-cjson-ubuntu2404-v1",
+  "provenance_sha256": "c58c6946e68ecbab49584207dd33cca7f66bb3d7430f541afca520882fd5322a",
+  "repository": "DaveGamble/cJSON",
+  "repository_key": "cjson",
+  "same_owner_oracle": {
+    "basis": "same-owner curator classification assigned during study construction before the canonical Guard workflow execution",
+    "disposition": "escalate",
+    "independent": false
+  },
+  "source": {
+    "base_commit": "a3f3d6c7843f3021b648623d13bc4fbca0084838",
+    "base_tree": "06504595b0b534dd57a258b996f5f3353698957e",
+    "head_commit": "b2890c8d76bbb64e710585ebc0a917196b9c67e7",
+    "head_tree": "ab2a8925131e889e06c7925f3fcd613ce094c1dd",
+    "type": "git",
+    "url": "https://github.com/DaveGamble/cJSON.git"
+  },
+  "test_scope": "declared_repo_suite_for_profile",
+  "upstream": {
+    "merge_commit": "b2890c8d76bbb64e710585ebc0a917196b9c67e7",
+    "merged_at_utc": "2026-03-12T11:18:36Z",
+    "original_head_commit": "79e2ad0817261a01323572a46806fde6ee8441b7",
+    "pull_request": 991,
+    "title": "fix: prevent NULL pointer dereference in cJSON_SetNumberHelper",
+    "url": "https://github.com/DaveGamble/cJSON/pull/991"
+  }
+}

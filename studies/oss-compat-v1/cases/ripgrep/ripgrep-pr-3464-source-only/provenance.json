@@ -1,0 +1,61 @@
+{
+  "base_commit": "48b0c795f4feb37343b2832d991c5c6a3900c08a",
+  "base_tree": "48169683e0c7eaf9a02c7cda5fbb5103b88f186c",
+  "candidate_canonical_sha256": "101983bb3d24ecedf544d06946ab5061e21e1e9eccf7feac6f889aa6ef09f229",
+  "candidate_sha256": "b95875b9529011ee6860dbaea73a1d7f510284242dbf86ddba2770d2a33928dd",
+  "canonical_url": "https://github.com/BurntSushi/ripgrep.git",
+  "changed_paths": [
+    {
+      "path": "crates/ignore/src/walk.rs",
+      "status": "M"
+    }
+  ],
+  "commit": {
+    "author_date": "2026-07-07T13:51:45-06:00",
+    "author_email": "astrothayne@gmail.com",
+    "author_name": "Thayne McCombs",
+    "committer_date": "2026-07-07T15:51:45-04:00",
+    "committer_email": "noreply@github.com",
+    "committer_name": "GitHub",
+    "has_embedded_signature": true
+  },
+  "diff_command": "git -c core.safecrlf=false -c diff.algorithm=myers -c diff.indentHeuristic=true -c diff.compactionHeuristic=false -c diff.interHunkContext=0 diff --no-ext-diff --no-textconv --no-renames --unified=3 --binary --full-index 48b0c795f4feb37343b2832d991c5c6a3900c08a f127579b006d9fb388050281d7d7146799a9cd4c --",
+  "head_commit": "f127579b006d9fb388050281d7d7146799a9cd4c",
+  "head_tree": "1ac45325b7634f5c3333349febf9f4ae8c43b2e3",
+  "license": {
+    "files": [
+      {
+        "git_blob": "bb9c20a094e41b7632d63bcff20c0b4b95e80777",
+        "path": "COPYING",
+        "redistributed_path": "licenses/ripgrep/f127579b006d9fb388050281d7d7146799a9cd4c/COPYING",
+        "sha256": "01c266bced4a434da0051174d6bee16a4c82cf634e2679b6155d40d75012390f"
+      },
+      {
+        "git_blob": "3b0a5dc09c1e16357459ddc9182a50f360f3cdba",
+        "path": "LICENSE-MIT",
+        "redistributed_path": "licenses/ripgrep/f127579b006d9fb388050281d7d7146799a9cd4c/LICENSE-MIT",
+        "sha256": "0f96a83840e146e43c0ec96a22ec1f392e0680e6c1226e6f3ba87e0740af850f"
+      },
+      {
+        "git_blob": "68a49daad8ff7e35068f2b7a97d643aab440eaec",
+        "path": "UNLICENSE",
+        "redistributed_path": "licenses/ripgrep/f127579b006d9fb388050281d7d7146799a9cd4c/UNLICENSE",
+        "sha256": "7e12e5df4bae12cb21581ba157ced20e1986a0508dd10d0e8a4ab9a4cf94e85c"
+      }
+    ],
+    "redistribution_review": "permitted_by_named_upstream_license",
+    "spdx": "MIT OR Unlicense"
+  },
+  "provenance_schema": "evoom.oss-case-provenance/1",
+  "pull_request": {
+    "merge_commit": "f127579b006d9fb388050281d7d7146799a9cd4c",
+    "merged_at_utc": "2026-07-07T19:51:45Z",
+    "number": 3464,
+    "original_head_commit": "d8cf1c52ffbc688a5ff81f9c05ba277ffbca3c06",
+    "title": "feat[ignore]: Add depth to more errors",
+    "url": "https://github.com/BurntSushi/ripgrep/pull/3464"
+  },
+  "relationship": "first-parent-to-merged-commit",
+  "repository": "BurntSushi/ripgrep",
+  "selection_and_metadata_frozen_at_utc": "2026-07-15T00:44:48Z"
+}

@@ -1,0 +1,61 @@
+{
+  "baseline_evidence": true,
+  "candidate_canonical_sha256": "a16cee95433dccb6b4a031ed82ada2056bee43ce53dabb974fcd4016ba49c083",
+  "candidate_kind": "verbatim_upstream",
+  "candidate_sha256": "c35910a926d713be6a78ce856b518766db44e6de95a5b4134745cbe6a6da9bc8",
+  "case_schema": "evoom.oss-compat-case/1",
+  "category": "verbatim_upstream_policy_trip",
+  "change_class": "bug_fix_with_test_edit",
+  "ecosystem": "python",
+  "environment": "environments/python-requests-py312-v1.json",
+  "expected_guard": {
+    "reason_code": "protected_harness_edit",
+    "verdict": "REJECTED"
+  },
+  "id": "requests-pr-7502-test-edit",
+  "license": {
+    "files": [
+      {
+        "git_blob": "67db8588217f266eb561f75fae738656325deac9",
+        "path": "LICENSE",
+        "redistributed_path": "licenses/requests/6f205ff422bccd5e4c4fc0b64c5f3e7df5181db6/LICENSE",
+        "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b"
+      },
+      {
+        "git_blob": "1ff62db688277b77c83c1766dac7f165364d3528",
+        "path": "NOTICE",
+        "redistributed_path": "licenses/requests/6f205ff422bccd5e4c4fc0b64c5f3e7df5181db6/NOTICE",
+        "sha256": "f5110972dedad2b4e9d314518daf3b7d72d6e02e499acd802181de6f74571dcc"
+      }
+    ],
+    "spdx": "Apache-2.0"
+  },
+  "mode": "diff",
+  "policy": "policies/python-requests-py312-v1.json",
+  "profile": "python-requests-py312-v1",
+  "provenance_sha256": "65a792752b3b837a4322edc1f696d2887d8e046ace5ac1b5eeba055ba36ba833",
+  "repository": "psf/requests",
+  "repository_key": "requests",
+  "same_owner_oracle": {
+    "basis": "same-owner curator classification assigned during study construction before the canonical Guard workflow execution",
+    "disposition": "escalate",
+    "independent": false
+  },
+  "source": {
+    "base_commit": "661970d171d9c3e12e4c789c4768db647d8c4da0",
+    "base_tree": "ea72ddd13e602fe8f9d9a5546d1be5f64b46046c",
+    "head_commit": "6f205ff422bccd5e4c4fc0b64c5f3e7df5181db6",
+    "head_tree": "1283c61d32482454e6a9cd287fb3a61d44614f69",
+    "type": "git",
+    "url": "https://github.com/psf/requests.git"
+  },
+  "test_scope": "declared_repo_suite_for_profile",
+  "upstream": {
+    "merge_commit": "6f205ff422bccd5e4c4fc0b64c5f3e7df5181db6",
+    "merged_at_utc": "2026-06-08T20:52:51Z",
+    "original_head_commit": "be53ff13b12df758cba1220f48fca0be31bcf03c",
+    "pull_request": 7502,
+    "title": "Fix `_encode_files` detection for `__getattr__`-based file wrappers",
+    "url": "https://github.com/psf/requests/pull/7502"
+  }
+}

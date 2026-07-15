@@ -1,0 +1,9 @@
+{
+  "id": "node-express-node24-v1",
+  "runner": "ubuntu-24.04",
+  "runtime": {"node": "24.14.1"},
+  "dependency_resolution": "live_unlocked_resolution_not_fully_captured",
+  "network": "required_during_guard_setup",
+  "secrets": false,
+  "notes": "The pinned Express revisions do not contain package-lock.json. npm lifecycle scripts are disabled, but the complete resolved dependency tree is not captured; the result is explicitly non-hermetic and time-bound."
+}

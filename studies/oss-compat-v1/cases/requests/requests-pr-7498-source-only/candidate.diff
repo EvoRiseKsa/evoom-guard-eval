@@ -1,0 +1,12 @@
+diff --git a/src/requests/models.py b/src/requests/models.py
+index 7aae7a0e691950b4f617302c36f866d7322721c1..c6ffb1fd6817bc2681049ccf01361e34f082d13a 100644
+--- a/src/requests/models.py
++++ b/src/requests/models.py
+@@ -308,6 +308,7 @@ class Request(RequestHooksMixin):
+       <PreparedRequest [GET]>
+     """
+ 
++    hooks: dict[str, list[_t.HookType]]
+     method: str | None
+     url: _t.UriType | None
+     headers: Mapping[str, str | bytes]

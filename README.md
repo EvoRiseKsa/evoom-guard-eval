@@ -125,6 +125,41 @@ Per round, per ecosystem, per change class:
 Plus: corpus hash, engine digest, `policy_sha256`, raw records, exact result
 inventory, per-invocation timing, and the labeler/runner separation statement.
 
+## Separate OSS compatibility study
+
+`studies/oss-compat-v1/` is a publicly frozen canonical-run **same-owner
+compatibility study**, not Round 1 and not an independent audit. Static-policy
+and harness validation occurred during study construction, so the design is not
+blind or model-independent. It freezes 12 historical merged changes from six
+unrelated projects across Python, Node, Go, Rust, C++, and C. Each project
+contributes one source-only replay and one real change that touches an existing
+test or CI workflow.
+
+The study has its own manifest, harness, workflow, and tag
+`oss-protocol-v0.1`; its files never enter the Round 1 corpus. It runs only from
+the exact protected tag. An Actions-API preflight enforces the first API-visible
+dispatch among retained runs; it cannot detect an earlier run deleted by the
+repository owner. Before any upstream code runs, the harness switches to a
+root-owned `env -i` execution with no Actions/artifact token. Setup and tests run
+as a dedicated capability-free uid under a trusted PID-namespace supervisor;
+the protocol, engine, source cache, judge parent, and artifact output remain
+root-owned. An unconditional cleanup must prove that no process of that uid
+survives before the output is released to the official upload step. The live
+self-test and `tests/oss_boundary_integration.sh` exercise detached-daemon,
+forbidden-write, environment, real-pytest/JUnit, and forced-wrapper-death paths.
+This narrows host and artifact risk but is not a VM/network/kernel sandbox, and
+the test process still writes the explicitly declared
+`same_process_candidate_writable` JUnit channel. Evidence integrity failures
+block publication, while integrity-valid negative product results remain
+publishable rather than being selected away.
+Canonical artifacts are preserved as ZIP archives and accepted only when their
+sizes and SHA-256 digests match the live GitHub Actions API. The materializer
+also binds the exact attempt-1 Jobs API inventory and every required official
+step before safe extraction is checked byte-for-byte against the published case
+directories.
+See [`studies/oss-compat-v1/PROTOCOL.md`](studies/oss-compat-v1/PROTOCOL.md)
+for the selection limits and non-hermetic dependency caveats.
+
 ## Round plan
 
 - Round pilot: 10 cases (5 Python, 5 Node), executed under the legacy v0.1
@@ -141,6 +176,11 @@ inventory, per-invocation timing, and the labeler/runner separation statement.
 python -m unittest discover -s tests -v
 python harness/make_manifest.py round-pilot --check
 python harness/evaluate.py --round round-pilot
+python harness/freeze_oss_cases.py --check
+python harness/make_oss_manifest.py oss-pilot-01 --check
+python harness/materialize_oss_artifacts.py --help
+python harness/evaluate_oss.py --study oss-pilot-01 \
+  --results studies/oss-compat-v1/results --check --if-present
 ```
 
 CI runs all three checks on Windows and Linux with Python 3.11–3.13. The

@@ -1,0 +1,55 @@
+{
+  "base_commit": "e50e5945294f79ee9ab4ec69de24d14f9b26a7ae",
+  "base_tree": "15178dfdd64b69f76b97f50398ebdb5dc5f12b80",
+  "candidate_canonical_sha256": "95304892723030d17672d02d650aa08019feb487722ed68131227091f162f27a",
+  "candidate_sha256": "39d132949b887748800754eed85bcc3b9ec93ed754d371ace11bea8f962ff087",
+  "canonical_url": "https://github.com/psf/requests.git",
+  "changed_paths": [
+    {
+      "path": "src/requests/models.py",
+      "status": "M"
+    }
+  ],
+  "commit": {
+    "author_date": "2026-06-04T23:43:21+02:00",
+    "author_email": "jhammudoglu@gmail.com",
+    "author_name": "Joren Hammudoglu",
+    "committer_date": "2026-06-04T14:43:21-07:00",
+    "committer_email": "noreply@github.com",
+    "committer_name": "GitHub",
+    "has_embedded_signature": true
+  },
+  "diff_command": "git -c core.safecrlf=false -c diff.algorithm=myers -c diff.indentHeuristic=true -c diff.compactionHeuristic=false -c diff.interHunkContext=0 diff --no-ext-diff --no-textconv --no-renames --unified=3 --binary --full-index e50e5945294f79ee9ab4ec69de24d14f9b26a7ae 1190afd14fca74292946d62c4c8169880a47ff67 --",
+  "head_commit": "1190afd14fca74292946d62c4c8169880a47ff67",
+  "head_tree": "035f0ad7df8ceeee902309cd8e1a644943872fd6",
+  "license": {
+    "files": [
+      {
+        "git_blob": "67db8588217f266eb561f75fae738656325deac9",
+        "path": "LICENSE",
+        "redistributed_path": "licenses/requests/1190afd14fca74292946d62c4c8169880a47ff67/LICENSE",
+        "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b"
+      },
+      {
+        "git_blob": "1ff62db688277b77c83c1766dac7f165364d3528",
+        "path": "NOTICE",
+        "redistributed_path": "licenses/requests/1190afd14fca74292946d62c4c8169880a47ff67/NOTICE",
+        "sha256": "f5110972dedad2b4e9d314518daf3b7d72d6e02e499acd802181de6f74571dcc"
+      }
+    ],
+    "redistribution_review": "permitted_by_named_upstream_license",
+    "spdx": "Apache-2.0"
+  },
+  "provenance_schema": "evoom.oss-case-provenance/1",
+  "pull_request": {
+    "merge_commit": "1190afd14fca74292946d62c4c8169880a47ff67",
+    "merged_at_utc": "2026-06-04T21:43:21Z",
+    "number": 7498,
+    "original_head_commit": "1e0fa672ed7185d5c408e2dc6ce1e15abf1d488f",
+    "title": "Add type annotation for `Request.hooks`",
+    "url": "https://github.com/psf/requests/pull/7498"
+  },
+  "relationship": "first-parent-to-merged-commit",
+  "repository": "psf/requests",
+  "selection_and_metadata_frozen_at_utc": "2026-07-15T00:44:48Z"
+}

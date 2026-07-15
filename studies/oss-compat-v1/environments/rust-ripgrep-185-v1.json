@@ -1,0 +1,9 @@
+{
+  "id": "rust-ripgrep-185-v1",
+  "runner": "ubuntu-24.04",
+  "runtime": {"rust": "1.85.0"},
+  "dependency_resolution": "Cargo.lock_then_offline_test",
+  "network": "required_during_guard_setup_only",
+  "secrets": false,
+  "notes": "cargo fetch --locked runs during protected setup; the suite then uses --locked --offline."
+}

@@ -1,0 +1,282 @@
+{
+  "snapshot_utc": "2026-07-15T00:44:48Z",
+  "selection_method": "purposive_stratified_publicly_frozen_canonical_run_protocol",
+  "selection_seed": null,
+  "selection_notes": "Six well-known repositories were purposively selected to span Python, JavaScript, Go, Rust, C++, and C. Static-policy and harness validation occurred during study construction before the first canonical workflow execution, so this is not a blind or model-independent evaluation. Each repository contributes one merged source-only change and one merged protected-harness policy trip. The inputs and analysis plan are publicly frozen for the canonical run, but the sample is not random or population-representative.",
+  "eligibility_criteria": [
+    "public well-known upstream repository with a redistribution-compatible named license",
+    "no secrets, credentials, privileged service, self-hosted runner, or external account required by the selected study profile",
+    "repository-native study profile expected to fit the profile-aware watchdog (at most 90 minutes including harness grace) within the 120-minute GitHub Actions job limit",
+    "historical merged commit whose first parent and merge tree are retrievable by full Git object id",
+    "text-only added or modified paths; no deletion, rename, copy, binary patch, submodule, or escaping symlink",
+    "one source-only case and one existing-test-or-CI policy-trip case available for the same ecosystem"
+  ],
+  "repositories": [
+    {
+      "key": "requests",
+      "repository": "psf/requests",
+      "url": "https://github.com/psf/requests.git",
+      "ecosystem": "python",
+      "stars_at_snapshot": 54142,
+      "profile": "python-requests-py312-v1",
+      "license": {"spdx": "Apache-2.0", "paths": ["LICENSE", "NOTICE"]},
+      "cases": [
+        {
+          "id": "requests-pr-7498-source-only",
+          "pr": 7498,
+          "title": "Add type annotation for `Request.hooks`",
+          "url": "https://github.com/psf/requests/pull/7498",
+          "merged_at_utc": "2026-06-04T21:43:21Z",
+          "pr_head_commit": "1e0fa672ed7185d5c408e2dc6ce1e15abf1d488f",
+          "base_commit": "e50e5945294f79ee9ab4ec69de24d14f9b26a7ae",
+          "head_commit": "1190afd14fca74292946d62c4c8169880a47ff67",
+          "base_tree": "15178dfdd64b69f76b97f50398ebdb5dc5f12b80",
+          "head_tree": "035f0ad7df8ceeee902309cd8e1a644943872fd6",
+          "category": "verbatim_upstream_source_only",
+          "change_class": "typing_maintenance",
+          "same_owner_disposition": "admit",
+          "expected_guard": {"verdict": "PASS", "reason_code": "tests_passed"}
+        },
+        {
+          "id": "requests-pr-7502-test-edit",
+          "pr": 7502,
+          "title": "Fix `_encode_files` detection for `__getattr__`-based file wrappers",
+          "url": "https://github.com/psf/requests/pull/7502",
+          "merged_at_utc": "2026-06-08T20:52:51Z",
+          "pr_head_commit": "be53ff13b12df758cba1220f48fca0be31bcf03c",
+          "base_commit": "661970d171d9c3e12e4c789c4768db647d8c4da0",
+          "head_commit": "6f205ff422bccd5e4c4fc0b64c5f3e7df5181db6",
+          "base_tree": "ea72ddd13e602fe8f9d9a5546d1be5f64b46046c",
+          "head_tree": "1283c61d32482454e6a9cd287fb3a61d44614f69",
+          "category": "verbatim_upstream_policy_trip",
+          "change_class": "bug_fix_with_test_edit",
+          "same_owner_disposition": "escalate",
+          "expected_guard": {"verdict": "REJECTED", "reason_code": "protected_harness_edit"}
+        }
+      ]
+    },
+    {
+      "key": "express",
+      "repository": "expressjs/express",
+      "url": "https://github.com/expressjs/express.git",
+      "ecosystem": "node",
+      "stars_at_snapshot": 69367,
+      "profile": "node-express-node24-v1",
+      "license": {"spdx": "MIT", "paths": ["LICENSE"]},
+      "cases": [
+        {
+          "id": "express-pr-7265-source-only",
+          "pr": 7265,
+          "title": "fix: replace deprecated trimRight() with trimEnd()",
+          "url": "https://github.com/expressjs/express/pull/7265",
+          "merged_at_utc": "2026-06-16T02:34:07Z",
+          "pr_head_commit": "bf6754c69c2676fe4acbab0ffd59c3c27c06bea3",
+          "base_commit": "90ec6206d3275fdf2787f2028c6f48a2d92e8042",
+          "head_commit": "9d8223d92ee81137a50a28eb6ad55a096791091d",
+          "base_tree": "598e297d2045b96e3d3eecd16d6b1faa509fe37c",
+          "head_tree": "d177b090f23b3402a8e2c94bed71d3a3cf73bba6",
+          "category": "verbatim_upstream_source_only",
+          "change_class": "deprecation_fix",
+          "same_owner_disposition": "admit",
+          "expected_guard": {"verdict": "PASS", "reason_code": "tests_passed"}
+        },
+        {
+          "id": "express-pr-7377-test-edit",
+          "pr": 7377,
+          "title": "feat: allow conditional revalidation for QUERY requests (v4)",
+          "url": "https://github.com/expressjs/express/pull/7377",
+          "merged_at_utc": "2026-07-12T18:27:44Z",
+          "pr_head_commit": "741598e4d7d2fec16d6815b59c0114d61a740702",
+          "base_commit": "715101bd27ec9c14a7ccc8a37c476f330d98ad53",
+          "head_commit": "61ccf2ea8c1bd19cbca6acfb7cd276c5fcd410d3",
+          "base_tree": "8fb785af0826d02947fd71aa77b67001b43f87a7",
+          "head_tree": "74c24d0569012befec1bf51c29794febc617fbfc",
+          "category": "verbatim_upstream_policy_trip",
+          "change_class": "feature_with_test_edit",
+          "same_owner_disposition": "escalate",
+          "expected_guard": {"verdict": "REJECTED", "reason_code": "protected_harness_edit"}
+        }
+      ]
+    },
+    {
+      "key": "fzf",
+      "repository": "junegunn/fzf",
+      "url": "https://github.com/junegunn/fzf.git",
+      "ecosystem": "go",
+      "stars_at_snapshot": 81727,
+      "profile": "go-fzf-go123-v1",
+      "license": {"spdx": "MIT", "paths": ["LICENSE"]},
+      "cases": [
+        {
+          "id": "fzf-pr-4734-source-only",
+          "pr": 4734,
+          "title": "Fix nthTransformer parts slice preallocation",
+          "url": "https://github.com/junegunn/fzf/pull/4734",
+          "merged_at_utc": "2026-03-23T00:55:00Z",
+          "pr_head_commit": "bcfcdfb2be21401f710618a3b9a254bed5263c18",
+          "base_commit": "22024817058bc002761735024b780dce6b31cfa7",
+          "head_commit": "14e3995a06e6a92a48d982c45f48595be1199002",
+          "base_tree": "cc2cc52365b2f0d08b7a42bd4c8700f3ebc9553f",
+          "head_tree": "95496a8bbe639e374534572163b40c53390d49d6",
+          "category": "verbatim_upstream_source_only",
+          "change_class": "performance_maintenance",
+          "same_owner_disposition": "admit",
+          "expected_guard": {"verdict": "PASS", "reason_code": "tests_passed"}
+        },
+        {
+          "id": "fzf-pr-4797-test-edit",
+          "pr": 4797,
+          "title": "Add every(N) bind event and FZF_IDLE_TIME env var",
+          "url": "https://github.com/junegunn/fzf/pull/4797",
+          "merged_at_utc": "2026-05-17T14:54:59Z",
+          "pr_head_commit": "7e52235f22520d8e4506a9db6ec7eb9124384313",
+          "base_commit": "e0d081906fd7a31b656b1d022042abcd1dcc0927",
+          "head_commit": "fcc3c6acce5cf4851b44c6299fe255519990bce6",
+          "base_tree": "a65399f688f9ea7231342d81a511814d780d7a14",
+          "head_tree": "afeda6f18c5abacd3565d2df2355b84c62a50ff6",
+          "category": "verbatim_upstream_policy_trip",
+          "change_class": "feature_with_test_edit",
+          "same_owner_disposition": "escalate",
+          "expected_guard": {"verdict": "REJECTED", "reason_code": "protected_harness_edit"}
+        }
+      ]
+    },
+    {
+      "key": "ripgrep",
+      "repository": "BurntSushi/ripgrep",
+      "url": "https://github.com/BurntSushi/ripgrep.git",
+      "ecosystem": "rust",
+      "stars_at_snapshot": 66128,
+      "profile": "rust-ripgrep-185-v1",
+      "license": {"spdx": "MIT OR Unlicense", "paths": ["COPYING", "LICENSE-MIT", "UNLICENSE"]},
+      "cases": [
+        {
+          "id": "ripgrep-pr-3464-source-only",
+          "pr": 3464,
+          "title": "feat[ignore]: Add depth to more errors",
+          "url": "https://github.com/BurntSushi/ripgrep/pull/3464",
+          "merged_at_utc": "2026-07-07T19:51:45Z",
+          "pr_head_commit": "d8cf1c52ffbc688a5ff81f9c05ba277ffbca3c06",
+          "base_commit": "48b0c795f4feb37343b2832d991c5c6a3900c08a",
+          "head_commit": "f127579b006d9fb388050281d7d7146799a9cd4c",
+          "base_tree": "48169683e0c7eaf9a02c7cda5fbb5103b88f186c",
+          "head_tree": "1ac45325b7634f5c3333349febf9f4ae8c43b2e3",
+          "category": "verbatim_upstream_source_only",
+          "change_class": "diagnostic_improvement",
+          "same_owner_disposition": "admit",
+          "expected_guard": {"verdict": "PASS", "reason_code": "tests_passed"}
+        },
+        {
+          "id": "ripgrep-pr-3467-test-edit",
+          "pr": 3467,
+          "title": "chore: fix typos in comments",
+          "url": "https://github.com/BurntSushi/ripgrep/pull/3467",
+          "merged_at_utc": "2026-07-08T12:26:02Z",
+          "pr_head_commit": "56ca9eed1e9a6cb5788a707e3067ed85e29fd491",
+          "base_commit": "e5f627fc16766194ced7bf498b03b78823f97716",
+          "head_commit": "b009b5b84b5bc92f18462f5c9fe1bad94551ceb0",
+          "base_tree": "4e9fa83c857273d4ae04141304dce72bab761ae3",
+          "head_tree": "3a47b3f08c36a42d479e7fc24488396ba7493db8",
+          "category": "verbatim_upstream_policy_trip",
+          "change_class": "maintenance_with_ci_and_test_edit",
+          "same_owner_disposition": "escalate",
+          "expected_guard": {"verdict": "REJECTED", "reason_code": "protected_harness_edit"}
+        }
+      ]
+    },
+    {
+      "key": "fmt",
+      "repository": "fmtlib/fmt",
+      "url": "https://github.com/fmtlib/fmt.git",
+      "ecosystem": "cpp",
+      "stars_at_snapshot": 23653,
+      "profile": "cpp-fmt-ubuntu2404-v1",
+      "license": {"spdx": "MIT", "paths": ["LICENSE"]},
+      "cases": [
+        {
+          "id": "fmt-pr-4822-source-only",
+          "pr": 4822,
+          "title": "avoid MSC warning C4702: unreachable code",
+          "url": "https://github.com/fmtlib/fmt/pull/4822",
+          "merged_at_utc": "2026-07-03T17:39:09Z",
+          "pr_head_commit": "1162474aca832459bdebea752604f25dacb3b04d",
+          "base_commit": "77b6ff700be3417e0a3ad9674ca306e40c451b6b",
+          "head_commit": "b54093c658ae5656799756ec5d4467f49064929f",
+          "base_tree": "a7c8b61ee7c49bd54980bc887ddb2dbab7b09573",
+          "head_tree": "99bb1b341adec450288fa9b2999d09c55fcc98d9",
+          "category": "verbatim_upstream_source_only",
+          "change_class": "compiler_compatibility",
+          "same_owner_disposition": "admit",
+          "expected_guard": {"verdict": "PASS", "reason_code": "tests_passed"}
+        },
+        {
+          "id": "fmt-pr-4825-test-edit",
+          "pr": 4825,
+          "title": "fix: explicitly check `operator[]` in `is_contiguous`",
+          "url": "https://github.com/fmtlib/fmt/pull/4825",
+          "merged_at_utc": "2026-06-25T19:21:59Z",
+          "pr_head_commit": "665587bc4d3477136aff6e482198dd4fa48c5253",
+          "base_commit": "588b3a0f8f6a8bcf2a959cae882d5b2703e86737",
+          "head_commit": "0e601c34de26fe5b46f4c62dab2039efcb0acaed",
+          "base_tree": "607e00d3d6e3ee3fbc70815c00a3c7e9c235637e",
+          "head_tree": "1f8137cf0b7300cb8b61bf4148908317be84147b",
+          "category": "verbatim_upstream_policy_trip",
+          "change_class": "bug_fix_with_test_edit",
+          "same_owner_disposition": "escalate",
+          "expected_guard": {"verdict": "REJECTED", "reason_code": "protected_harness_edit"}
+        }
+      ]
+    },
+    {
+      "key": "cjson",
+      "repository": "DaveGamble/cJSON",
+      "url": "https://github.com/DaveGamble/cJSON.git",
+      "ecosystem": "c",
+      "stars_at_snapshot": 12856,
+      "profile": "c-cjson-ubuntu2404-v1",
+      "license": {"spdx": "MIT", "paths": ["LICENSE"]},
+      "cases": [
+        {
+          "id": "cjson-pr-1006-source-only",
+          "pr": 1006,
+          "title": "Fix: Type Confusion vulnerability in cJSONUtils_ApplyPatches",
+          "url": "https://github.com/DaveGamble/cJSON/pull/1006",
+          "merged_at_utc": "2026-04-09T01:59:11Z",
+          "pr_head_commit": "cd14a72963ebc1a77d387771104730beb5bb63ef",
+          "base_commit": "b2890c8d76bbb64e710585ebc0a917196b9c67e7",
+          "head_commit": "fb16e5cf358798aabb049655975cde8427101056",
+          "base_tree": "ab2a8925131e889e06c7925f3fcd613ce094c1dd",
+          "head_tree": "e01489f142ec404fb133529eb9433acabceb4ead",
+          "category": "verbatim_upstream_source_only",
+          "change_class": "security_fix",
+          "same_owner_disposition": "admit",
+          "expected_guard": {"verdict": "PASS", "reason_code": "tests_passed"}
+        },
+        {
+          "id": "cjson-pr-991-test-edit",
+          "pr": 991,
+          "title": "fix: prevent NULL pointer dereference in cJSON_SetNumberHelper",
+          "url": "https://github.com/DaveGamble/cJSON/pull/991",
+          "merged_at_utc": "2026-03-12T11:18:36Z",
+          "pr_head_commit": "79e2ad0817261a01323572a46806fde6ee8441b7",
+          "base_commit": "a3f3d6c7843f3021b648623d13bc4fbca0084838",
+          "head_commit": "b2890c8d76bbb64e710585ebc0a917196b9c67e7",
+          "base_tree": "06504595b0b534dd57a258b996f5f3353698957e",
+          "head_tree": "ab2a8925131e889e06c7925f3fcd613ce094c1dd",
+          "category": "verbatim_upstream_policy_trip",
+          "change_class": "bug_fix_with_test_edit",
+          "same_owner_disposition": "escalate",
+          "expected_guard": {"verdict": "REJECTED", "reason_code": "protected_harness_edit"}
+        }
+      ]
+    }
+  ],
+  "excluded_or_deferred": [
+    {"repository": "pallets/flask", "reason": "deferred to avoid overweighting Python in the first compatibility sample"},
+    {"repository": "axios/axios", "reason": "browser and multi-runtime CI would confound the first pilot"},
+    {"repository": "cli/cli", "reason": "integration paths may require GitHub credentials; deferred"},
+    {"repository": "nlohmann/json", "reason": "repository and CI cost are disproportionate for the first pilot"},
+    {"repository": "curl/curl", "reason": "TLS/server test matrix is too complex for the first pilot"},
+    {"repository": "redis/redis", "reason": "heavier runtime plus non-permissive multi-license scope"}
+  ]
+}

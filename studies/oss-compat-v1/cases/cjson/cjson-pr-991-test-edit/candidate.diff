@@ -1,0 +1,39 @@
+diff --git a/cJSON.c b/cJSON.c
+index f16a7bccdb6e0d8f4e705d489c4748b86707bc62..88c2d95b313132abde96d0f6e200789c771fc1e1 100644
+--- a/cJSON.c
++++ b/cJSON.c
+@@ -410,6 +410,11 @@ loop_end:
+ /* don't ask me, but the original cJSON_SetNumberValue returns an integer or double */
+ CJSON_PUBLIC(double) cJSON_SetNumberHelper(cJSON *object, double number)
+ {
++    if (object == NULL)
++    {
++        return (double)NAN;
++    }
++
+     if (number >= INT_MAX)
+     {
+         object->valueint = INT_MAX;
+diff --git a/tests/misc_tests.c b/tests/misc_tests.c
+index 7c616479ee34339dd813510df92c12b604c39da7..fe2325e964485adad2a14e46c103a27ab6b00fd4 100644
+--- a/tests/misc_tests.c
++++ b/tests/misc_tests.c
+@@ -23,6 +23,7 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <math.h>
+ 
+ #include "unity/examples/unity_config.h"
+ #include "unity/src/unity.h"
+@@ -478,8 +479,8 @@ static void cjson_functions_should_not_crash_with_null_pointers(void)
+     TEST_ASSERT_NULL(cJSON_SetValuestring(corruptedString, "test"));
+     TEST_ASSERT_NULL(cJSON_SetValuestring(item, NULL));
+     cJSON_Minify(NULL);
+-    /* skipped because it is only used via a macro that checks for NULL */
+-    /* cJSON_SetNumberHelper(NULL, 0); */
++    /* cJSON_SetNumberHelper should handle NULL gracefully */
++    TEST_ASSERT_TRUE(isnan(cJSON_SetNumberHelper(NULL, 0)));
+ 
+     /* restore corrupted item2 to delete it */
+     item2->prev = originalPrev;

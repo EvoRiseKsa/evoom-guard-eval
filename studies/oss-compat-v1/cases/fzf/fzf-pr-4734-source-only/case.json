@@ -1,0 +1,55 @@
+{
+  "baseline_evidence": true,
+  "candidate_canonical_sha256": "1ae11f3c7b9c9fb560bb536642f3e5aecd0a576b5de1e5e783402d1dcfc85c4c",
+  "candidate_kind": "verbatim_upstream",
+  "candidate_sha256": "aaa276a7f60053052514791724ff929ba6157bef5b7c53f768b8055801c296c6",
+  "case_schema": "evoom.oss-compat-case/1",
+  "category": "verbatim_upstream_source_only",
+  "change_class": "performance_maintenance",
+  "ecosystem": "go",
+  "environment": "environments/go-fzf-go123-v1.json",
+  "expected_guard": {
+    "reason_code": "tests_passed",
+    "verdict": "PASS"
+  },
+  "id": "fzf-pr-4734-source-only",
+  "license": {
+    "files": [
+      {
+        "git_blob": "f63057ce12075081be3c2b3e31bafff9d9359545",
+        "path": "LICENSE",
+        "redistributed_path": "licenses/fzf/14e3995a06e6a92a48d982c45f48595be1199002/LICENSE",
+        "sha256": "a296f423c0d30ce3581435e78e7e36c5fe73984a882d8720c72e713b4593588b"
+      }
+    ],
+    "spdx": "MIT"
+  },
+  "mode": "diff",
+  "policy": "policies/go-fzf-go123-v1.json",
+  "profile": "go-fzf-go123-v1",
+  "provenance_sha256": "a2c78642980e6823a63e48442fe37746ecf7f5ede18afff6279e2f1f6d13d064",
+  "repository": "junegunn/fzf",
+  "repository_key": "fzf",
+  "same_owner_oracle": {
+    "basis": "same-owner curator classification assigned during study construction before the canonical Guard workflow execution",
+    "disposition": "admit",
+    "independent": false
+  },
+  "source": {
+    "base_commit": "22024817058bc002761735024b780dce6b31cfa7",
+    "base_tree": "cc2cc52365b2f0d08b7a42bd4c8700f3ebc9553f",
+    "head_commit": "14e3995a06e6a92a48d982c45f48595be1199002",
+    "head_tree": "95496a8bbe639e374534572163b40c53390d49d6",
+    "type": "git",
+    "url": "https://github.com/junegunn/fzf.git"
+  },
+  "test_scope": "declared_repo_suite_for_profile",
+  "upstream": {
+    "merge_commit": "14e3995a06e6a92a48d982c45f48595be1199002",
+    "merged_at_utc": "2026-03-23T00:55:00Z",
+    "original_head_commit": "bcfcdfb2be21401f710618a3b9a254bed5263c18",
+    "pull_request": 4734,
+    "title": "Fix nthTransformer parts slice preallocation",
+    "url": "https://github.com/junegunn/fzf/pull/4734"
+  }
+}
