@@ -6,6 +6,7 @@ reaches ``run_oss_case.py`` it remains as explicit evidence that the matrix cell
 failed before product measurement.  A product run consumes it before creating
 any result files, so the two artifact classes cannot be confused.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -42,6 +43,7 @@ UNTRUSTED_USER = "evoom-oss-untrusted"
 UNTRUSTED_GROUP = "evoom-oss-untrusted"
 UNTRUSTED_UID = 60001
 UNTRUSTED_GID = 60001
+IDENTITY_SCAN_TIMEOUT_SECONDS = 300
 BOOTSTRAP_NAME = "bootstrap-envelope.json"
 BOOTSTRAP_SCHEMA = "evoom.oss-infrastructure-bootstrap/1"
 INFRA_CLASSIFICATION = "invalid_before_measurement"
@@ -124,16 +126,20 @@ def _empty_directory(path: Path) -> None:
         raise BootstrapError(f"cannot inventory trusted directory: {path}") from exc
 
 
-def _assert_no_preexisting_identity_files(kind: str, identifier: int) -> None:
-    if kind not in {"uid", "gid"}:
-        raise BootstrapError("invalid identity-file scan kind")
+def _assert_no_preexisting_identity_files() -> None:
+    """Reject root-filesystem objects that a newly provisioned identity would own."""
     completed = subprocess.run(
         [
             "/usr/bin/find",
             "/",
             "-xdev",
-            f"-{kind}",
-            str(identifier),
+            "(",
+            "-uid",
+            str(UNTRUSTED_UID),
+            "-o",
+            "-gid",
+            str(UNTRUSTED_GID),
+            ")",
             "-print",
             "-quit",
         ],
@@ -141,11 +147,11 @@ def _assert_no_preexisting_identity_files(kind: str, identifier: int) -> None:
         capture_output=True,
         encoding="utf-8",
         errors="replace",
-        timeout=60,
+        timeout=IDENTITY_SCAN_TIMEOUT_SECONDS,
     )
     if completed.stdout.strip():
         raise BootstrapError(
-            f"fixed {kind} {identifier} already owns a host filesystem object"
+            "fixed untrusted uid/gid already owns a root-filesystem object"
         )
 
 
@@ -163,13 +169,8 @@ def _ensure_fixed_identity() -> None:
             raise BootstrapError(
                 f"fixed gid {UNTRUSTED_GID} belongs to {occupied.gr_name}"
             )
-        _assert_no_preexisting_identity_files("gid", UNTRUSTED_GID)
-        subprocess.run(
-            ["/usr/sbin/groupadd", "--gid", str(UNTRUSTED_GID), UNTRUSTED_GROUP],
-            check=True,
-        )
-        group = grp.getgrnam(UNTRUSTED_GROUP)
-    if group.gr_gid != UNTRUSTED_GID:
+        group = None
+    if group is not None and group.gr_gid != UNTRUSTED_GID:
         raise BootstrapError("fixed untrusted group has the wrong gid")
 
     try:
@@ -183,7 +184,23 @@ def _ensure_fixed_identity() -> None:
             raise BootstrapError(
                 f"fixed uid {UNTRUSTED_UID} belongs to {occupied_user.pw_name}"
             )
-        _assert_no_preexisting_identity_files("uid", UNTRUSTED_UID)
+        account = None
+    if account is not None and (
+        account.pw_uid != UNTRUSTED_UID or account.pw_gid != UNTRUSTED_GID
+    ):
+        raise BootstrapError("fixed untrusted user has the wrong uid/gid")
+
+    if group is None or account is None:
+        # One bounded traversal preserves the preexisting-ownership guarantee
+        # without the two full-root scans that made v0.2 time out.
+        _assert_no_preexisting_identity_files()
+    if group is None:
+        subprocess.run(
+            ["/usr/sbin/groupadd", "--gid", str(UNTRUSTED_GID), UNTRUSTED_GROUP],
+            check=True,
+        )
+        group = grp.getgrnam(UNTRUSTED_GROUP)
+    if account is None:
         subprocess.run(
             [
                 "/usr/sbin/useradd",
@@ -201,6 +218,8 @@ def _ensure_fixed_identity() -> None:
             check=True,
         )
         account = pwd.getpwnam(UNTRUSTED_USER)
+    if group.gr_gid != UNTRUSTED_GID:
+        raise BootstrapError("fixed untrusted group has the wrong gid")
     if account.pw_uid != UNTRUSTED_UID or account.pw_gid != UNTRUSTED_GID:
         raise BootstrapError("fixed untrusted user has the wrong uid/gid")
 
@@ -217,9 +236,7 @@ def _bootstrap_value(
         "manifest_sha256": _manifest_digest(study_id),
         "publisher": {"uid": publisher_uid, "gid": publisher_gid},
         "runner": _identity(),
-        "created_utc": datetime.now(timezone.utc)
-        .isoformat()
-        .replace("+00:00", "Z"),
+        "created_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
     }
 
 
@@ -308,13 +325,8 @@ def prepare(
     _validate_case(study_id, case_id)
     if output_root != OUTPUT_ROOT:
         raise BootstrapError(f"output root must be {OUTPUT_ROOT}")
-    if (
-        publisher_uid <= 0
-        or publisher_gid <= 0
-        or publisher_uid == UNTRUSTED_UID
-    ):
+    if publisher_uid <= 0 or publisher_gid <= 0 or publisher_uid == UNTRUSTED_UID:
         raise BootstrapError("unsafe publisher uid/gid")
-    _ensure_fixed_identity()
     _directory(BOUNDARY_ROOT, 0o711, create=True)
     _directory(output_root, 0o700, create=True)
     _directory(STATE_ROOT, 0o700, create=True)
@@ -339,6 +351,10 @@ def prepare(
         publisher_gid=publisher_gid,
         require_root_owner=True,
     )
+    # Provision only after the root-owned fallback is durable.  Any identity
+    # preflight/provisioning failure can then be released as explicit infra
+    # evidence by the unconditional cleanup step.
+    _ensure_fixed_identity()
     return marker
 
 
@@ -401,14 +417,15 @@ def release_infra(
     publisher_uid: int,
     publisher_gid: int,
 ) -> Path:
-    """Kill the fixed identity, then release only a pristine bootstrap artifact."""
+    """Prove the fixed identity is clean, then release only a pristine marker."""
     if os.geteuid() != 0:
         raise BootstrapError("bootstrap release requires root")
     _validate_case(study_id, case_id)
     if output_root != OUTPUT_ROOT:
         raise BootstrapError(f"output root must be {OUTPUT_ROOT}")
     # This helper intentionally has no dependency on installer configuration or
-    # tool discovery.  It kills the fixed uid and validates the root state path.
+    # tool discovery.  It cleans an exact identity or proves an absent numeric
+    # uid unused, then validates the root state path.
     from oss_untrusted_exec import cleanup_processes_without_config
 
     cleanup_processes_without_config()
@@ -457,7 +474,9 @@ def classify(output_root: Path, study_id: str, case_id: str) -> str:
         if not stat.S_ISREG(item_status.st_mode) or item.is_symlink():
             raise BootstrapError(f"product output is not regular: {name}")
     try:
-        envelope = json.loads((output / "run-envelope.json").read_text(encoding="utf-8"))
+        envelope = json.loads(
+            (output / "run-envelope.json").read_text(encoding="utf-8")
+        )
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         raise BootstrapError("invalid product run envelope") from exc
     if (

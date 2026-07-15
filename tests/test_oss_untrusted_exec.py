@@ -7,6 +7,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -85,9 +86,7 @@ class OssBoundaryPolicyContractTests(unittest.TestCase):
 
     def test_python_setup_uses_an_unprivileged_user_install(self) -> None:
         policy = json.loads(
-            (POLICY_ROOT / "python-requests-py312-v1.json").read_text(
-                encoding="utf-8"
-            )
+            (POLICY_ROOT / "python-requests-py312-v1.json").read_text(encoding="utf-8")
         )
         setup = policy["setup_command"]
         self.assertEqual(["python", "-m", "pip", "install"], setup[4:8])
@@ -137,14 +136,10 @@ class OssBoundaryWorkflowContractTests(unittest.TestCase):
         self.assertIn("steps.trusted_cleanup.outcome == 'success'", normalized)
         self.assertIn("outputs.classification == 'product'", normalized)
 
-        infra = _step_block(
-            _workflow_text(), "Upload immutable infrastructure output"
-        )
+        infra = _step_block(_workflow_text(), "Upload immutable infrastructure output")
         infra_condition = re.search(r"(?m)^\s+if:\s*(.+?)\s*$", infra)
         self.assertIsNotNone(infra_condition)
-        infra_normalized = (
-            infra_condition.group(1).replace("${{", "").replace("}}", "")
-        )
+        infra_normalized = infra_condition.group(1).replace("${{", "").replace("}}", "")
         self.assertIn("outputs.classification == 'infra'", infra_normalized)
 
 
@@ -172,11 +167,14 @@ class OssBoundaryQualificationWorkflowTests(unittest.TestCase):
             'sudo install -d -o root -g root -m 0711 "$CASE_ROOT" "$REPO"',
             text,
         )
-        self.assertIn(
-            'sudo chmod 0600 "$REPO/CMakeLists.txt" "$REPO/main.c"', text
-        )
+        self.assertIn('sudo chmod 0600 "$REPO/CMakeLists.txt" "$REPO/main.c"', text)
         self.assertIn("--phase setup -- cmake -S . -B build", text)
         self.assertIn("--phase test -- cmake --build build", text)
+        self.assertIn("Qualify bootstrap and pre-installer recovery", text)
+        self.assertIn("make_oss_manifest.py oss-pilot-03", text)
+        self.assertIn("prepare_oss_bootstrap.py prepare", text)
+        self.assertIn("prepare_oss_bootstrap.py release-infra", text)
+        self.assertIn("grep -Fx 'classification=infra'", text)
 
     def test_privileged_container_runs_the_boundary_integration_suite(self) -> None:
         text = CI_WORKFLOW_PATH.read_text(encoding="utf-8")
@@ -200,7 +198,9 @@ class OssBoundaryHelperTests(unittest.TestCase):
             self.skipTest(f"boundary wrapper has no {name} helper yet")
         return helper
 
-    def test_infer_phase_rejects_unknown_commands_and_classifies_policy_tools(self) -> None:
+    def test_infer_phase_rejects_unknown_commands_and_classifies_policy_tools(
+        self,
+    ) -> None:
         infer_phase = self._helper("infer_phase")
         examples = [
             ("python", ["-m", "pip", "install", "--user", "x"], "setup"),
@@ -277,6 +277,63 @@ class OssBoundaryHelperTests(unittest.TestCase):
                 any(fragment in name.upper() for fragment in forbidden_fragments),
                 name,
             )
+
+    def test_cleanup_without_passwd_entry_requires_an_unused_numeric_uid(self) -> None:
+        cleanup = self._helper("cleanup_processes_without_config")
+        fake_pwd = mock.Mock()
+        fake_pwd.getpwnam.side_effect = KeyError
+        with (
+            mock.patch.object(oss_untrusted_exec, "pwd", fake_pwd),
+            mock.patch.object(oss_untrusted_exec, "_kill_uid") as kill_uid,
+            mock.patch.object(
+                oss_untrusted_exec, "uid_processes", return_value=[]
+            ) as processes,
+            mock.patch.object(Path, "exists", return_value=False),
+        ):
+            cleanup()
+        kill_uid.assert_not_called()
+        processes.assert_called_once_with(oss_untrusted_exec.UNTRUSTED_UID)
+
+    def test_cleanup_without_passwd_entry_refuses_numeric_uid_processes(self) -> None:
+        cleanup = self._helper("cleanup_processes_without_config")
+        fake_pwd = mock.Mock()
+        fake_pwd.getpwnam.side_effect = KeyError
+        with (
+            mock.patch.object(oss_untrusted_exec, "pwd", fake_pwd),
+            mock.patch.object(oss_untrusted_exec, "_kill_uid") as kill_uid,
+            mock.patch.object(oss_untrusted_exec, "uid_processes", return_value=[321]),
+            mock.patch.object(Path, "exists", return_value=False),
+            self.assertRaisesRegex(
+                oss_untrusted_exec.BoundaryError, "fixed uid has processes"
+            ),
+        ):
+            cleanup()
+        kill_uid.assert_not_called()
+
+    def test_cleanup_identity_mismatch_fails_after_non_destructive_uid_check(
+        self,
+    ) -> None:
+        cleanup = self._helper("cleanup_processes_without_config")
+        account = mock.Mock(
+            pw_uid=oss_untrusted_exec.UNTRUSTED_UID,
+            pw_gid=oss_untrusted_exec.UNTRUSTED_GID + 1,
+        )
+        fake_pwd = mock.Mock()
+        fake_pwd.getpwnam.return_value = account
+        with (
+            mock.patch.object(oss_untrusted_exec, "pwd", fake_pwd),
+            mock.patch.object(oss_untrusted_exec, "_kill_uid") as kill_uid,
+            mock.patch.object(
+                oss_untrusted_exec, "uid_processes", return_value=[]
+            ) as processes,
+            mock.patch.object(Path, "exists", return_value=False),
+            self.assertRaisesRegex(
+                oss_untrusted_exec.BoundaryError, "identity mismatch"
+            ),
+        ):
+            cleanup()
+        kill_uid.assert_not_called()
+        processes.assert_called_once_with(oss_untrusted_exec.UNTRUSTED_UID)
 
 
 if __name__ == "__main__":

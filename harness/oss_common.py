@@ -1,4 +1,5 @@
 """Fail-closed primitives for the separate OSS compatibility study."""
+
 from __future__ import annotations
 
 import hashlib
@@ -13,10 +14,10 @@ from typing import Any, Callable, Iterable
 
 ROOT = Path(__file__).resolve().parents[1]
 STUDY_ROOT = ROOT / "studies" / "oss-compat-v1"
-STUDY_ID = "oss-pilot-02"
+STUDY_ID = "oss-pilot-03"
 PROTOCOL_ID = "oss-compat"
-PROTOCOL_VERSION = "0.2"
-PROTOCOL_TAG = "oss-protocol-v0.2"
+PROTOCOL_VERSION = "0.3"
+PROTOCOL_TAG = "oss-protocol-v0.3"
 ENGINE_VERSION = "v3.5.2"
 ENGINE_SHA256 = "a370fac23233ea6f317d5d7e5347389197fc936bd9b5903c685b1d3755e0046f"
 SCHEMA_VERSION = "1.11"
@@ -27,7 +28,12 @@ LEGACY_STUDIES = {
         "protocol_tag": "oss-protocol-v0.1",
         "protocol_version": "0.1",
         "manifest_sha256": "f428189ed79d7b2f236f8f5a80c1fee7fc2207b6d03e6c873679c4669e9c02eb",
-    }
+    },
+    "oss-pilot-02": {
+        "protocol_tag": "oss-protocol-v0.2",
+        "protocol_version": "0.2",
+        "manifest_sha256": "c5b2ddd34c92838a460865d96d831b6f4aa2b49f032bf6ed066496744408c05e",
+    },
 }
 
 HARNESS_INPUTS = (
@@ -68,9 +74,9 @@ def sha256_file(path: str | Path) -> str:
 
 
 def canonical_json_bytes(value: Any) -> bytes:
-    return (json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n").encode(
-        "utf-8"
-    )
+    return (
+        json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False) + "\n"
+    ).encode("utf-8")
 
 
 def load_json(path: str | Path) -> dict[str, Any]:
@@ -131,9 +137,13 @@ def ensure_git_cache(url: str, cache_root: str | Path) -> Path:
             ["git", "clone", "--quiet", "--no-checkout", url, str(cache)],
             timeout=300,
         )
-    origin = run_checked(
-        ["git", "-C", str(cache), "remote", "get-url", "origin"], timeout=30
-    ).stdout.decode("utf-8", "replace").strip()
+    origin = (
+        run_checked(
+            ["git", "-C", str(cache), "remote", "get-url", "origin"], timeout=30
+        )
+        .stdout.decode("utf-8", "replace")
+        .strip()
+    )
     if normalize_git_url(origin) != normalize_git_url(url):
         raise RuntimeError(f"git cache origin mismatch: expected {url}, got {origin}")
     return cache
@@ -152,7 +162,9 @@ def ensure_commit(cache: Path, commit: str) -> None:
         timeout=30,
     )
     if probe.returncode != 0:
-        run_checked(["git", "-C", str(cache), "fetch", "--quiet", "origin"], timeout=180)
+        run_checked(
+            ["git", "-C", str(cache), "fetch", "--quiet", "origin"], timeout=180
+        )
         run_checked(
             ["git", "-C", str(cache), "cat-file", "-e", f"{commit}^{{commit}}"],
             timeout=30,
@@ -269,7 +281,9 @@ def extract_git_tree(cache: Path, commit: str, destination: str | Path) -> Path:
     """Materialize a Git tree without applying git-archive export attributes."""
     destination_path = Path(destination)
     if destination_path.exists():
-        raise FileExistsError(f"refusing to replace extraction directory: {destination_path}")
+        raise FileExistsError(
+            f"refusing to replace extraction directory: {destination_path}"
+        )
     destination_path.mkdir(parents=True)
     raw_entries = git_output(cache, "ls-tree", "-r", "-z", commit)
     for entry in raw_entries.split(b"\0"):
@@ -280,9 +294,7 @@ def extract_git_tree(cache: Path, commit: str, destination: str | Path) -> Path:
         relative = encoded_path.decode("utf-8", "surrogateescape")
         safe_posix_relative_path(relative)
         if mode not in {"100644", "100755", "120000"} or kind != "blob":
-            raise RuntimeError(
-                f"unsupported Git tree entry {mode}/{kind}: {relative}"
-            )
+            raise RuntimeError(f"unsupported Git tree entry {mode}/{kind}: {relative}")
         if mode == "120000":
             link_name = git_output(cache, "cat-file", "blob", object_id).decode(
                 "utf-8", "strict"
@@ -445,7 +457,9 @@ def working_study_problems() -> list[str]:
     except (KeyError, TypeError, ValueError) as exc:
         return [f"invalid working case inventory: {exc}"]
     if len(current_cases) != EXPECTED_CASE_COUNT:
-        problems.append(f"working study must contain exactly {EXPECTED_CASE_COUNT} cases")
+        problems.append(
+            f"working study must contain exactly {EXPECTED_CASE_COUNT} cases"
+        )
     if set(current_cases) != set(selected):
         problems.append("working case ids differ from the predeclared selection")
 
@@ -458,8 +472,12 @@ def working_study_problems() -> list[str]:
         if case.get("candidate_sha256") != sha256_file(candidate):
             problems.append(f"{case_id}: candidate digest mismatch")
         canonical_digest = case.get("candidate_canonical_sha256")
-        if not isinstance(canonical_digest, str) or len(canonical_digest) != 64 or any(
-            character not in "0123456789abcdef" for character in canonical_digest
+        if (
+            not isinstance(canonical_digest, str)
+            or len(canonical_digest) != 64
+            or any(
+                character not in "0123456789abcdef" for character in canonical_digest
+            )
         ):
             problems.append(f"{case_id}: invalid canonical candidate digest")
         if case.get("provenance_sha256") != sha256_file(provenance_path):
@@ -488,10 +506,14 @@ def working_study_problems() -> list[str]:
             if expected_tuple != ("PASS", "tests_passed") or disposition != "admit":
                 problems.append(f"{case_id}: source-only truth/expectation mismatch")
         elif category == "verbatim_upstream_policy_trip":
-            if expected_tuple != (
-                "REJECTED",
-                "protected_harness_edit",
-            ) or disposition != "escalate":
+            if (
+                expected_tuple
+                != (
+                    "REJECTED",
+                    "protected_harness_edit",
+                )
+                or disposition != "escalate"
+            ):
                 problems.append(f"{case_id}: policy-trip truth/expectation mismatch")
         else:
             problems.append(f"{case_id}: unsupported category")
@@ -515,16 +537,22 @@ def working_study_problems() -> list[str]:
                     else:
                         declared = load_json(target)
                         if field == "environment" and declared.get("id") != profile:
-                            problems.append(f"{case_id}: environment id/profile mismatch")
+                            problems.append(
+                                f"{case_id}: environment id/profile mismatch"
+                            )
                         if field == "policy":
                             for command in ("test_command", "setup_command"):
                                 value = declared.get(command)
-                                if command == "test_command" and not isinstance(value, list):
+                                if command == "test_command" and not isinstance(
+                                    value, list
+                                ):
                                     problems.append(
                                         f"{case_id}: policy test_command must be argv"
                                     )
-                                if command == "setup_command" and value is not None and not isinstance(
-                                    value, list
+                                if (
+                                    command == "setup_command"
+                                    and value is not None
+                                    and not isinstance(value, list)
                                 ):
                                     problems.append(
                                         f"{case_id}: policy setup_command must be argv"
@@ -615,6 +643,14 @@ def verify_manifest(study_id: str = STUDY_ID) -> tuple[dict[str, Any], list[str]
         return {}, [f"missing frozen OSS study manifest: {path.relative_to(ROOT)}"]
     manifest = load_json(path)
     problems: list[str] = []
+    legacy = LEGACY_STUDIES.get(study_id)
+    if legacy:
+        # The protected-tag bytes and the pinned digest are the complete
+        # historical contract.  Never compare them with successor metadata,
+        # selection files, engine constants, or the evolving working tree.
+        if sha256_file(path) != legacy["manifest_sha256"]:
+            problems.append("historical manifest digest mismatch")
+        return manifest, problems
     if set(manifest) != {
         "manifest_schema",
         "study_id",
@@ -632,11 +668,10 @@ def verify_manifest(study_id: str = STUDY_ID) -> tuple[dict[str, Any], list[str]
         problems.append("study_id mismatch")
     if manifest.get("manifest_schema") != "evoom.oss-study-manifest/1":
         problems.append("unsupported OSS manifest schema")
-    legacy = LEGACY_STUDIES.get(study_id)
     expected_protocol = {
         "id": PROTOCOL_ID,
-        "tag": legacy["protocol_tag"] if legacy else PROTOCOL_TAG,
-        "version": legacy["protocol_version"] if legacy else PROTOCOL_VERSION,
+        "tag": PROTOCOL_TAG,
+        "version": PROTOCOL_VERSION,
     }
     protocol = manifest.get("protocol")
     if protocol != expected_protocol:
@@ -647,7 +682,9 @@ def verify_manifest(study_id: str = STUDY_ID) -> tuple[dict[str, Any], list[str]
         "independent": False,
         "kind": "same_owner_compatibility",
     }:
-        problems.append("claim scope must remain explicitly same-owner and non-independent")
+        problems.append(
+            "claim scope must remain explicitly same-owner and non-independent"
+        )
     if manifest.get("roles") != {
         "curator": "EvoRiseKsa",
         "runner": "EvoRiseKsa",
@@ -676,19 +713,11 @@ def verify_manifest(study_id: str = STUDY_ID) -> tuple[dict[str, Any], list[str]
     if not isinstance(entries, list) or not entries:
         problems.append("manifest has no input_files")
         return manifest, problems
-    if legacy:
-        # Historical manifests bind the bytes at their protected tag.  Main may
-        # evolve for a successor protocol, so comparing a legacy manifest with
-        # the current working tree would be both false and unreproducible.
-        if sha256_file(path) != legacy["manifest_sha256"]:
-            problems.append("historical manifest digest mismatch")
-        return manifest, problems
-    else:
-        current_entries, current_digest = hashed_entries(study_input_paths())
-        if entries != current_entries:
-            problems.append("study inputs differ from frozen manifest")
-        if manifest.get("corpus_sha256") != current_digest:
-            problems.append("corpus_sha256 mismatch")
+    current_entries, current_digest = hashed_entries(study_input_paths())
+    if entries != current_entries:
+        problems.append("study inputs differ from frozen manifest")
+    if manifest.get("corpus_sha256") != current_digest:
+        problems.append("corpus_sha256 mismatch")
     cases = manifest.get("cases")
     try:
         expected_manifest_cases = manifest_case_entries()

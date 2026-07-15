@@ -11,3 +11,4 @@ studies/oss-compat-v1/cases/** -text
 studies/oss-compat-v1/licenses/** -text
 studies/oss-compat-v1/manifests/** -text
 studies/oss-compat-v1/results/** -text
+studies/oss-compat-v1/attempts/** -text

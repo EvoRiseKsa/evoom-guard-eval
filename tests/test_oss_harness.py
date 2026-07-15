@@ -48,7 +48,8 @@ class OssStudyDataTests(unittest.TestCase):
         self.assertEqual([], oss_common.working_study_problems())
         selection = oss_common.load_json(oss_common.STUDY_ROOT / "SELECTION.json")
         self.assertEqual(
-            [], freeze_oss_cases._check_local_structure(selection)  # noqa: SLF001
+            [],
+            freeze_oss_cases._check_local_structure(selection),  # noqa: SLF001
         )
 
     def test_selection_is_six_balanced_repository_pairs(self) -> None:
@@ -66,7 +67,9 @@ class OssStudyDataTests(unittest.TestCase):
             },
             {repository["repository"] for repository in repositories},
         )
-        self.assertEqual(6, len({repository["ecosystem"] for repository in repositories}))
+        self.assertEqual(
+            6, len({repository["ecosystem"] for repository in repositories})
+        )
         all_ids: set[str] = set()
         for repository in repositories:
             cases = repository["cases"]
@@ -94,30 +97,71 @@ class OssStudyDataTests(unittest.TestCase):
         self.assertFalse(
             any(path.startswith("studies/oss-compat-v1/attempts/") for path in paths)
         )
-        self.assertTrue(any(path.startswith("studies/oss-compat-v1/licenses/") for path in paths))
-
-    def test_invalid_v01_manifest_remains_byte_identical_historical_evidence(self) -> None:
-        manifest, problems = oss_common.verify_manifest("oss-pilot-01")
-        self.assertEqual([], problems)
-        self.assertEqual("oss-pilot-01", manifest["study_id"])
-        self.assertEqual(
-            oss_common.LEGACY_STUDIES["oss-pilot-01"]["manifest_sha256"],
-            oss_common.sha256_file(oss_common.manifest_path("oss-pilot-01")),
+        self.assertTrue(
+            any(path.startswith("studies/oss-compat-v1/licenses/") for path in paths)
         )
 
-    def test_recovery_lineage_forbids_product_inference_from_v01(self) -> None:
+    def test_invalid_historical_manifests_remain_byte_identical(self) -> None:
+        for study_id in ("oss-pilot-01", "oss-pilot-02"):
+            with self.subTest(study_id=study_id):
+                manifest, problems = oss_common.verify_manifest(study_id)
+                self.assertEqual([], problems)
+                self.assertEqual(study_id, manifest["study_id"])
+                self.assertEqual(
+                    oss_common.LEGACY_STUDIES[study_id]["manifest_sha256"],
+                    oss_common.sha256_file(oss_common.manifest_path(study_id)),
+                )
+
+    def test_v03_keeps_v02_cases_labels_profiles_and_engine_unchanged(self) -> None:
+        predecessor = oss_common.load_json(oss_common.manifest_path("oss-pilot-02"))
+        successor = make_oss_manifest.build_manifest()
+        for field in ("claim_scope", "roles", "selection", "engine", "cases"):
+            with self.subTest(field=field):
+                self.assertEqual(predecessor[field], successor[field])
+
+    def test_recovery_lineage_excludes_both_attempts_from_product_results(self) -> None:
         recovery = oss_common.load_json(oss_common.STUDY_ROOT / "RECOVERY.json")
-        predecessor = recovery["predecessor"]
+        self.assertEqual("evoom.oss-study-recovery/2", recovery["recovery_schema"])
+        attempts = recovery["historical_attempts"]
         successor = recovery["successor"]
-        self.assertEqual("invalid_before_measurement", predecessor["disposition"])
-        self.assertIs(predecessor["product_inference_allowed"], False)
-        self.assertEqual(0, predecessor["observations"]["case_steps_started"])
-        self.assertEqual(0, predecessor["observations"]["guard_records"])
-        self.assertEqual("oss-pilot-02", successor["study_id"])
+        self.assertEqual(
+            ["oss-pilot-01", "oss-pilot-02"], [a["study_id"] for a in attempts]
+        )
+        for attempt in attempts:
+            with self.subTest(study_id=attempt["study_id"]):
+                self.assertEqual(
+                    "invalid_before_measurement", attempt["scientific_disposition"]
+                )
+                self.assertIs(attempt["product_inference_allowed"], False)
+                observations = attempt["observations"]
+                self.assertEqual(0, observations["case_runner_steps_started"])
+                self.assertEqual(0, observations["guard_invocations"])
+                self.assertEqual(0, observations["verified_guard_records"])
+                self.assertEqual(
+                    0, observations["product_outcome_denominator_contribution"]
+                )
+        self.assertEqual(0, recovery["pooling_rules"]["historical_product_denominator"])
+        self.assertEqual("oss-pilot-03", successor["study_id"])
         self.assertEqual(
             "new_preregistered_successor_not_a_rerun_or_replacement",
             successor["relationship"],
         )
+
+    def test_recovery_checksum_indexes_bind_every_captured_evidence_file(self) -> None:
+        recovery = oss_common.load_json(oss_common.STUDY_ROOT / "RECOVERY.json")
+        for attempt in recovery["historical_attempts"]:
+            with self.subTest(study_id=attempt["study_id"]):
+                capture = ROOT / attempt["capture_path"]
+                checksum_index = capture / "SHA256SUMS"
+                self.assertEqual(
+                    attempt["checksum_index_sha256"],
+                    oss_common.sha256_file(checksum_index),
+                )
+                for line in checksum_index.read_text(encoding="utf-8").splitlines():
+                    expected, relative = line.split("  ", 1)
+                    target = capture / relative
+                    self.assertTrue(target.is_file(), relative)
+                    self.assertEqual(expected, oss_common.sha256_file(target), relative)
 
     def test_manifest_and_study_references_reject_traversal(self) -> None:
         with self.assertRaises(ValueError):
@@ -211,7 +255,9 @@ class OssRecordAndFailureTests(unittest.TestCase):
             "test_command_ran": True,
             "baseline": {"verdict": "PASS"},
             "attestation": {
-                "created_utc": datetime.fromtimestamp(created, timezone.utc).isoformat(),
+                "created_utc": datetime.fromtimestamp(
+                    created, timezone.utc
+                ).isoformat(),
                 "guard_version": oss_common.ENGINE_VERSION.removeprefix("v"),
                 "base_sha": source["base_commit"],
                 "head_sha": source["head_commit"],
@@ -389,9 +435,7 @@ class OssEvaluatorTests(unittest.TestCase):
                     "release": oss_common.ENGINE_VERSION,
                     "sha256": oss_common.ENGINE_SHA256,
                 },
-                "candidate_sha256": oss_common.sha256_file(
-                    case_dir / "candidate.diff"
-                ),
+                "candidate_sha256": oss_common.sha256_file(case_dir / "candidate.diff"),
                 "candidate_canonical_sha256": case["candidate_canonical_sha256"],
                 "policy_sha256": oss_common.sha256_file(
                     oss_common.resolve_study_file(case["policy"], "policies")
@@ -427,9 +471,7 @@ class OssEvaluatorTests(unittest.TestCase):
                     "case_map",
                     return_value={case_id: (case_dir, case)},
                 ),
-                mock.patch.object(
-                    evaluate_oss, "manifest_path", return_value=manifest
-                ),
+                mock.patch.object(evaluate_oss, "manifest_path", return_value=manifest),
                 mock.patch.object(
                     evaluate_oss, "verify_local_materialization", return_value=[]
                 ),
@@ -462,7 +504,9 @@ class OssEvaluatorTests(unittest.TestCase):
                 Path(temporary), Path("unused-engine"), github_run_id="123"
             )
         self.assertTrue(problems)
-        self.assertEqual({"conformant": 0, "total": 6}, summary["source_only_conformance"])
+        self.assertEqual(
+            {"conformant": 0, "total": 6}, summary["source_only_conformance"]
+        )
         self.assertEqual(
             {"conformant": 0, "total": 6},
             summary["protected_policy_trip_detection"],
@@ -470,7 +514,9 @@ class OssEvaluatorTests(unittest.TestCase):
         self.assertEqual(12, sum(summary["by_ecosystem"].values()))
         self.assertEqual(12, summary["execution_coverage"]["fixed_case_denominator"])
         self.assertEqual(0, summary["execution_coverage"]["guard_invocation_count"])
-        self.assertEqual(0, summary["execution_coverage"]["product_outcome_denominator"])
+        self.assertEqual(
+            0, summary["execution_coverage"]["product_outcome_denominator"]
+        )
 
     def test_nested_output_entry_is_not_ignored(self) -> None:
         case_id, (case_dir, case) = next(iter(oss_common.case_map().items()))
@@ -498,7 +544,9 @@ class OssEvaluatorTests(unittest.TestCase):
                 _, _, problems = evaluate_oss.evaluate(
                     Path(temporary), Path("unused-engine"), github_run_id="123"
                 )
-        self.assertTrue(any("output inventory mismatch" in problem for problem in problems))
+        self.assertTrue(
+            any("output inventory mismatch" in problem for problem in problems)
+        )
 
     def test_timing_contract_rejects_nonfinite_negative_and_short_total(self) -> None:
         valid = {
@@ -511,9 +559,7 @@ class OssEvaluatorTests(unittest.TestCase):
         for bad in (-1, float("nan"), float("inf")):
             payload = dict(valid, guard_seconds=bad)
             self.assertTrue(evaluate_oss.validated_timings(payload)[1])
-        self.assertTrue(
-            evaluate_oss.validated_timings(dict(valid, total_seconds=1))[1]
-        )
+        self.assertTrue(evaluate_oss.validated_timings(dict(valid, total_seconds=1))[1])
         self.assertTrue(
             evaluate_oss.validated_timings(dict(valid, untrusted_extra=1))[1]
         )
@@ -524,7 +570,9 @@ class OssEvaluatorTests(unittest.TestCase):
             ),
         )
 
-    def test_negative_study_outcome_does_not_block_integrity_valid_publication(self) -> None:
+    def test_negative_study_outcome_does_not_block_integrity_valid_publication(
+        self,
+    ) -> None:
         summary = {
             "repository_count": 1,
             "case_count": 1,
@@ -545,7 +593,9 @@ class OssEvaluatorTests(unittest.TestCase):
             ]
             with (
                 mock.patch.object(sys, "argv", argv),
-                mock.patch.object(evaluate_oss, "acquire_engine", return_value=Path("engine")),
+                mock.patch.object(
+                    evaluate_oss, "acquire_engine", return_value=Path("engine")
+                ),
                 mock.patch.object(
                     evaluate_oss,
                     "evaluate",
@@ -572,7 +622,9 @@ class OssEvaluatorTests(unittest.TestCase):
             ]
             with (
                 mock.patch.object(sys, "argv", argv),
-                mock.patch.object(evaluate_oss, "acquire_engine", return_value=Path("engine")),
+                mock.patch.object(
+                    evaluate_oss, "acquire_engine", return_value=Path("engine")
+                ),
                 mock.patch.object(
                     evaluate_oss,
                     "evaluate",
@@ -675,9 +727,13 @@ class OssCanonicalDispatchTests(unittest.TestCase):
         ) as request:
             runs = check_canonical_dispatch.fetch_all_runs("token")
         self.assertEqual(101, len(runs))
-        self.assertEqual([mock.call("token", 1), mock.call("token", 2)], request.call_args_list)
+        self.assertEqual(
+            [mock.call("token", 1), mock.call("token", 2)], request.call_args_list
+        )
 
-    def test_github_identity_requires_exact_protected_tag_and_canonical_marker(self) -> None:
+    def test_github_identity_requires_exact_protected_tag_and_canonical_marker(
+        self,
+    ) -> None:
         commit = "b" * 40
         environment = {
             "GITHUB_ACTIONS": "true",

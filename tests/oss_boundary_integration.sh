@@ -10,6 +10,41 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
 apt-get install -y -qq python3 python3-pytest util-linux passwd >/dev/null
 
+# With no passwd entry, fallback cleanup must accept an unused numeric uid but
+# must neither kill nor release evidence while that unassigned uid has a process.
+setpriv --reuid=60001 --regid=60001 --clear-groups -- sleep 300 &
+UNASSIGNED_UID_PID=$!
+for _ in $(seq 1 50); do
+  test -r "/proc/$UNASSIGNED_UID_PID/status" || break
+  test "$(awk '/^Uid:/ {print $2}' "/proc/$UNASSIGNED_UID_PID/status")" = 60001 \
+    && break
+  sleep 0.1
+done
+test "$(awk '/^Uid:/ {print $2}' "/proc/$UNASSIGNED_UID_PID/status")" = 60001
+if python3 - <<'PY'
+import sys
+
+sys.path.insert(0, "/src/harness")
+from oss_untrusted_exec import cleanup_processes_without_config
+
+cleanup_processes_without_config()
+PY
+then
+  printf '%s\n' "cleanup accepted a process owned by an unassigned fixed uid" >&2
+  exit 1
+fi
+test -d "/proc/$UNASSIGNED_UID_PID"
+kill -KILL "$UNASSIGNED_UID_PID"
+wait "$UNASSIGNED_UID_PID" || true
+python3 - <<'PY'
+import sys
+
+sys.path.insert(0, "/src/harness")
+from oss_untrusted_exec import cleanup_processes_without_config
+
+cleanup_processes_without_config()
+PY
+
 groupadd --gid 60001 evoom-oss-untrusted
 useradd --uid 60001 --gid 60001 --no-create-home --home-dir /nonexistent \
   --shell /usr/sbin/nologin evoom-oss-untrusted
@@ -153,7 +188,7 @@ PY
 python3 - <<'PY'
 from pathlib import Path
 
-case = Path("/var/lib/evoom-oss/output/oss-pilot-02/case")
+case = Path("/var/lib/evoom-oss/output/boundary-integration/case")
 case.mkdir(parents=True)
 (case / "evidence.json").write_text("{}\n", encoding="utf-8")
 PY
@@ -187,6 +222,6 @@ wait "$STALE_UNTRUSTED_PID" || true
 test ! -d "/proc/$STALE_UNTRUSTED_PID"
 test "$(stat -c %u /var/lib/evoom-oss/output)" = "20001"
 runuser -u evoom-publisher -- \
-  test -r /var/lib/evoom-oss/output/oss-pilot-02/case/evidence.json
+  test -r /var/lib/evoom-oss/output/boundary-integration/case/evidence.json
 test -z "$(find /var/lib/evoom-oss/work -mindepth 1 -print -quit)"
 printf '%s\n' "DOCKER_BOUNDARY_INTEGRATION_OK"

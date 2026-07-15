@@ -468,7 +468,9 @@ class CurrentAttemptCaptureTests(unittest.TestCase):
             run_id=424242,
             protocol=protocol,
         )
-        manifest = b'{"study_id":"oss-pilot-02"}\n'
+        manifest = (
+            json.dumps({"study_id": protocol["study_id"]}, separators=(",", ":")) + "\n"
+        ).encode("utf-8")
         protocol["manifest_sha256"] = hashlib.sha256(manifest).hexdigest()
         attempt["manifest_sha256"] = protocol["manifest_sha256"]
         with tempfile.TemporaryDirectory() as temporary:

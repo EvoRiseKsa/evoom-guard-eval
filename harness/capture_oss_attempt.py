@@ -2,9 +2,10 @@
 """Capture immutable, non-evaluative evidence for OSS protocol attempts.
 
 The no-argument mode remains intentionally bound to the historical v0.1
-attempt.  ``current --run-id`` captures a v0.2 attempt without extracting or
-evaluating any case artifact; it exists so a mixed product/infrastructure run
-can be retained without being reinterpreted as product evidence.
+attempt.  ``current --run-id`` captures the active frozen successor without
+extracting or evaluating any case artifact; it exists so a mixed
+product/infrastructure run can be retained without being reinterpreted as
+product evidence.
 """
 
 from __future__ import annotations
@@ -1299,7 +1300,10 @@ def main(argv: list[str] | None = None) -> int:
         nargs="?",
         choices=("historical-v0.1", "current"),
         default="historical-v0.1",
-        help="default preserves the one exact v0.1 failure; current captures v0.2",
+        help=(
+            "default preserves the one exact v0.1 failure; current captures "
+            "the active frozen successor"
+        ),
     )
     parser.add_argument("--run-id", type=int)
     args = parser.parse_args(argv)
