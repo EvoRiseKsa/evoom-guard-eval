@@ -1,0 +1,24 @@
+{
+  "message": "Freeze OSS compatibility protocol v0.3\n\nstudy_id=oss-pilot-03\n\nmanifest_sha256=bee00b8f1142fa9f9bddf53bb7354a06e79055b658b308517a225371ab0f5b7c\n\ncorpus_sha256=9b3facda35472f842496895e5b421293d34bf67edb8251c035882a3aa78f6e69\n\nqualification_run=29392585413\n",
+  "node_id": "TA_kwDOTYnmeNoAKGE2M2M3YzQ0MDI1MDY5ODg3ODcxMTQ0MzY0NzBkNWQ1NTljN2Q3ZjY",
+  "object": {
+    "sha": "d2ab88924d564a9ab9035195f0933c492edac8e5",
+    "type": "commit",
+    "url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/git/commits/d2ab88924d564a9ab9035195f0933c492edac8e5"
+  },
+  "sha": "a63c7c4402506988787114436470d5d559c7d7f6",
+  "tag": "oss-protocol-v0.3",
+  "tagger": {
+    "date": "2026-07-15T05:55:14Z",
+    "email": "evoriseksa@gmail.com",
+    "name": "MainDev"
+  },
+  "url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/git/tags/a63c7c4402506988787114436470d5d559c7d7f6",
+  "verification": {
+    "payload": null,
+    "reason": "unsigned",
+    "signature": null,
+    "verified": false,
+    "verified_at": null
+  }
+}
