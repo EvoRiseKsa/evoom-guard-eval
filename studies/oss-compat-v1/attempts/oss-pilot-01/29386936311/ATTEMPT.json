@@ -1,0 +1,188 @@
+{
+  "boundary_failure": {
+    "archive_bytes": 232591,
+    "archive_sha256": "fb5756639bb7ca88f0efd18442a905c1f246b2048a2c3659fd5f97c714196554",
+    "boundary_failure_occurrences": 48,
+    "members_with_boundary_failure": [
+      "0_ripgrep-pr-3467-test-edit.txt",
+      "10_cjson-pr-1006-source-only.txt",
+      "11_requests-pr-7498-source-only.txt",
+      "1_requests-pr-7502-test-edit.txt",
+      "2_ripgrep-pr-3464-source-only.txt",
+      "3_fzf-pr-4734-source-only.txt",
+      "4_fmt-pr-4825-test-edit.txt",
+      "5_fzf-pr-4797-test-edit.txt",
+      "6_express-pr-7265-source-only.txt",
+      "7_cjson-pr-991-test-edit.txt",
+      "8_express-pr-7377-test-edit.txt",
+      "9_fmt-pr-4822-source-only.txt",
+      "cjson-pr-1006-source-only/11_Kill residual untrusted processes.txt",
+      "cjson-pr-1006-source-only/9_Install trusted execution boundary.txt",
+      "cjson-pr-991-test-edit/11_Kill residual untrusted processes.txt",
+      "cjson-pr-991-test-edit/9_Install trusted execution boundary.txt",
+      "express-pr-7265-source-only/11_Kill residual untrusted processes.txt",
+      "express-pr-7265-source-only/9_Install trusted execution boundary.txt",
+      "express-pr-7377-test-edit/11_Kill residual untrusted processes.txt",
+      "express-pr-7377-test-edit/9_Install trusted execution boundary.txt",
+      "fmt-pr-4822-source-only/11_Kill residual untrusted processes.txt",
+      "fmt-pr-4822-source-only/9_Install trusted execution boundary.txt",
+      "fmt-pr-4825-test-edit/11_Kill residual untrusted processes.txt",
+      "fmt-pr-4825-test-edit/9_Install trusted execution boundary.txt",
+      "fzf-pr-4734-source-only/11_Kill residual untrusted processes.txt",
+      "fzf-pr-4734-source-only/9_Install trusted execution boundary.txt",
+      "fzf-pr-4797-test-edit/11_Kill residual untrusted processes.txt",
+      "fzf-pr-4797-test-edit/9_Install trusted execution boundary.txt",
+      "requests-pr-7498-source-only/11_Kill residual untrusted processes.txt",
+      "requests-pr-7498-source-only/9_Install trusted execution boundary.txt",
+      "requests-pr-7502-test-edit/11_Kill residual untrusted processes.txt",
+      "requests-pr-7502-test-edit/9_Install trusted execution boundary.txt",
+      "ripgrep-pr-3464-source-only/11_Kill residual untrusted processes.txt",
+      "ripgrep-pr-3464-source-only/9_Install trusted execution boundary.txt",
+      "ripgrep-pr-3467-test-edit/11_Kill residual untrusted processes.txt",
+      "ripgrep-pr-3467-test-edit/9_Install trusted execution boundary.txt"
+    ],
+    "message": "OSS EXECUTION BOUNDARY FAILED: real tool is writable by the untrusted uid: /usr/local/bin/cmake"
+  },
+  "canonical_dispatch": {
+    "first_created_at": "2026-07-15T03:36:20Z",
+    "first_run_id": 29386936311,
+    "matching_dispatch_count": 1,
+    "selection": "first API-visible workflow_dispatch for workflow and commit"
+  },
+  "captured_at": "2026-07-15T04:09:07Z",
+  "case_count": 12,
+  "cases_started": 0,
+  "classification": "invalid_before_measurement",
+  "evidence_files": [
+    "actions-logs.zip",
+    "api/artifacts.json",
+    "api/dispatches.json",
+    "api/jobs.json",
+    "api/run.json",
+    "api/tag-object.json",
+    "api/tag-ref.json",
+    "api/tag-ruleset.json",
+    "api/workflow.json"
+  ],
+  "failure_domain": "trusted_execution_boundary_installation",
+  "guard_invocations": 0,
+  "matrix_cases": [
+    "cjson-pr-1006-source-only",
+    "cjson-pr-991-test-edit",
+    "express-pr-7265-source-only",
+    "express-pr-7377-test-edit",
+    "fmt-pr-4822-source-only",
+    "fmt-pr-4825-test-edit",
+    "fzf-pr-4734-source-only",
+    "fzf-pr-4797-test-edit",
+    "requests-pr-7498-source-only",
+    "requests-pr-7502-test-edit",
+    "ripgrep-pr-3464-source-only",
+    "ripgrep-pr-3467-test-edit"
+  ],
+  "product_artifact_count": 0,
+  "product_inference_allowed": false,
+  "protocol_commit": "9b7bd9e1fe6a01fe75ddf1676f59e9eddebd5822",
+  "protocol_tag": "oss-protocol-v0.1",
+  "repository": "EvoRiseKsa/evoom-guard-eval",
+  "run_attempt": 1,
+  "run_id": 29386936311,
+  "run_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29386936311",
+  "schema": "evoom-oss-invalid-attempt/v1",
+  "step_contract": {
+    "Install trusted execution boundary": "failure",
+    "Prove first API-visible dispatch": "success",
+    "Run frozen case": "skipped",
+    "Upload immutable raw case output": "skipped",
+    "Verify frozen study identity": "success"
+  },
+  "step_observations": {
+    "cjson-pr-1006-source-only": {
+      "Install trusted execution boundary": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "cjson-pr-991-test-edit": {
+      "Install trusted execution boundary": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "express-pr-7265-source-only": {
+      "Install trusted execution boundary": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "express-pr-7377-test-edit": {
+      "Install trusted execution boundary": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "fmt-pr-4822-source-only": {
+      "Install trusted execution boundary": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "fmt-pr-4825-test-edit": {
+      "Install trusted execution boundary": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "fzf-pr-4734-source-only": {
+      "Install trusted execution boundary": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "fzf-pr-4797-test-edit": {
+      "Install trusted execution boundary": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "requests-pr-7498-source-only": {
+      "Install trusted execution boundary": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "requests-pr-7502-test-edit": {
+      "Install trusted execution boundary": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "ripgrep-pr-3464-source-only": {
+      "Install trusted execution boundary": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "ripgrep-pr-3467-test-edit": {
+      "Install trusted execution boundary": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    }
+  },
+  "study_id": "oss-pilot-01",
+  "tag_object": "42268b4c0990285391ed2cff28f14088f26117f9",
+  "workflow_path": ".github/workflows/oss-compat-run.yml"
+}

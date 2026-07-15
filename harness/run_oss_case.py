@@ -42,6 +42,7 @@ from oss_common import (
     verify_manifest,
     write_new,
 )
+from prepare_oss_bootstrap import consume_bootstrap
 
 ENGINE_URL = (
     "https://github.com/EvoRiseKsa/EvoOM-Guard-m/releases/download/"
@@ -63,6 +64,7 @@ EXPECTED_GITHUB_WORKFLOW_REF = (
     f"{EXPECTED_GITHUB_REF}"
 )
 _FAILURE_OUTPUT_DIR: Path | None = None
+_RUNTIME_INVENTORY: dict[str, Any] | None = None
 _ENTRY_STARTED = time.perf_counter()
 _ENTRY_STARTED_UTC = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
@@ -76,9 +78,12 @@ def _prepare_failure_output(args: argparse.Namespace) -> None:
             return
     except ValueError:
         return
-    candidate = Path(args.output_root).resolve() / args.study / args.case_id
-    if candidate.exists() and any(candidate.iterdir()):
-        return
+    # The root-owned bootstrap must be the only existing entry.  Consuming it is
+    # the irreversible transition from infrastructure evidence to a product run.
+    # Any exception before this point leaves the marker for the infra classifier.
+    candidate = consume_bootstrap(
+        Path(args.output_root).resolve(), args.study, args.case_id
+    )
     _FAILURE_OUTPUT_DIR = candidate
 
 
@@ -201,7 +206,7 @@ def _preserve_harness_failure(error: BaseException) -> None:
             "environment_sha256": sha256_file(environment_path),
             "environment": load_json(environment_path),
             "source": case["source"],
-            "runtime": runtime_inventory(),
+            "runtime": captured_runtime_inventory(),
             "runner": runner_identity(),
         }
     except Exception as binding_error:  # invalid pre-protocol runs remain invalid evidence
@@ -294,22 +299,46 @@ def _os_release() -> dict[str, str]:
 
 
 def runtime_inventory() -> dict[str, Any]:
+    commands = {
+        "python": (sys.executable, ["--version"]),
+        "git": (shutil.which("git"), ["--version"]),
+        "node": (shutil.which("node"), ["--version"]),
+        "npm": (shutil.which("npm"), ["--version"]),
+        "go": (shutil.which("go"), ["version"]),
+        "rustc": (shutil.which("rustc"), ["--version"]),
+        "cargo": (shutil.which("cargo"), ["--version"]),
+        "cmake": (shutil.which("cmake"), ["--version"]),
+        "gcc": (shutil.which("gcc"), ["--version"]),
+        "g++": (shutil.which("g++"), ["--version"]),
+        "make": (shutil.which("make"), ["--version"]),
+    }
+    paths: dict[str, dict[str, str] | None] = {}
+    versions: dict[str, str | None] = {}
+    for name, (executable, arguments) in commands.items():
+        if not executable:
+            paths[name] = None
+            versions[name] = None
+            continue
+        absolute = Path(executable).absolute()
+        paths[name] = {
+            "entrypoint": str(absolute),
+            "resolved": str(absolute.resolve(strict=True)),
+        }
+        versions[name] = _tool_version([str(absolute), *arguments])
     return {
         "platform": platform.platform(),
         "machine": platform.machine(),
         "os_release": _os_release(),
-        "python": _tool_version([sys.executable, "--version"]),
-        "git": _tool_version(["git", "--version"]),
-        "node": _tool_version(["node", "--version"]),
-        "npm": _tool_version(["npm", "--version"]),
-        "go": _tool_version(["go", "version"]),
-        "rustc": _tool_version(["rustc", "--version"]),
-        "cargo": _tool_version(["cargo", "--version"]),
-        "cmake": _tool_version(["cmake", "--version"]),
-        "gcc": _tool_version(["gcc", "--version"]),
-        "g++": _tool_version(["g++", "--version"]),
-        "make": _tool_version(["make", "--version"]),
+        **versions,
+        "tool_paths": paths,
     }
+
+
+def captured_runtime_inventory() -> dict[str, Any]:
+    global _RUNTIME_INVENTORY
+    if _RUNTIME_INVENTORY is None:
+        _RUNTIME_INVENTORY = runtime_inventory()
+    return _RUNTIME_INVENTORY
 
 
 def candidate_digest(head: Path, entries: list[dict[str, str]]) -> str:
@@ -661,6 +690,7 @@ def main() -> int:
     started_wall = time.time()
     guard_started = time.perf_counter()
     watchdog_seconds = guard_watchdog_seconds(policy, case)
+    captured_runtime_inventory()
     process = subprocess.Popen(
         argv,
         stdout=subprocess.PIPE,
@@ -755,7 +785,7 @@ def main() -> int:
         "environment_sha256": sha256_file(environment_path),
         "environment": environment,
         "source": case["source"],
-        "runtime": runtime_inventory(),
+        "runtime": captured_runtime_inventory(),
         "runner": runner_identity(),
         "argv": ["<python>", "<digest-verified-evo-guard.pyz>", *argv[2:]],
         "started_utc": started_utc,

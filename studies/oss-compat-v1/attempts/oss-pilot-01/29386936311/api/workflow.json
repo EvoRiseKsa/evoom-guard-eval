@@ -1,0 +1,12 @@
+{
+  "badge_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/workflows/OSS%20compatibility%20study%20(manual,%20frozen)/badge.svg",
+  "created_at": "2026-07-15T06:33:27.000+03:00",
+  "html_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/blob/main/.github/workflows/oss-compat-run.yml",
+  "id": 313430175,
+  "name": "OSS compatibility study (manual, frozen)",
+  "node_id": "W_kwDOTYnmeM4SrpCf",
+  "path": ".github/workflows/oss-compat-run.yml",
+  "state": "active",
+  "updated_at": "2026-07-15T06:33:27.000+03:00",
+  "url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/workflows/313430175"
+}

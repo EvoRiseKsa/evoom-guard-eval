@@ -281,6 +281,10 @@ def evaluate(
     policy_total = policy_conformant = 0
     baseline_green = 0
     infrastructure_errors = 0
+    case_runner_evidence_count = 0
+    guard_invocation_count = 0
+    verified_guard_record_count = 0
+    pre_guard_infrastructure_error_count = 0
 
     if not github_run_id:
         integrity_problems.append("a canonical first-attempt GitHub run id is required")
@@ -594,6 +598,19 @@ def evaluate(
             local_integrity.append("runner success claim mismatch")
         infrastructure_errors += int(infrastructure_case)
 
+        # Coverage and outcome denominators are reported separately from the
+        # fixed intention-to-test corpus.  A pre-Guard harness failure remains
+        # a nonconformant case in the fixed denominator, but it is never
+        # misrepresented as an observed Guard verdict.
+        if not local_integrity:
+            case_runner_evidence_count += 1
+            if is_harness_failure:
+                pre_guard_infrastructure_error_count += 1
+            else:
+                guard_invocation_count += 1
+                if record:
+                    verified_guard_record_count += 1
+
         conformant = not local_integrity and not outcome_findings
         if category == "verbatim_upstream_source_only":
             source_conformant += int(conformant)
@@ -636,7 +653,7 @@ def evaluate(
 
     repository_compatible = sum(all(values) for values in repo_status.values())
     summary: dict[str, Any] = {
-        "summary_schema": "evoom.oss-study-summary/2",
+        "summary_schema": "evoom.oss-study-summary/3",
         "study_id": study_id,
         "claim_scope": manifest.get("claim_scope"),
         "engine": manifest.get("engine"),
@@ -672,6 +689,17 @@ def evaluate(
             ),
         },
         "case_count": len(rows),
+        "execution_coverage": {
+            "fixed_case_denominator": len(rows),
+            "case_runner_evidence_count": case_runner_evidence_count,
+            "guard_invocation_count": guard_invocation_count,
+            "verified_guard_record_count": verified_guard_record_count,
+            "pre_guard_infrastructure_error_count": (
+                pre_guard_infrastructure_error_count
+            ),
+            "product_outcome_denominator": verified_guard_record_count,
+        },
+        "conformance_denominator_kind": "fixed_preregistered_case_inventory",
         "repository_count": len(repo_status),
         "repository_compatibility": {
             "conformant": repository_compatible,
@@ -708,6 +736,12 @@ def evaluate(
         "",
         f"- Frozen engine: `{ENGINE_VERSION}` (`{ENGINE_SHA256}`)",
         f"- Repositories: {len(repo_status)}; cases: {len(rows)}",
+        "- Guard invocation coverage: "
+        f"{guard_invocation_count}/{len(rows)}; verified records: "
+        f"{verified_guard_record_count}/{len(rows)}",
+        "- Product-outcome denominator: "
+        f"{verified_guard_record_count} verified Guard records; fixed conformance "
+        f"denominator: {len(rows)} preregistered cases",
         f"- Source-only conformance: {source_conformant}/{source_total}",
         f"- Protected test/CI policy trips detected: {policy_conformant}/{policy_total}",
         f"- Green reconstructed baselines: {baseline_green}/{source_total}",

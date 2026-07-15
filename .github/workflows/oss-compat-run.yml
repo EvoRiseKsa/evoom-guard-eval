@@ -6,7 +6,7 @@ on:
       study_id:
         description: "Must be the frozen study id"
         required: true
-        default: "oss-pilot-01"
+        default: "oss-pilot-02"
       manifest_sha256:
         description: "Exact SHA-256 of the already-published manifest"
         required: true
@@ -16,7 +16,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: oss-compat-oss-pilot-01
+  group: oss-compat-oss-pilot-02
   cancel-in-progress: false
 
 jobs:
@@ -86,92 +86,41 @@ jobs:
           INPUT_MANIFEST_SHA: ${{ inputs.manifest_sha256 }}
         run: |
           set -euo pipefail
-          test "$INPUT_STUDY" = "oss-pilot-01"
-          ACTUAL="$(sha256sum studies/oss-compat-v1/manifests/oss-pilot-01.json | cut -d' ' -f1)"
+          test "$INPUT_STUDY" = "oss-pilot-02"
+          ACTUAL="$(sha256sum studies/oss-compat-v1/manifests/oss-pilot-02.json | cut -d' ' -f1)"
           test "$ACTUAL" = "$INPUT_MANIFEST_SHA"
           python harness/freeze_oss_cases.py --check
-          python harness/make_oss_manifest.py oss-pilot-01 --check
+          python harness/make_oss_manifest.py oss-pilot-02 --check
 
-      - name: Install trusted execution boundary
+      - name: Prepare trusted infrastructure fallback
         shell: bash
         run: |
           set -euo pipefail
-          test -x /usr/bin/unshare
-          test -x /usr/bin/setpriv
-          /usr/bin/setpriv --help | grep -q -- '--pdeathsig'
-
-          if ! id -u evoom-oss-untrusted >/dev/null 2>&1; then
-            sudo useradd --system --no-create-home --home-dir /nonexistent \
-              --shell /usr/sbin/nologin evoom-oss-untrusted
-          fi
-          test "$(id -u evoom-oss-untrusted)" != "0"
-          test "$(id -u evoom-oss-untrusted)" != "$(id -u)"
-
-          sudo install -d -o root -g root -m 0711 \
-            /var/lib/evoom-oss /var/lib/evoom-oss/work
-          sudo install -d -o root -g root -m 0700 \
-            /var/lib/evoom-oss/source \
-            /var/lib/evoom-oss/output \
-            /var/lib/evoom-oss/state \
-            /var/lib/evoom-oss/trusted-home
-          sudo install -d -o root -g root -m 0755 /var/lib/evoom-oss/tools
-          sudo install -o root -g root -m 0755 \
-            harness/oss_untrusted_exec.py \
-            /usr/local/sbin/evoom-oss-untrusted-exec
-
           PYTHON_BIN="$(command -v python)"
-          NPM_BIN="$(command -v npm)"
-          GO_BIN="$(command -v go)"
-          CARGO_BIN="$(command -v cargo)"
-          CMAKE_BIN="$(command -v cmake)"
-          for TOOL_PATH in \
-            "$PYTHON_BIN" "$NPM_BIN" "$GO_BIN" "$CARGO_BIN" "$CMAKE_BIN"; do
-            test -n "$TOOL_PATH"
-            test -x "$TOOL_PATH"
-          done
+          sudo env -i \
+            PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+            GITHUB_ACTIONS="$GITHUB_ACTIONS" \
+            GITHUB_EVENT_NAME="$GITHUB_EVENT_NAME" \
+            GITHUB_REPOSITORY="$GITHUB_REPOSITORY" \
+            GITHUB_RUN_ID="$GITHUB_RUN_ID" \
+            GITHUB_RUN_ATTEMPT="$GITHUB_RUN_ATTEMPT" \
+            GITHUB_SHA="$GITHUB_SHA" \
+            GITHUB_REF="$GITHUB_REF" \
+            GITHUB_REF_NAME="$GITHUB_REF_NAME" \
+            GITHUB_REF_TYPE="$GITHUB_REF_TYPE" \
+            GITHUB_REF_PROTECTED="$GITHUB_REF_PROTECTED" \
+            GITHUB_WORKFLOW_REF="$GITHUB_WORKFLOW_REF" \
+            OSS_CANONICAL_DISPATCH_ID="$OSS_CANONICAL_DISPATCH_ID" \
+            "$PYTHON_BIN" harness/prepare_oss_bootstrap.py prepare \
+              --study oss-pilot-02 \
+              --case "${{ matrix.case }}" \
+              --output-root /var/lib/evoom-oss/output \
+              --publisher-uid "$(id -u)" \
+              --publisher-gid "$(id -g)"
 
-          for TOOL in python npm go cargo cmake node rustc gcc g++ make git; do
-            TARGET="$(command -v "$TOOL" || true)"
-            if test -n "$TARGET"; then
-              sudo ln -s -- "$TARGET" "/var/lib/evoom-oss/tools/$TOOL"
-            fi
-          done
-          sudo chmod 0555 /var/lib/evoom-oss/tools
-
-          CONFIG_TMP="$RUNNER_TEMP/evoom-oss-boundary.json"
-          "$PYTHON_BIN" - \
-            "$CONFIG_TMP" "$(id -u)" "$(id -g)" \
-            "$PYTHON_BIN" "$NPM_BIN" "$GO_BIN" "$CARGO_BIN" "$CMAKE_BIN" <<'PY'
-          import json
-          import sys
-
-          destination, publisher_uid, publisher_gid, python, npm, go, cargo, cmake = sys.argv[1:]
-          config = {
-              "root": "/var/lib/evoom-oss",
-              "work_root": "/var/lib/evoom-oss/work",
-              "source_root": "/var/lib/evoom-oss/source",
-              "output_root": "/var/lib/evoom-oss/output",
-              "state_root": "/var/lib/evoom-oss/state",
-              "trusted_home": "/var/lib/evoom-oss/trusted-home",
-              "untrusted_user": "evoom-oss-untrusted",
-              "publisher_uid": int(publisher_uid),
-              "publisher_gid": int(publisher_gid),
-              "real_tools": {
-                  "python": python,
-                  "npm": npm,
-                  "go": go,
-                  "cargo": cargo,
-                  "cmake": cmake,
-              },
-          }
-          with open(destination, "x", encoding="utf-8", newline="\n") as handle:
-              json.dump(config, handle, indent=2, sort_keys=True)
-              handle.write("\n")
-          PY
-          sudo install -o root -g root -m 0600 \
-            "$CONFIG_TMP" /etc/evoom-oss-boundary.json
-          rm -f -- "$CONFIG_TMP"
-          sudo /usr/local/sbin/evoom-oss-untrusted-exec --self-test
+      - name: Install trusted execution boundary
+        shell: bash
+        run: bash harness/install_oss_boundary.sh
 
       - name: Run frozen case
         shell: bash
@@ -199,7 +148,7 @@ jobs:
             RUNNER_OS="$RUNNER_OS" RUNNER_ARCH="$RUNNER_ARCH" \
             ImageOS="${ImageOS:-}" ImageVersion="${ImageVersion:-}" \
             "$PYTHON_BIN" harness/run_oss_case.py "${{ matrix.case }}" \
-              --study oss-pilot-01 \
+              --study oss-pilot-02 \
               --work-root /var/lib/evoom-oss/source \
               --output-root /var/lib/evoom-oss/output
 
@@ -207,17 +156,63 @@ jobs:
         id: trusted_cleanup
         if: always()
         shell: bash
+        run: |
+          set -euo pipefail
+          PYTHON_BIN="$(command -v python)"
+          if sudo test -x /usr/local/sbin/evoom-oss-untrusted-exec; then
+            if sudo env -i \
+              PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+              /usr/local/sbin/evoom-oss-untrusted-exec \
+              --cleanup --purge-homes; then
+              exit 0
+            fi
+          fi
+          sudo env -i \
+            PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+            GITHUB_ACTIONS="$GITHUB_ACTIONS" \
+            GITHUB_EVENT_NAME="$GITHUB_EVENT_NAME" \
+            GITHUB_REPOSITORY="$GITHUB_REPOSITORY" \
+            GITHUB_RUN_ID="$GITHUB_RUN_ID" \
+            GITHUB_RUN_ATTEMPT="$GITHUB_RUN_ATTEMPT" \
+            GITHUB_SHA="$GITHUB_SHA" \
+            GITHUB_REF="$GITHUB_REF" \
+            GITHUB_REF_NAME="$GITHUB_REF_NAME" \
+            GITHUB_REF_TYPE="$GITHUB_REF_TYPE" \
+            GITHUB_REF_PROTECTED="$GITHUB_REF_PROTECTED" \
+            GITHUB_WORKFLOW_REF="$GITHUB_WORKFLOW_REF" \
+            OSS_CANONICAL_DISPATCH_ID="$OSS_CANONICAL_DISPATCH_ID" \
+            "$PYTHON_BIN" harness/prepare_oss_bootstrap.py release-infra \
+              --study oss-pilot-02 \
+              --case "${{ matrix.case }}" \
+              --output-root /var/lib/evoom-oss/output \
+              --publisher-uid "$(id -u)" \
+              --publisher-gid "$(id -g)"
+
+      - name: Classify trusted case output
+        id: trusted_classification
+        if: ${{ always() && steps.trusted_cleanup.outcome == 'success' }}
+        shell: bash
         run: >-
-          sudo env -i
-          PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-          /usr/local/sbin/evoom-oss-untrusted-exec
-          --cleanup --purge-homes
+          python harness/prepare_oss_bootstrap.py classify
+          --study oss-pilot-02
+          --case "${{ matrix.case }}"
+          --output-root /var/lib/evoom-oss/output
+          --github-output "$GITHUB_OUTPUT"
 
       - name: Upload immutable raw case output
-        if: ${{ always() && steps.trusted_cleanup.outcome == 'success' }}
+        if: ${{ always() && steps.trusted_cleanup.outcome == 'success' && steps.trusted_classification.outcome == 'success' && steps.trusted_classification.outputs.classification == 'product' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: oss-${{ matrix.case }}
-          path: /var/lib/evoom-oss/output/oss-pilot-01/${{ matrix.case }}
+          path: /var/lib/evoom-oss/output/oss-pilot-02/${{ matrix.case }}
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Upload immutable infrastructure output
+        if: ${{ always() && steps.trusted_cleanup.outcome == 'success' && steps.trusted_classification.outcome == 'success' && steps.trusted_classification.outputs.classification == 'infra' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: oss-infra-${{ matrix.case }}
+          path: /var/lib/evoom-oss/output/oss-pilot-02/${{ matrix.case }}
           if-no-files-found: error
           retention-days: 90

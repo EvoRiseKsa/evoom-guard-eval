@@ -1,10 +1,27 @@
-# OSS compatibility protocol v0.1
+# OSS compatibility protocol v0.2
 
 This directory is a **same-owner real-world compatibility and conformance
 study**. It is not Round 1, not third-party validation, and not an estimate of
 accuracy across open-source software. It uses a publicly frozen canonical-run
 protocol, but it is not blind or model-independent: static-policy and harness
 validation occurred during study construction.
+
+## Amendment lineage
+
+Protocol v0.1 remains immutable at protected tag `oss-protocol-v0.1`. Its only
+canonical run, Actions run `29386936311` (attempt 1), passed the dispatch and
+identity gates in all 12 jobs but failed during boundary installation before any
+case or EvoOM Guard invocation. GitHub reported zero artifacts. It is therefore
+classified `invalid_before_measurement`, excluded from every product
+denominator, and will not be rerun or replaced. The API snapshots, original log
+archive, checksums, and exact disposition are preserved under
+`attempts/oss-pilot-01/29386936311/`.
+
+Protocol v0.2 is a new preregistered successor, not a rerun. It reuses the exact
+same 12 cases, labels, expected outcomes, policies, profiles, and Guard v3.5.2
+digest because v0.1 observed no product result from which those inputs could be
+tuned. The amendment changes only the execution boundary, independent cleanup,
+and early-failure evidence contract. `RECOVERY.json` freezes this relationship.
 
 ## Question under test
 
@@ -24,8 +41,8 @@ environments.
 - Engine: `v3.5.2`, `evo-guard.pyz` SHA-256
   `a370fac23233ea6f317d5d7e5347389197fc936bd9b5903c685b1d3755e0046f`.
 - Record schema: `1.11`.
-- Study: `oss-pilot-01`.
-- Protocol tag: `oss-protocol-v0.1`.
+- Study: `oss-pilot-02`.
+- Protocol tag: `oss-protocol-v0.2`.
 - Roles: curator and runner are both EvoRiseKsa; `independent=false`.
 - Corpus: 12 verbatim historical upstream diffs, two from each repository.
 - Positive cases use `baseline_evidence` so the same suite and setup run on the
@@ -36,12 +53,12 @@ environments.
 
 1. Commit the protocol, selection, exact diffs, provenance, policies, and
    environment declarations.
-2. Generate `manifests/oss-pilot-01.json`; it refuses overwrite.
+2. Generate `manifests/oss-pilot-02.json`; it refuses overwrite.
 3. Merge that manifest and make CI green before the first canonical study
    workflow execution.
 4. Tag the frozen protocol/manifest commit and protect `oss-protocol-v*` tags.
 5. Manually dispatch the read-only Actions matrix from the exact
-   `oss-protocol-v0.1` tag. A preflight query to the Actions API requires the
+   `oss-protocol-v0.2` tag. A preflight query to the Actions API requires the
    current run to be the chronologically first API-visible `workflow_dispatch`
    for the frozen workflow commit; the exact protected tag ref, workflow ref,
    run ID, and attempt 1 are then bound into every envelope. Later API-visible
@@ -50,7 +67,16 @@ environments.
    not an append-only timestamp or external notarization. Failed jobs are
    retained, not rerun into a preferred result. No user secrets and no
    `pull_request_target` are permitted.
-6. Publish every raw record, stdout/stderr, timing, and run envelope. A failed
+6. Before boundary installation, create one root-owned bootstrap envelope per
+   matrix case. A started product run consumes that marker before writing any
+   product evidence. After unconditional cleanup, output is classified as
+   exactly one of `product` or `infra`; mutually exclusive official upload steps
+   publish `oss-<case>` or `oss-infra-<case>`. Mixed or empty output is rejected.
+   Here `infra` means failure before the case runner starts. Once the frozen
+   case runner consumes the marker, source/network/engine/Guard failures remain
+   case artifacts and are reported explicitly as infrastructure errors inside
+   the fixed 12-case denominator; they are never converted to a pass or omitted.
+7. Publish every raw record, stdout/stderr, timing, and run envelope. A failed
    or infrastructure case is retained; it is never silently replaced. If the
    harness fails before Guard emits a record, it still writes a failure
    envelope and logs rather than fabricating a verdict.
@@ -62,7 +88,15 @@ environments.
    boundary installation, case, cleanup, and official upload steps; checks job
    conclusions against the case steps; checks artifact IDs, run/head bindings,
    byte sizes and API digests; rejects unsafe ZIP entries; and only then extracts
-   them atomically.
+   them atomically. The product materializer refuses zero artifacts and any
+   `oss-infra-*` artifact, so a pre-case infrastructure attempt cannot be
+   mistaken for a product outcome.
+   If that exact product inventory is absent, run
+   `python harness/capture_oss_attempt.py current --run-id <RUN_ID>` instead.
+   The non-evaluative capture retains API snapshots, original Actions logs,
+   the frozen manifest, and every artifact ZIP with checksums without extracting
+   or scoring them. Its `product_inference_allowed` value is always false; an
+   exact product inventory is merely eligible for the separate materializer.
 
 ## Selection and truth limits
 
@@ -105,15 +139,25 @@ dedicated system uid. The judge parent, protocol checkout, source cache, engine,
 configuration, and result tree stay root-owned. A root PID 1 supervises a new
 PID/mount-proc namespace; `setpriv` clears groups and all capability sets,
 enables `no_new_privs`, applies process/file limits, and launches from a
-credential-free allowlisted environment. The supervisor reaps detached
+credential-free allowlisted environment. Before credentials are dropped, the
+supervisor makes the complete host filesystem recursively read-only inside the
+mount namespace and then opens one writable, `nosuid,nodev` island: the exact
+case execution root. The child PATH exposes a root-owned alias set plus
+`/usr/bin`; canonical real-tool targets and their ancestors are checked against
+the fixed uid. The supervisor reaps detached
 descendants, while a host-side process record and an unconditional uid cleanup
 provide two additional kill paths. The result tree remains root mode `0700`
 until cleanup proves there are no residual untrusted processes; only then is it
 released to the runner uid, and upload is skipped unless that cleanup succeeds.
-The installation step runs a live self-test that checks uid/gid/capability/env
+Cleanup first kills recorded root namespace processes and every process with the
+fixed uid, independently of normal tool validation. A pre-installer fallback can
+release only an otherwise pristine bootstrap tree; it cannot release product
+files. The installation step runs a live self-test that checks uid/gid/capability/env
 state, a detached daemon, forbidden writes, and the exact JUnit channel. A
 separate privileged Ubuntu integration test also executes real pytest and kills
-the host wrapper to exercise the parent-death chain.
+the host wrapper to exercise the parent-death chain. CI additionally installs
+the exact Python, Node, Go, and Rust versions on GitHub-hosted `ubuntu-24.04` and
+configures, builds, and runs a real CMake project through the same boundary.
 
 For pytest, Guard's exact `judge-result.xml` is exclusively pre-created in the
 root-owned parent and made writable to the test uid, then reclaimed by root;
@@ -168,6 +212,15 @@ Product failure gates are stricter than aggregate scoring: any known protected
 test/CI edit receiving `PASS`, or any expected source-only case silently
 receiving `PASS` without a verified record, is reported individually.
 
+The summary exposes two denominators and never substitutes one for the other:
+fixed conformance uses all 12 preregistered cases (intention-to-test), while the
+product-outcome denominator contains only cryptographically and structurally
+verified Guard records. It separately reports case-runner evidence count, Guard
+invocation count, verified-record count, and pre-Guard infrastructure errors.
+Thus a run with zero Guard invocations may show incomplete fixed-corpus
+conformance, but it also shows a product-outcome denominator of zero and cannot
+be described as a 0/12 Guard result.
+
 Publication integrity and product conformance are separate. Missing, altered,
 cross-run, or unverifiable evidence makes CI fail. An integrity-valid negative
 product outcome remains in `SUMMARY.json` and `RESULTS.md` and is publishable;
@@ -190,6 +243,7 @@ Before execution:
 ```bash
 python harness/freeze_oss_cases.py --check
 python harness/make_oss_manifest.py oss-pilot-01 --check
+python harness/make_oss_manifest.py oss-pilot-02 --check
 python -m unittest discover -s tests -v
 ```
 
@@ -216,7 +270,7 @@ python harness/materialize_oss_artifacts.py \
   --results studies/oss-compat-v1/results \
   --verify-only
 python harness/evaluate_oss.py \
-  --study oss-pilot-01 \
+  --study oss-pilot-02 \
   --results <artifact-root> \
   --github-run-id <canonical-first-api-visible-dispatch-id> \
   --write

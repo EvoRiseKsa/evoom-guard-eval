@@ -1,0 +1,38 @@
+{
+  "_links": {
+    "html": {
+      "href": "https://github.com/EvoRiseKsa/evoom-guard-eval/rules/18956782"
+    },
+    "self": {
+      "href": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/rulesets/18956782"
+    }
+  },
+  "bypass_actors": [],
+  "conditions": {
+    "ref_name": {
+      "exclude": [],
+      "include": [
+        "refs/tags/protocol-v*",
+        "refs/tags/oss-protocol-v*"
+      ]
+    }
+  },
+  "created_at": "2026-07-15T02:30:28.259+03:00",
+  "current_user_can_bypass": "never",
+  "enforcement": "active",
+  "id": 18956782,
+  "name": "Protect immutable protocol tags",
+  "node_id": "RRS_lACqUmVwb3NpdG9yec5NieZ4zgEhQe4",
+  "rules": [
+    {
+      "type": "deletion"
+    },
+    {
+      "type": "non_fast_forward"
+    }
+  ],
+  "source": "EvoRiseKsa/evoom-guard-eval",
+  "source_type": "Repository",
+  "target": "tag",
+  "updated_at": "2026-07-15T06:27:22.451+03:00"
+}

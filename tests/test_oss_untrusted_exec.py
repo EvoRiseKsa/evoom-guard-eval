@@ -15,6 +15,8 @@ sys.path.insert(0, str(ROOT / "harness"))
 import oss_common  # noqa: E402
 
 WORKFLOW_PATH = ROOT / ".github" / "workflows" / "oss-compat-run.yml"
+CI_WORKFLOW_PATH = ROOT / ".github" / "workflows" / "ci.yml"
+INSTALLER_PATH = ROOT / "harness" / "install_oss_boundary.sh"
 POLICY_ROOT = ROOT / "studies" / "oss-compat-v1" / "policies"
 BOUNDARY_EXEC = "/usr/local/sbin/evoom-oss-untrusted-exec"
 
@@ -26,10 +28,13 @@ EXPECTED_STEPS = [
     "Set up Go",
     "Pin Rust 1.85.0",
     "Verify frozen study identity",
+    "Prepare trusted infrastructure fallback",
     "Install trusted execution boundary",
     "Run frozen case",
     "Kill residual untrusted processes",
+    "Classify trusted case output",
     "Upload immutable raw case output",
+    "Upload immutable infrastructure output",
 ]
 
 
@@ -58,6 +63,7 @@ def _step_block(text: str, name: str) -> str:
 class OssBoundaryPolicyContractTests(unittest.TestCase):
     def test_boundary_code_and_tests_are_frozen_manifest_inputs(self) -> None:
         self.assertIn("harness/oss_untrusted_exec.py", oss_common.HARNESS_INPUTS)
+        self.assertIn("harness/install_oss_boundary.sh", oss_common.HARNESS_INPUTS)
         self.assertIn("tests/test_oss_untrusted_exec.py", oss_common.HARNESS_INPUTS)
 
     def test_all_six_policies_route_setup_and_test_through_boundary(self) -> None:
@@ -103,11 +109,14 @@ class OssBoundaryWorkflowContractTests(unittest.TestCase):
 
     def test_install_proves_pid_namespace_boundary_before_execution(self) -> None:
         block = _step_block(_workflow_text(), "Install trusted execution boundary")
-        self.assertIn("--self-test", block)
-        self.assertIn("unshare", block)
-        self.assertIn("/etc/evoom-oss-boundary.json", block)
-        self.assertIn("real_tools", block)
-        self.assertRegex(block, r"(?<!\d)0700(?!\d)")
+        self.assertIn("bash harness/install_oss_boundary.sh", block)
+        installer = INSTALLER_PATH.read_text(encoding="utf-8")
+        self.assertIn("--self-test", installer)
+        self.assertIn("/usr/bin/unshare", installer)
+        self.assertIn("/etc/evoom-oss-boundary.json", installer)
+        self.assertIn("real_tools", installer)
+        self.assertRegex(installer, r"(?<!\d)0700(?!\d)")
+        self.assertIn('UNTRUSTED_UID="60001"', installer)
 
     def test_cleanup_is_unconditional_but_upload_requires_cleanup_success(self) -> None:
         cleanup = _step_block(_workflow_text(), "Kill residual untrusted processes")
@@ -118,6 +127,7 @@ class OssBoundaryWorkflowContractTests(unittest.TestCase):
         )
         self.assertIn("--cleanup", cleanup)
         self.assertIn("--purge-homes", cleanup)
+        self.assertIn("prepare_oss_bootstrap.py release-infra", cleanup)
 
         upload = _step_block(_workflow_text(), "Upload immutable raw case output")
         condition = re.search(r"(?m)^\s+if:\s*(.+?)\s*$", upload)
@@ -125,6 +135,48 @@ class OssBoundaryWorkflowContractTests(unittest.TestCase):
         normalized = condition.group(1).replace("${{", "").replace("}}", "")
         self.assertIn("always()", normalized)
         self.assertIn("steps.trusted_cleanup.outcome == 'success'", normalized)
+        self.assertIn("outputs.classification == 'product'", normalized)
+
+        infra = _step_block(
+            _workflow_text(), "Upload immutable infrastructure output"
+        )
+        infra_condition = re.search(r"(?m)^\s+if:\s*(.+?)\s*$", infra)
+        self.assertIsNotNone(infra_condition)
+        infra_normalized = (
+            infra_condition.group(1).replace("${{", "").replace("}}", "")
+        )
+        self.assertIn("outputs.classification == 'infra'", infra_normalized)
+
+
+class OssBoundaryQualificationWorkflowTests(unittest.TestCase):
+    def test_qualification_pins_the_full_runtime_and_builds_real_cmake(self) -> None:
+        text = CI_WORKFLOW_PATH.read_text(encoding="utf-8")
+        self.assertGreaterEqual(
+            text.count(
+                "if: github.event_name == 'push' && github.ref == 'refs/heads/main'"
+            ),
+            2,
+        )
+        self.assertIn("runs-on: ubuntu-24.04", text)
+        self.assertIn(
+            "shellcheck harness/install_oss_boundary.sh "
+            "tests/oss_boundary_integration.sh",
+            text,
+        )
+        self.assertIn('python-version: "3.12.10"', text)
+        self.assertIn('node-version: "24.14.1"', text)
+        self.assertIn('go-version: "1.23.12"', text)
+        self.assertIn("rustup toolchain install 1.85.0 --profile minimal", text)
+        self.assertIn("bash harness/install_oss_boundary.sh", text)
+        self.assertIn("--phase setup -- cmake -S . -B build", text)
+        self.assertIn("--phase test -- cmake --build build", text)
+
+    def test_privileged_container_runs_the_boundary_integration_suite(self) -> None:
+        text = CI_WORKFLOW_PATH.read_text(encoding="utf-8")
+        self.assertIn("oss-boundary-privileged-integration:", text)
+        self.assertRegex(text, r"docker run --rm --privileged")
+        self.assertIn("EVOOM_BOUNDARY_CONTAINER_TEST=1", text)
+        self.assertIn("bash tests/oss_boundary_integration.sh", text)
 
 
 try:
@@ -191,12 +243,20 @@ class OssBoundaryHelperTests(unittest.TestCase):
                     "go": "/usr/bin/go",
                     "cargo": "/usr/bin/cargo",
                     "cmake": "/usr/bin/cmake",
+                    "node": "/usr/bin/node",
+                    "rustc": "/usr/bin/rustc",
+                    "gcc": "/usr/bin/gcc",
+                    "g++": "/usr/bin/g++",
+                    "make": "/usr/bin/make",
+                    "git": "/usr/bin/git",
                 },
             }
             environment = child_environment(config, home)
         self.assertEqual(str(home), environment["HOME"])
         self.assertEqual("C.UTF-8", environment["LANG"])
         self.assertEqual("UTC", environment["TZ"])
+        self.assertEqual("/var/lib/evoom-oss/tools:/usr/bin", environment["PATH"])
+        self.assertNotIn("/usr/local/bin", environment["PATH"])
         forbidden_fragments = (
             "TOKEN",
             "SECRET",

@@ -12,6 +12,7 @@ import argparse
 import ctypes
 import json
 import os
+import platform
 import shutil
 import signal
 import stat
@@ -34,7 +35,34 @@ INSTALLED_PATH = Path("/usr/local/sbin/evoom-oss-untrusted-exec")
 UNSHARE = Path("/usr/bin/unshare")
 SETPRIV = Path("/usr/bin/setpriv")
 ALLOWED_TEMP_PREFIXES = ("evo_repo_", "evo_baseline_")
-REAL_TOOL_NAMES = frozenset({"python", "npm", "go", "cargo", "cmake"})
+PRIMARY_TOOL_NAMES = frozenset({"python", "npm", "go", "cargo", "cmake"})
+REAL_TOOL_NAMES = frozenset(
+    {
+        *PRIMARY_TOOL_NAMES,
+        "node",
+        "rustc",
+        "gcc",
+        "g++",
+        "make",
+        "git",
+    }
+)
+TOOL_ROOT = Path("/var/lib/evoom-oss/tools")
+SYSTEM_TOOL_ROOT = Path("/usr/bin")
+READONLY_PROBE = Path("/var/lib/evoom-oss/readonly-probe")
+UNTRUSTED_USER = "evoom-oss-untrusted"
+UNTRUSTED_UID = 60001
+UNTRUSTED_GID = 60001
+
+AT_FDCWD = -100
+AT_RECURSIVE = 0x8000
+MS_BIND = 4096
+MS_REC = 16384
+MS_PRIVATE = 1 << 18
+MOUNT_ATTR_RDONLY = 0x00000001
+MOUNT_ATTR_NOSUID = 0x00000002
+MOUNT_ATTR_NODEV = 0x00000004
+SYS_MOUNT_SETATTR_X86_64 = 442
 FORBIDDEN_ENV_FRAGMENTS = (
     "TOKEN",
     "SECRET",
@@ -89,7 +117,30 @@ def _trusted_directory(
     return metadata
 
 
-def _safe_tool(path_value: Any, uid: int) -> str:
+def _identity_can_write(metadata: os.stat_result, uid: int, gid: int) -> bool:
+    """Model write access after setpriv clears supplementary groups."""
+    mode = metadata.st_mode
+    if metadata.st_uid == uid:
+        # The owner can chmod a read-only file or directory before writing it.
+        return True
+    if metadata.st_gid == gid:
+        return bool(mode & stat.S_IWGRP)
+    return bool(mode & stat.S_IWOTH)
+
+
+def _safe_path_ancestors(path: Path, uid: int, gid: int) -> None:
+    for ancestor in path.parents:
+        try:
+            info = ancestor.lstat()
+        except OSError as exc:
+            raise BoundaryError(f"missing real-tool ancestor: {ancestor}") from exc
+        if _identity_can_write(info, uid, gid):
+            raise BoundaryError(f"unsafe real-tool ancestor: {ancestor}")
+        if ancestor == Path("/"):
+            break
+
+
+def _safe_tool(path_value: Any, uid: int, gid: int) -> str:
     if not isinstance(path_value, str) or not path_value.startswith("/"):
         raise BoundaryError("real tool paths must be absolute")
     path = Path(path_value)
@@ -100,23 +151,37 @@ def _safe_tool(path_value: Any, uid: int) -> str:
     metadata = target.stat()
     if not stat.S_ISREG(metadata.st_mode) or not os.access(target, os.X_OK):
         raise BoundaryError(f"real tool is not executable: {path}")
-    if metadata.st_uid == uid or metadata.st_mode & 0o002:
+    if _identity_can_write(metadata, uid, gid):
         raise BoundaryError(f"real tool is writable by the untrusted uid: {path}")
-    for ancestor in (path, *path.parents):
-        if not ancestor.exists():
-            continue
-        info = ancestor.lstat()
-        world_writable = bool(info.st_mode & 0o002) and not stat.S_ISLNK(
-            info.st_mode
-        )
-        if info.st_uid == uid or world_writable:
-            raise BoundaryError(f"unsafe real-tool ancestor: {ancestor}")
-        if ancestor == Path("/"):
-            break
-    return str(path)
+    _safe_path_ancestors(target, uid, gid)
+    if _path_is_relative_to(target, Path("/var/lib/evoom-oss")):
+        raise BoundaryError("real tool resolves inside the boundary writable tree")
+    return str(target)
 
 
-def load_config(path: Path = CONFIG_PATH) -> dict[str, Any]:
+def _trusted_tool_aliases(tools: dict[str, str]) -> None:
+    _trusted_directory(TOOL_ROOT, mode=0o555)
+    aliases = {entry.name: entry for entry in TOOL_ROOT.iterdir()}
+    if set(aliases) != REAL_TOOL_NAMES:
+        raise BoundaryError("trusted tool-alias inventory mismatch")
+    for name, configured in tools.items():
+        alias = aliases[name]
+        metadata = alias.lstat()
+        if not stat.S_ISLNK(metadata.st_mode):
+            raise BoundaryError(f"trusted tool alias is not a symlink: {alias}")
+        link = Path(os.readlink(alias))
+        if not link.is_absolute() or link != Path(configured):
+            raise BoundaryError(f"trusted tool alias target mismatch: {alias}")
+        try:
+            if alias.resolve(strict=True) != Path(configured).resolve(strict=True):
+                raise BoundaryError(f"trusted tool alias resolution mismatch: {alias}")
+        except OSError as exc:
+            raise BoundaryError(f"trusted tool alias cannot be resolved: {alias}") from exc
+
+
+def load_config(
+    path: Path = CONFIG_PATH, *, validate_tools: bool = True
+) -> dict[str, Any]:
     if pwd is None:
         raise BoundaryError("the execution boundary requires Linux pwd support")
     _root_owned_regular(path, private=True)
@@ -141,7 +206,7 @@ def load_config(path: Path = CONFIG_PATH) -> dict[str, Any]:
     if set(value) != expected:
         raise BoundaryError("boundary configuration field set mismatch")
     user_name = value.get("untrusted_user")
-    if not isinstance(user_name, str) or not user_name:
+    if user_name != UNTRUSTED_USER:
         raise BoundaryError("invalid untrusted user")
     try:
         account = pwd.getpwnam(user_name)
@@ -150,8 +215,8 @@ def load_config(path: Path = CONFIG_PATH) -> dict[str, Any]:
     publisher_uid = value.get("publisher_uid")
     publisher_gid = value.get("publisher_gid")
     if (
-        account.pw_uid <= 0
-        or account.pw_gid <= 0
+        account.pw_uid != UNTRUSTED_UID
+        or account.pw_gid != UNTRUSTED_GID
         or not isinstance(publisher_uid, int)
         or not isinstance(publisher_gid, int)
         or publisher_uid <= 0
@@ -179,11 +244,19 @@ def load_config(path: Path = CONFIG_PATH) -> dict[str, Any]:
     if len({path.resolve() for path in roots.values()}) != len(roots):
         raise BoundaryError("boundary roots overlap")
     tools = value.get("real_tools")
-    if not isinstance(tools, dict) or set(tools) != REAL_TOOL_NAMES:
-        raise BoundaryError("real tool inventory mismatch")
-    value["real_tools"] = {
-        name: _safe_tool(tools[name], account.pw_uid) for name in sorted(tools)
-    }
+    if validate_tools:
+        if not isinstance(tools, dict) or set(tools) != REAL_TOOL_NAMES:
+            raise BoundaryError("real tool inventory mismatch")
+        value["real_tools"] = {
+            name: _safe_tool(tools[name], account.pw_uid, account.pw_gid)
+            for name in sorted(tools)
+        }
+        _trusted_tool_aliases(value["real_tools"])
+        system_tools = _trusted_directory(SYSTEM_TOOL_ROOT)
+        if stat.S_IMODE(system_tools.st_mode) & 0o022:
+            raise BoundaryError("system tool root is group/world writable")
+    else:
+        value["real_tools"] = tools if isinstance(tools, dict) else {}
     value["untrusted_uid"] = account.pw_uid
     value["untrusted_gid"] = account.pw_gid
     return value
@@ -236,15 +309,8 @@ def uid_processes(uid: int, proc_root: Path = Path("/proc")) -> list[int]:
 
 
 def _tool_path(config: dict[str, Any]) -> str:
-    directories: list[str] = []
-    for value in config["real_tools"].values():
-        parent = str(Path(value).parent)
-        if parent not in directories:
-            directories.append(parent)
-    for standard in ("/usr/local/bin", "/usr/bin", "/bin"):
-        if standard not in directories:
-            directories.append(standard)
-    return ":".join(directories)
+    del config
+    return "/var/lib/evoom-oss/tools:/usr/bin"
 
 
 def child_environment(config: dict[str, Any], home: Path) -> dict[str, str]:
@@ -508,12 +574,109 @@ def _state_cleanup(state_root: Path) -> None:
         path.unlink()
 
 
-def _namespace_supervisor(uid: int, gid: int, command: list[str]) -> int:
+class _MountAttr(ctypes.Structure):
+    _fields_ = [
+        ("attr_set", ctypes.c_uint64),
+        ("attr_clr", ctypes.c_uint64),
+        ("propagation", ctypes.c_uint64),
+        ("userns_fd", ctypes.c_uint64),
+    ]
+
+
+def _mount(source: Path | None, target: Path, flags: int) -> None:
+    libc = ctypes.CDLL(None, use_errno=True)
+    mount = libc.mount
+    mount.argtypes = [
+        ctypes.c_char_p,
+        ctypes.c_char_p,
+        ctypes.c_char_p,
+        ctypes.c_ulong,
+        ctypes.c_void_p,
+    ]
+    mount.restype = ctypes.c_int
+    source_bytes = None if source is None else os.fsencode(source)
+    if mount(source_bytes, os.fsencode(target), None, flags, None) != 0:
+        error = ctypes.get_errno()
+        raise BoundaryError(
+            f"mount namespace setup failed for {target}: errno {error}"
+        )
+
+
+def _mount_setattr(
+    path: Path, *, recursive: bool, attr_set: int = 0, attr_clr: int = 0
+) -> None:
+    if platform.machine().lower() not in {"x86_64", "amd64"}:
+        raise BoundaryError("mount_setattr is pinned to the x86_64 study runner")
+    libc = ctypes.CDLL(None, use_errno=True)
+    attributes = _MountAttr(
+        attr_set=attr_set,
+        attr_clr=attr_clr,
+        propagation=0,
+        userns_fd=0,
+    )
+    flags = AT_RECURSIVE if recursive else 0
+    result = libc.syscall(
+        SYS_MOUNT_SETATTR_X86_64,
+        AT_FDCWD,
+        os.fsencode(path),
+        flags,
+        ctypes.byref(attributes),
+        ctypes.sizeof(attributes),
+    )
+    if result != 0:
+        error = ctypes.get_errno()
+        raise BoundaryError(f"mount_setattr failed for {path}: errno {error}")
+
+
+def _readonly_mount_view(execution_root: Path, executable: Path) -> None:
+    resolved_root = execution_root.resolve(strict=True)
+    if Path.cwd().resolve(strict=True) != resolved_root / "repo":
+        raise BoundaryError("namespace cwd is outside its exact execution root")
+    if not _path_is_relative_to(resolved_root, Path("/var/lib/evoom-oss/work")):
+        raise BoundaryError("namespace writable root is outside the fixed work root")
+    _trusted_directory(resolved_root, mode=0o711)
+
+    _mount(None, Path("/"), MS_REC | MS_PRIVATE)
+    _mount(resolved_root, resolved_root, MS_BIND | MS_REC)
+    _mount_setattr(Path("/"), recursive=True, attr_set=MOUNT_ATTR_RDONLY)
+    _mount_setattr(
+        resolved_root,
+        recursive=False,
+        attr_set=MOUNT_ATTR_NOSUID | MOUNT_ATTR_NODEV,
+        attr_clr=MOUNT_ATTR_RDONLY,
+    )
+
+    readonly_checks = [
+        Path("/"),
+        executable,
+        Path("/var/lib/evoom-oss/output"),
+        READONLY_PROBE,
+    ]
+    readonly_checks.extend(
+        path
+        for path in (Path("/opt"), Path("/usr/share"), Path("/usr/local/bin"))
+        if path.exists()
+    )
+    for path in readonly_checks:
+        if not os.statvfs(path).f_flag & os.ST_RDONLY:
+            raise BoundaryError(f"host path remained writable in namespace: {path}")
+    if os.statvfs(resolved_root).f_flag & os.ST_RDONLY:
+        raise BoundaryError("execution root did not remain writable in namespace")
+
+
+def _namespace_supervisor(
+    uid: int,
+    gid: int,
+    execution_root: Path,
+    executable: Path,
+    command: list[str],
+) -> int:
     if os.geteuid() != 0 or os.getpid() != 1:
         raise BoundaryError("namespace supervisor must be root PID 1")
     libc = ctypes.CDLL(None, use_errno=True)
     if libc.prctl(4, 0, 0, 0, 0) != 0:  # PR_SET_DUMPABLE = 0
         raise BoundaryError("could not make namespace supervisor non-dumpable")
+    _readonly_mount_view(execution_root, executable)
     launcher = [
         str(SETPRIV),
         f"--reuid={uid}",
@@ -526,6 +689,7 @@ def _namespace_supervisor(uid: int, gid: int, command: list[str]) -> int:
         "--pdeathsig=keep",
         str(INSTALLED_PATH),
         "--untrusted-launch",
+        f"--exec-path={executable}",
         "--",
         *command,
     ]
@@ -553,7 +717,7 @@ def _namespace_supervisor(uid: int, gid: int, command: list[str]) -> int:
     return returncode if returncode >= 0 else 128 - returncode
 
 
-def _untrusted_launch(command: list[str]) -> None:
+def _untrusted_launch(executable: Path, command: list[str]) -> None:
     if resource is None:
         raise BoundaryError("the execution boundary requires Linux resource limits")
     if os.geteuid() == 0 or os.getuid() == 0:
@@ -563,9 +727,9 @@ def _untrusted_launch(command: list[str]) -> None:
     resource.setrlimit(resource.RLIMIT_NPROC, (512, 512))
     two_gib = 2 * 1024 * 1024 * 1024
     resource.setrlimit(resource.RLIMIT_FSIZE, (two_gib, two_gib))
-    if not command or not command[0].startswith("/"):
-        raise BoundaryError("untrusted launcher requires an absolute real tool")
-    os.execve(command[0], command, dict(os.environ))
+    if not executable.is_absolute() or not command or "/" in command[0]:
+        raise BoundaryError("untrusted launcher requires an absolute executable")
+    os.execve(executable, command, dict(os.environ))
 
 
 def _execute(
@@ -581,7 +745,7 @@ def _execute(
     gid = int(config["untrusted_gid"])
     if not self_test and infer_phase(tool, arguments) != phase:
         raise BoundaryError("declared phase does not match the frozen command")
-    if tool not in config["real_tools"]:
+    if tool not in PRIMARY_TOOL_NAMES or tool not in config["real_tools"]:
         raise BoundaryError("tool is not in the frozen real-tool map")
     _ensure_no_uid_processes(uid)
     execution_root, repo = _execution_paths(config, cwd)
@@ -589,9 +753,11 @@ def _execute(
     _chown_repo_tree(repo, uid, gid)
     report = _prepare_report_channel(phase, arguments, execution_root, uid, gid)
     environment = child_environment(config, home)
-    command = [str(config["real_tools"][tool]), *arguments]
+    executable = Path(str(config["real_tools"][tool]))
+    command = [tool, *arguments]
     namespace = [
         str(UNSHARE),
+        "--mount",
         "--fork",
         "--pid",
         "--mount-proc",
@@ -600,6 +766,8 @@ def _execute(
         "--namespace-supervisor",
         f"--uid={uid}",
         f"--gid={gid}",
+        f"--execution-root={execution_root}",
+        f"--exec-path={executable}",
         "--",
         *command,
     ]
@@ -612,8 +780,12 @@ def _execute(
         start_new_session=True,
         preexec_fn=lambda: _set_parent_death_signal(parent),
     )
-    state = _write_state(Path(config["state_root"]), process.pid)
+    state: Path | None = None
     try:
+        # Enter the cleanup region before writing the durable state.  If the
+        # state write itself fails, the just-created root namespace process and
+        # every uid-60001 descendant must still be reaped synchronously.
+        state = _write_state(Path(config["state_root"]), process.pid)
         returncode = process.wait()
     finally:
         if process.poll() is None:
@@ -621,7 +793,8 @@ def _execute(
             process.wait()
         _kill_uid(uid)
         _reclaim_report(report, uid)
-        state.unlink(missing_ok=True)
+        if state is not None:
+            state.unlink(missing_ok=True)
     return returncode
 
 
@@ -674,6 +847,34 @@ def cleanup(config: dict[str, Any], *, purge_homes: bool) -> None:
     _publish_output(config)
 
 
+def cleanup_processes_without_config() -> None:
+    """Kill boundary processes before parsing tool-dependent configuration."""
+    if pwd is None:
+        raise BoundaryError("the execution boundary requires Linux pwd support")
+    try:
+        account = pwd.getpwnam(UNTRUSTED_USER)
+    except KeyError as exc:
+        raise BoundaryError("fixed untrusted user does not exist") from exc
+    if account.pw_uid != UNTRUSTED_UID or account.pw_gid != UNTRUSTED_GID:
+        raise BoundaryError("fixed untrusted identity mismatch")
+
+    state_problem: BaseException | None = None
+    state_root = Path("/var/lib/evoom-oss/state")
+    try:
+        if state_root.exists():
+            _trusted_directory(state_root, mode=0o700)
+            _state_cleanup(state_root)
+    except (BoundaryError, OSError, ValueError) as exc:
+        state_problem = exc
+    finally:
+        _kill_uid(UNTRUSTED_UID)
+        _ensure_no_uid_processes(UNTRUSTED_UID)
+    if state_problem is not None:
+        raise BoundaryError(
+            f"root boundary process cleanup failed: {state_problem}"
+        ) from state_problem
+
+
 def _self_test_script(
     *,
     uid: int,
@@ -683,6 +884,7 @@ def _self_test_script(
     proof: Path,
     marker: Path,
     sentinel: Path,
+    readonly_probe: Path,
 ) -> str:
     return f"""
 import ctypes, json, os, pathlib, signal, time
@@ -713,10 +915,11 @@ for target, directory in [
     ({str(sentinel)!r}, False),
     ({str(report.parent / 'judge-result.xml.d')!r}, True),
     ({str(report.parent / 'evil')!r}, False),
+    ({str(readonly_probe)!r}, False),
 ]:
     try:
         pathlib.Path(target).mkdir() if directory else pathlib.Path(target).open('a').close()
-    except (PermissionError, FileNotFoundError, IsADirectoryError):
+    except OSError:
         pass
     else:
         raise AssertionError('writable trusted path: ' + target)
@@ -743,6 +946,15 @@ def self_test(config: dict[str, Any]) -> None:
             raise BoundaryError(f"required executable is not executable: {executable}")
     uid = int(config["untrusted_uid"])
     gid = int(config["untrusted_gid"])
+    probe = READONLY_PROBE.lstat()
+    if (
+        not stat.S_ISREG(probe.st_mode)
+        or probe.st_uid != 0
+        or probe.st_gid != 0
+        or probe.st_nlink != 1
+        or stat.S_IMODE(probe.st_mode) != 0o666
+    ):
+        raise BoundaryError("read-only mount probe has unsafe metadata")
     execution_root = (
         Path(config["work_root"]) / f"evo_repo_boundary_selftest_{os.getpid()}"
     )
@@ -763,6 +975,7 @@ def self_test(config: dict[str, Any]) -> None:
         proof=proof,
         marker=marker,
         sentinel=sentinel,
+        readonly_probe=READONLY_PROBE,
     )
     try:
         returncode = _execute(
@@ -798,7 +1011,10 @@ def _parse_delimited(arguments: list[str]) -> list[str]:
 def main(argv: list[str] | None = None) -> int:
     arguments = list(sys.argv[1:] if argv is None else argv)
     if arguments[:1] == ["--untrusted-launch"]:
-        _untrusted_launch(_parse_delimited(arguments[1:]))
+        parser = argparse.ArgumentParser(add_help=False)
+        parser.add_argument("--exec-path", type=Path, required=True)
+        parsed, remainder = parser.parse_known_args(arguments[1:])
+        _untrusted_launch(parsed.exec_path, _parse_delimited(remainder))
         raise AssertionError("execve returned")
     if os.geteuid() != 0:
         raise BoundaryError("boundary entry point requires root")
@@ -806,12 +1022,18 @@ def main(argv: list[str] | None = None) -> int:
         parser = argparse.ArgumentParser(add_help=False)
         parser.add_argument("--uid", type=int, required=True)
         parser.add_argument("--gid", type=int, required=True)
+        parser.add_argument("--execution-root", type=Path, required=True)
+        parser.add_argument("--exec-path", type=Path, required=True)
         parsed, remainder = parser.parse_known_args(arguments[1:])
         return _namespace_supervisor(
-            parsed.uid, parsed.gid, _parse_delimited(remainder)
+            parsed.uid,
+            parsed.gid,
+            parsed.execution_root,
+            parsed.exec_path,
+            _parse_delimited(remainder),
         )
-    config = load_config()
     if arguments == ["--self-test"]:
+        config = load_config()
         self_test(config)
         print("OK trusted execution boundary self-test")
         return 0
@@ -819,6 +1041,8 @@ def main(argv: list[str] | None = None) -> int:
         parser = argparse.ArgumentParser(add_help=False)
         parser.add_argument("--purge-homes", action="store_true")
         parsed = parser.parse_args(arguments[1:])
+        cleanup_processes_without_config()
+        config = load_config(validate_tools=False)
         cleanup(config, purge_homes=parsed.purge_homes)
         print("OK no residual untrusted processes; output released to publisher")
         return 0
@@ -826,6 +1050,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--phase", choices=("setup", "test"), required=True)
     parsed, remainder = parser.parse_known_args(arguments)
     command = _parse_delimited(remainder)
+    config = load_config()
     return _execute(
         config,
         parsed.phase,

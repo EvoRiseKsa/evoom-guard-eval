@@ -1,0 +1,47 @@
+{
+  "recovery_schema": "evoom.oss-study-recovery/1",
+  "predecessor": {
+    "study_id": "oss-pilot-01",
+    "protocol_tag": "oss-protocol-v0.1",
+    "protocol_commit": "9b7bd9e1fe6a01fe75ddf1676f59e9eddebd5822",
+    "manifest_sha256": "f428189ed79d7b2f236f8f5a80c1fee7fc2207b6d03e6c873679c4669e9c02eb",
+    "canonical_run_id": 29386936311,
+    "canonical_run_attempt": 1,
+    "canonical_run_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29386936311",
+    "disposition": "invalid_before_measurement",
+    "product_inference_allowed": false,
+    "observations": {
+      "matrix_jobs": 12,
+      "canonical_preflight_successes": 12,
+      "identity_check_successes": 12,
+      "boundary_install_failures": 12,
+      "case_steps_started": 0,
+      "guard_records": 0,
+      "actions_artifacts": 0
+    },
+    "failure": {
+      "phase": "trusted_boundary_installation",
+      "message": "real tool is writable by the untrusted uid: /usr/local/bin/cmake",
+      "meaning": "The protocol failed closed on a mutable hosted-runner tool path before any case or EvoOM Guard invocation."
+    }
+  },
+  "successor": {
+    "study_id": "oss-pilot-02",
+    "protocol_tag": "oss-protocol-v0.2",
+    "relationship": "new_preregistered_successor_not_a_rerun_or_replacement",
+    "unchanged_inputs": [
+      "12 frozen candidate diffs",
+      "case labels and expected Guard outcomes",
+      "six repository profiles and policies",
+      "EvoOM Guard v3.5.2 artifact and digest"
+    ],
+    "amendments": [
+      "qualify canonical real-tool targets and expose only a root-owned alias set",
+      "make the complete host filesystem read-only inside each untrusted mount namespace except the exact execution root",
+      "make process cleanup independent of normal tool validation",
+      "preserve and classify failures that occur before the case runner starts",
+      "qualify the exact boundary on GitHub-hosted Ubuntu 24.04 and in a privileged Ubuntu integration container"
+    ],
+    "reuse_rationale": "No case or Guard invocation occurred in oss-pilot-01, so no product outcome was observed and no case, label, expectation, policy, or engine choice was tuned from results."
+  }
+}

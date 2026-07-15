@@ -13,22 +13,33 @@ from typing import Any, Callable, Iterable
 
 ROOT = Path(__file__).resolve().parents[1]
 STUDY_ROOT = ROOT / "studies" / "oss-compat-v1"
-STUDY_ID = "oss-pilot-01"
+STUDY_ID = "oss-pilot-02"
 PROTOCOL_ID = "oss-compat"
-PROTOCOL_VERSION = "0.1"
-PROTOCOL_TAG = "oss-protocol-v0.1"
+PROTOCOL_VERSION = "0.2"
+PROTOCOL_TAG = "oss-protocol-v0.2"
 ENGINE_VERSION = "v3.5.2"
 ENGINE_SHA256 = "a370fac23233ea6f317d5d7e5347389197fc936bd9b5903c685b1d3755e0046f"
 SCHEMA_VERSION = "1.11"
 EXPECTED_CASE_COUNT = 12
 
+LEGACY_STUDIES = {
+    "oss-pilot-01": {
+        "protocol_tag": "oss-protocol-v0.1",
+        "protocol_version": "0.1",
+        "manifest_sha256": "f428189ed79d7b2f236f8f5a80c1fee7fc2207b6d03e6c873679c4669e9c02eb",
+    }
+}
+
 HARNESS_INPUTS = (
     "harness/oss_common.py",
+    "harness/capture_oss_attempt.py",
     "harness/check_canonical_dispatch.py",
     "harness/freeze_oss_cases.py",
     "harness/make_oss_manifest.py",
     "harness/materialize_oss_artifacts.py",
+    "harness/install_oss_boundary.sh",
     "harness/oss_untrusted_exec.py",
+    "harness/prepare_oss_bootstrap.py",
     "harness/run_oss_case.py",
     "harness/evaluate_oss.py",
     ".gitattributes",
@@ -37,6 +48,8 @@ HARNESS_INPUTS = (
     ".github/workflows/ci.yml",
     "tests/test_oss_harness.py",
     "tests/test_oss_artifacts.py",
+    "tests/test_capture_oss_attempt.py",
+    "tests/test_oss_bootstrap.py",
     "tests/test_oss_untrusted_exec.py",
     "tests/oss_boundary_integration.sh",
 )
@@ -329,7 +342,7 @@ def study_input_paths() -> list[Path]:
         if not path.is_file():
             continue
         relative = path.relative_to(STUDY_ROOT)
-        if relative.parts[0] in {"results", "manifests"}:
+        if relative.parts[0] in {"attempts", "results", "manifests"}:
             continue
         paths.append(path)
     for relative in HARNESS_INPUTS:
@@ -394,8 +407,8 @@ def manifest_case_entries() -> list[dict[str, Any]]:
 
 
 def manifest_path(study_id: str = STUDY_ID) -> Path:
-    if study_id != STUDY_ID:
-        raise ValueError(f"protocol v0.1 defines only {STUDY_ID!r}")
+    if study_id != STUDY_ID and study_id not in LEGACY_STUDIES:
+        raise ValueError(f"unknown OSS study id: {study_id!r}")
     return STUDY_ROOT / "manifests" / f"{study_id}.json"
 
 
@@ -619,12 +632,14 @@ def verify_manifest(study_id: str = STUDY_ID) -> tuple[dict[str, Any], list[str]
         problems.append("study_id mismatch")
     if manifest.get("manifest_schema") != "evoom.oss-study-manifest/1":
         problems.append("unsupported OSS manifest schema")
-    protocol = manifest.get("protocol")
-    if protocol != {
+    legacy = LEGACY_STUDIES.get(study_id)
+    expected_protocol = {
         "id": PROTOCOL_ID,
-        "tag": PROTOCOL_TAG,
-        "version": PROTOCOL_VERSION,
-    }:
+        "tag": legacy["protocol_tag"] if legacy else PROTOCOL_TAG,
+        "version": legacy["protocol_version"] if legacy else PROTOCOL_VERSION,
+    }
+    protocol = manifest.get("protocol")
+    if protocol != expected_protocol:
         problems.append("protocol identity mismatch")
     scope = manifest.get("claim_scope")
     if scope != {
@@ -661,11 +676,19 @@ def verify_manifest(study_id: str = STUDY_ID) -> tuple[dict[str, Any], list[str]
     if not isinstance(entries, list) or not entries:
         problems.append("manifest has no input_files")
         return manifest, problems
-    current_entries, current_digest = hashed_entries(study_input_paths())
-    if entries != current_entries:
-        problems.append("study inputs differ from frozen manifest")
-    if manifest.get("corpus_sha256") != current_digest:
-        problems.append("corpus_sha256 mismatch")
+    if legacy:
+        # Historical manifests bind the bytes at their protected tag.  Main may
+        # evolve for a successor protocol, so comparing a legacy manifest with
+        # the current working tree would be both false and unreproducible.
+        if sha256_file(path) != legacy["manifest_sha256"]:
+            problems.append("historical manifest digest mismatch")
+        return manifest, problems
+    else:
+        current_entries, current_digest = hashed_entries(study_input_paths())
+        if entries != current_entries:
+            problems.append("study inputs differ from frozen manifest")
+        if manifest.get("corpus_sha256") != current_digest:
+            problems.append("corpus_sha256 mismatch")
     cases = manifest.get("cases")
     try:
         expected_manifest_cases = manifest_case_entries()
