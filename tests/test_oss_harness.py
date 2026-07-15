@@ -151,7 +151,7 @@ class OssStudyDataTests(unittest.TestCase):
         self,
     ) -> None:
         recovery = oss_common.load_json(oss_common.STUDY_ROOT / "RECOVERY.json")
-        self.assertEqual("evoom.oss-study-recovery/3", recovery["recovery_schema"])
+        self.assertEqual("evoom.oss-study-recovery/4", recovery["recovery_schema"])
         attempts = recovery["historical_attempts"]
         successor = recovery["successor"]
         self.assertEqual(
@@ -194,6 +194,45 @@ class OssStudyDataTests(unittest.TestCase):
         )
         self.assertTrue(successor["prior_product_exposure"])
         self.assertEqual("repeated_non_blind_not_held_out", successor["design"])
+        qualification_history = recovery["qualification_history"]
+        self.assertEqual(1, len(qualification_history))
+        qualification = qualification_history[0]
+        self.assertEqual(29395836809, qualification["run_id"])
+        self.assertEqual(
+            "0459f07150fc39b3330e175468d8eab006ee71ee",
+            qualification["protocol_commit"],
+        )
+        self.assertEqual(
+            "failed_pre_manifest_infrastructure_qualification",
+            qualification["scientific_disposition"],
+        )
+        self.assertFalse(qualification["canonical_execution_performed"])
+        self.assertFalse(qualification["frozen_case_execution_performed"])
+        self.assertFalse(qualification["manifest_frozen"])
+        self.assertEqual(0, qualification["guard_invocations"])
+        self.assertEqual(
+            0, qualification["product_outcome_denominator_contribution"]
+        )
+        self.assertEqual(
+            {"total": 19, "successful": 13, "failed": 6},
+            {
+                name: qualification["job_outcomes"][name]
+                for name in ("total", "successful", "failed")
+            },
+        )
+        self.assertEqual(
+            [2, 4, 5, 6, 9, 12],
+            [
+                failure["replica"]
+                for failure in qualification["failed_qualification_replicas"]
+            ],
+        )
+        self.assertEqual(
+            729, qualification["failure"]["initial_partition_inventory_entries"]
+        )
+        self.assertEqual(
+            727, qualification["failure"]["final_partition_inventory_entries"]
+        )
 
     def test_recovery_checksum_indexes_bind_every_captured_evidence_file(self) -> None:
         recovery = oss_common.load_json(oss_common.STUDY_ROOT / "RECOVERY.json")

@@ -152,6 +152,11 @@ Guard v3.5.2 remain frozen. V0.4 may report infrastructure completion and
 descriptive exact-case conformance only. It cannot support accuracy,
 false-positive-rate, generalization, held-out, or independent-validation
 claims, and repeated runs never increase the unique sample size above 12.
+The scanner permits one initial pass plus at most two complete retries (three
+attempts total) under the same 900-second deadline, and only after correlating
+a deletion-only boundary change with every failed-and-then-absent transient
+partition; all other changes and errors remain terminal. These are internal
+infrastructure attempts, not product reruns.
 These files never enter the separate Round 1 corpus. An Actions-API preflight enforces the first API-visible
 dispatch among retained runs; it cannot detect an earlier run deleted by the
 repository owner. Before any upstream code runs, the harness switches to a
