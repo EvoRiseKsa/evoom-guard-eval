@@ -40,13 +40,15 @@ jobs:
       - name: Verify frozen OSS compatibility inputs
         run: python harness/freeze_oss_cases.py --check
       - name: Verify historical OSS manifest identity
-        run: python harness/make_oss_manifest.py oss-pilot-01 --check
+        run: |
+          python harness/make_oss_manifest.py oss-pilot-01 --check
+          python harness/make_oss_manifest.py oss-pilot-02 --check
       - name: Reproduce current OSS manifest when frozen
-        run: python harness/make_oss_manifest.py oss-pilot-02 --check --if-present
+        run: python harness/make_oss_manifest.py oss-pilot-03 --check --if-present
       - name: Verify published OSS compatibility results when present
         run: >-
           python harness/evaluate_oss.py
-          --study oss-pilot-02
+          --study oss-pilot-03
           --results studies/oss-compat-v1/results
           --check --if-present
       - name: Verify published artifacts against the live Actions API
@@ -90,6 +92,61 @@ jobs:
           rustup toolchain install 1.85.0 --profile minimal
           rustup default 1.85.0
           test "$(rustc --version)" = "rustc 1.85.0 (4d91de4e4 2025-02-17)"
+
+      - name: Qualify bootstrap and pre-installer recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          readonly CASE_ID=cjson-pr-1006-source-only
+          PYTHON_BIN="$(command -v python)"
+          if test -f studies/oss-compat-v1/manifests/oss-pilot-03.json; then
+            python harness/make_oss_manifest.py oss-pilot-03 --check
+          else
+            python harness/make_oss_manifest.py oss-pilot-03
+          fi
+          readonly -a TRUSTED_IDENTITY=(
+            "GITHUB_ACTIONS=$GITHUB_ACTIONS"
+            "GITHUB_EVENT_NAME=$GITHUB_EVENT_NAME"
+            "GITHUB_REPOSITORY=$GITHUB_REPOSITORY"
+            "GITHUB_RUN_ID=$GITHUB_RUN_ID"
+            "GITHUB_RUN_ATTEMPT=$GITHUB_RUN_ATTEMPT"
+            "GITHUB_SHA=$GITHUB_SHA"
+            "GITHUB_REF=$GITHUB_REF"
+            "GITHUB_REF_NAME=$GITHUB_REF_NAME"
+            "GITHUB_REF_TYPE=$GITHUB_REF_TYPE"
+            "GITHUB_REF_PROTECTED=$GITHUB_REF_PROTECTED"
+            "GITHUB_WORKFLOW_REF=$GITHUB_WORKFLOW_REF"
+          )
+          sudo env -i \
+            PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+            "${TRUSTED_IDENTITY[@]}" \
+            "$PYTHON_BIN" harness/prepare_oss_bootstrap.py prepare \
+              --study oss-pilot-03 \
+              --case "$CASE_ID" \
+              --output-root /var/lib/evoom-oss/output \
+              --publisher-uid "$(id -u)" \
+              --publisher-gid "$(id -g)"
+          sudo env -i \
+            PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+            "${TRUSTED_IDENTITY[@]}" \
+            "$PYTHON_BIN" harness/prepare_oss_bootstrap.py release-infra \
+              --study oss-pilot-03 \
+              --case "$CASE_ID" \
+              --output-root /var/lib/evoom-oss/output \
+              --publisher-uid "$(id -u)" \
+              --publisher-gid "$(id -g)"
+          readonly CLASSIFICATION_OUTPUT="$RUNNER_TEMP/bootstrap-classification"
+          test ! -e "$CLASSIFICATION_OUTPUT"
+          python harness/prepare_oss_bootstrap.py classify \
+            --study oss-pilot-03 \
+            --case "$CASE_ID" \
+            --output-root /var/lib/evoom-oss/output \
+            --github-output "$CLASSIFICATION_OUTPUT"
+          grep -Fx 'classification=infra' "$CLASSIFICATION_OUTPUT"
+          test "$(stat -c %u \
+            "/var/lib/evoom-oss/output/oss-pilot-03/$CASE_ID/bootstrap-envelope.json")" \
+            = "$(id -u)"
+          sudo rm -rf -- /var/lib/evoom-oss
 
       - name: Install and self-test trusted execution boundary
         shell: bash

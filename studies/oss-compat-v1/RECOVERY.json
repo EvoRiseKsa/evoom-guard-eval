@@ -1,47 +1,90 @@
 {
-  "recovery_schema": "evoom.oss-study-recovery/1",
-  "predecessor": {
-    "study_id": "oss-pilot-01",
-    "protocol_tag": "oss-protocol-v0.1",
-    "protocol_commit": "9b7bd9e1fe6a01fe75ddf1676f59e9eddebd5822",
-    "manifest_sha256": "f428189ed79d7b2f236f8f5a80c1fee7fc2207b6d03e6c873679c4669e9c02eb",
-    "canonical_run_id": 29386936311,
-    "canonical_run_attempt": 1,
-    "canonical_run_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29386936311",
-    "disposition": "invalid_before_measurement",
-    "product_inference_allowed": false,
-    "observations": {
-      "matrix_jobs": 12,
-      "canonical_preflight_successes": 12,
-      "identity_check_successes": 12,
-      "boundary_install_failures": 12,
-      "case_steps_started": 0,
-      "guard_records": 0,
-      "actions_artifacts": 0
+  "historical_attempts": [
+    {
+      "canonical_run_attempt": 1,
+      "canonical_run_id": 29386936311,
+      "canonical_run_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29386936311",
+      "capture_classification": "invalid_before_measurement",
+      "capture_path": "studies/oss-compat-v1/attempts/oss-pilot-01/29386936311",
+      "checksum_index_sha256": "fadebc1ee0afb8d67894a9dcd79e612556d8b2ff3844dafc06444026615a468a",
+      "failure": {
+        "primary": {
+          "message": "real tool is writable by the untrusted uid: /usr/local/bin/cmake",
+          "phase": "trusted_boundary_installation"
+        }
+      },
+      "manifest_sha256": "f428189ed79d7b2f236f8f5a80c1fee7fc2207b6d03e6c873679c4669e9c02eb",
+      "observations": {
+        "case_runner_steps_started": 0,
+        "guard_invocations": 0,
+        "product_artifacts": 0,
+        "product_outcome_denominator_contribution": 0,
+        "verified_guard_records": 0
+      },
+      "preregistered_case_inventory": 12,
+      "product_inference_allowed": false,
+      "protocol_commit": "9b7bd9e1fe6a01fe75ddf1676f59e9eddebd5822",
+      "protocol_tag": "oss-protocol-v0.1",
+      "scientific_disposition": "invalid_before_measurement",
+      "study_id": "oss-pilot-01"
     },
-    "failure": {
-      "phase": "trusted_boundary_installation",
-      "message": "real tool is writable by the untrusted uid: /usr/local/bin/cmake",
-      "meaning": "The protocol failed closed on a mutable hosted-runner tool path before any case or EvoOM Guard invocation."
+    {
+      "canonical_run_attempt": 1,
+      "canonical_run_id": 29390627493,
+      "canonical_run_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29390627493",
+      "capture_classification": "invalid_or_incomplete_before_product_materialization",
+      "capture_path": "studies/oss-compat-v1/attempts/oss-pilot-02/29390627493",
+      "checksum_index_sha256": "4e84be133b85be5bbc5e70a226021c00d6a606d4dc2fdd063e6fbfa0d4c4163d",
+      "failure": {
+        "primary": {
+          "message": "find / -xdev -gid 60001 exceeded the 60-second timeout",
+          "phase": "trusted_bootstrap_identity_preflight"
+        },
+        "secondary": {
+          "message": "fallback cleanup rejected the not-yet-created fixed user, so no infrastructure artifact was released",
+          "phase": "trusted_fallback_release"
+        }
+      },
+      "manifest_sha256": "c5b2ddd34c92838a460865d96d831b6f4aa2b49f032bf6ed066496744408c05e",
+      "observations": {
+        "case_runner_steps_started": 0,
+        "guard_invocations": 0,
+        "product_artifacts": 0,
+        "product_outcome_denominator_contribution": 0,
+        "verified_guard_records": 0
+      },
+      "preregistered_case_inventory": 12,
+      "product_inference_allowed": false,
+      "protocol_commit": "bc6d2e4d559dbf97b06b3c4f06a6ff46a5c50df7",
+      "protocol_tag": "oss-protocol-v0.2",
+      "scientific_disposition": "invalid_before_measurement",
+      "study_id": "oss-pilot-02"
     }
+  ],
+  "pooling_rules": {
+    "historical_attempts_are_product_observations": false,
+    "historical_product_denominator": 0,
+    "maximum_unique_successor_case_denominator": 12,
+    "repeated_preregistered_cases_increase_unique_n": false,
+    "rule": "Do not pool 12 intended matrix cells from v0.1, v0.2, and v0.3 as 36 product outcomes. Only verified v0.3 product records may enter a product denominator, whose maximum unique case count is 12."
   },
+  "recovery_schema": "evoom.oss-study-recovery/2",
   "successor": {
-    "study_id": "oss-pilot-02",
-    "protocol_tag": "oss-protocol-v0.2",
+    "amendments": [
+      "combine the fixed uid/gid ownership preflight into one bounded root-filesystem traversal with a 300-second fail-closed timeout",
+      "persist the root-owned infrastructure marker before identity preflight",
+      "allow fallback release when the passwd entry is absent only if numeric uid 60001 has no processes",
+      "qualify the exact bootstrap and pre-installer recovery path on GitHub-hosted Ubuntu 24.04"
+    ],
+    "protocol_tag": "oss-protocol-v0.3",
     "relationship": "new_preregistered_successor_not_a_rerun_or_replacement",
+    "reuse_rationale": "Neither historical attempt started a case runner or EvoOM Guard invocation, so no product outcome was observed and no case, label, expectation, policy, profile, or engine choice was tuned from product results.",
+    "study_id": "oss-pilot-03",
     "unchanged_inputs": [
       "12 frozen candidate diffs",
       "case labels and expected Guard outcomes",
       "six repository profiles and policies",
       "EvoOM Guard v3.5.2 artifact and digest"
-    ],
-    "amendments": [
-      "qualify canonical real-tool targets and expose only a root-owned alias set",
-      "make the complete host filesystem read-only inside each untrusted mount namespace except the exact execution root",
-      "make process cleanup independent of normal tool validation",
-      "preserve and classify failures that occur before the case runner starts",
-      "qualify the exact boundary on GitHub-hosted Ubuntu 24.04 and in a privileged Ubuntu integration container"
-    ],
-    "reuse_rationale": "No case or Guard invocation occurred in oss-pilot-01, so no product outcome was observed and no case, label, expectation, policy, or engine choice was tuned from results."
+    ]
   }
 }

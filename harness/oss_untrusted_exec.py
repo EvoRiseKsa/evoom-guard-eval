@@ -6,6 +6,7 @@ It does remove Actions credentials, drop to a dedicated uid with no capabilities
 use a trusted PID-namespace init, constrain writable paths, and reap that uid before
 the result directory can be released to the artifact publisher.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -176,7 +177,9 @@ def _trusted_tool_aliases(tools: dict[str, str]) -> None:
             if alias.resolve(strict=True) != Path(configured).resolve(strict=True):
                 raise BoundaryError(f"trusted tool alias resolution mismatch: {alias}")
         except OSError as exc:
-            raise BoundaryError(f"trusted tool alias cannot be resolved: {alias}") from exc
+            raise BoundaryError(
+                f"trusted tool alias cannot be resolved: {alias}"
+            ) from exc
 
 
 def load_config(
@@ -296,9 +299,11 @@ def uid_processes(uid: int, proc_root: Path = Path("/proc")) -> list[int]:
         if not entry.name.isdecimal():
             continue
         try:
-            lines = (entry / "status").read_text(
-                encoding="utf-8", errors="replace"
-            ).splitlines()
+            lines = (
+                (entry / "status")
+                .read_text(encoding="utf-8", errors="replace")
+                .splitlines()
+            )
             uid_line = next(line for line in lines if line.startswith("Uid:"))
             values = [int(value) for value in uid_line.split()[1:5]]
         except (OSError, StopIteration, ValueError):
@@ -368,7 +373,9 @@ def _kill_uid(uid: int, *, wait_seconds: float = 5.0) -> None:
         if time.monotonic() >= deadline:
             remaining = uid_processes(uid)
             if remaining:
-                raise BoundaryError(f"untrusted processes survived cleanup: {remaining}")
+                raise BoundaryError(
+                    f"untrusted processes survived cleanup: {remaining}"
+                )
             return
         time.sleep(0.05)
 
@@ -597,9 +604,7 @@ def _mount(source: Path | None, target: Path, flags: int) -> None:
     source_bytes = None if source is None else os.fsencode(source)
     if mount(source_bytes, os.fsencode(target), None, flags, None) != 0:
         error = ctypes.get_errno()
-        raise BoundaryError(
-            f"mount namespace setup failed for {target}: errno {error}"
-        )
+        raise BoundaryError(f"mount namespace setup failed for {target}: errno {error}")
 
 
 def _mount_setattr(
@@ -848,17 +853,24 @@ def cleanup(config: dict[str, Any], *, purge_homes: bool) -> None:
 
 
 def cleanup_processes_without_config() -> None:
-    """Kill boundary processes before parsing tool-dependent configuration."""
+    """Clean the exact boundary identity, or prove an absent identity is unused."""
     if pwd is None:
         raise BoundaryError("the execution boundary requires Linux pwd support")
+    identity_problem: BaseException | None = None
     try:
         account = pwd.getpwnam(UNTRUSTED_USER)
-    except KeyError as exc:
-        raise BoundaryError("fixed untrusted user does not exist") from exc
-    if account.pw_uid != UNTRUSTED_UID or account.pw_gid != UNTRUSTED_GID:
-        raise BoundaryError("fixed untrusted identity mismatch")
+    except KeyError:
+        # Bootstrap may fail before useradd.  Numeric-uid cleanup remains both
+        # possible and mandatory; absence of the passwd entry is not residue.
+        account = None
+    if account is not None and (
+        account.pw_uid != UNTRUSTED_UID or account.pw_gid != UNTRUSTED_GID
+    ):
+        identity_problem = BoundaryError("fixed untrusted identity mismatch")
+    identity_is_exact = account is not None and identity_problem is None
 
     state_problem: BaseException | None = None
+    process_problem: BaseException | None = None
     state_root = Path("/var/lib/evoom-oss/state")
     try:
         if state_root.exists():
@@ -867,8 +879,19 @@ def cleanup_processes_without_config() -> None:
     except (BoundaryError, OSError, ValueError) as exc:
         state_problem = exc
     finally:
-        _kill_uid(UNTRUSTED_UID)
-        _ensure_no_uid_processes(UNTRUSTED_UID)
+        if identity_is_exact:
+            _kill_uid(UNTRUSTED_UID)
+            _ensure_no_uid_processes(UNTRUSTED_UID)
+        else:
+            residual = uid_processes(UNTRUSTED_UID)
+            if residual:
+                process_problem = BoundaryError(
+                    f"unassigned or mismatched fixed uid has processes: {residual}"
+                )
+    if identity_problem is not None:
+        raise identity_problem
+    if process_problem is not None:
+        raise process_problem
     if state_problem is not None:
         raise BoundaryError(
             f"root boundary process cleanup failed: {state_problem}"

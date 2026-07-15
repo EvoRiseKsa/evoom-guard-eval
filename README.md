@@ -135,15 +135,20 @@ unrelated projects across Python, Node, Go, Rust, C++, and C. Each project
 contributes one source-only replay and one real change that touches an existing
 test or CI workflow.
 
-The study has its own manifest, harness, workflow, and protected tag. Protocol
-v0.1 produced no product measurement: its only canonical run failed closed
-during boundary installation before any case or Guard invocation, and its API
-snapshots and original logs are preserved under
-`studies/oss-compat-v1/attempts/oss-pilot-01/29386936311/`. It is explicitly
-classified `invalid_before_measurement`, not 0/12. The successor study
-`oss-pilot-02` runs only from `oss-protocol-v0.2` and reuses the unchanged frozen
-cases because v0.1 exposed no product outcome from which to tune them. These
-files never enter the separate Round 1 corpus. An Actions-API preflight enforces the first API-visible
+The study has its own manifest, harness, workflow, and protected tag. Protocols
+v0.1 and v0.2 produced no product measurement: their canonical runs failed
+closed before any case runner or Guard invocation. Their API snapshots and
+original logs are preserved under `studies/oss-compat-v1/attempts/`; both are
+explicitly classified `invalid_before_measurement`, not 0/12. v0.1 rejected a
+mutable hosted-runner tool path. v0.2 then reached its identity preflight but a
+full root-filesystem GID scan exceeded its 60-second timeout; its fallback also
+could not release an infrastructure marker because the fixed user did not yet
+exist. The new preregistered successor `oss-pilot-03` runs only from
+`oss-protocol-v0.3`. It reuses the unchanged 12 cases, labels, policies,
+profiles, and Guard v3.5.2 digest because neither historical attempt exposed a
+product outcome from which to tune them. The historical 12 intended cells are
+never pooled as product observations; v0.3 still has at most 12 unique product
+cases. These files never enter the separate Round 1 corpus. An Actions-API preflight enforces the first API-visible
 dispatch among retained runs; it cannot detect an earlier run deleted by the
 repository owner. Before any upstream code runs, the harness switches to a
 root-owned `env -i` execution with no Actions/artifact token. Setup and tests run
@@ -174,7 +179,7 @@ The evaluator reports the fixed 12-case intention-to-test denominator separately
 from Guard invocation coverage and the verified-record product-outcome
 denominator. A pre-Guard failure therefore cannot be presented as a Guard
 verdict or as a 0/12 product score.
-If the one canonical v0.2 run does not yield the exact 12 product artifacts,
+If the one canonical v0.3 run does not yield the exact 12 product artifacts,
 `python harness/capture_oss_attempt.py current --run-id <RUN_ID>` preserves the
 API records, original logs, frozen manifest, and every artifact ZIP without
 extracting or evaluating them. A capture alone always forbids product inference;
@@ -201,9 +206,10 @@ python harness/evaluate.py --round round-pilot
 python harness/freeze_oss_cases.py --check
 python harness/make_oss_manifest.py oss-pilot-01 --check
 python harness/make_oss_manifest.py oss-pilot-02 --check
+python harness/make_oss_manifest.py oss-pilot-03 --check --if-present
 python harness/materialize_oss_artifacts.py --help
 python harness/capture_oss_attempt.py current --run-id <RUN_ID>
-python harness/evaluate_oss.py --study oss-pilot-02 \
+python harness/evaluate_oss.py --study oss-pilot-03 \
   --results studies/oss-compat-v1/results --check --if-present
 ```
 

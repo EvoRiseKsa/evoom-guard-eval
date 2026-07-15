@@ -1,4 +1,4 @@
-# OSS compatibility protocol v0.2
+# OSS compatibility protocol v0.3
 
 This directory is a **same-owner real-world compatibility and conformance
 study**. It is not Round 1, not third-party validation, and not an estimate of
@@ -17,11 +17,23 @@ denominator, and will not be rerun or replaced. The API snapshots, original log
 archive, checksums, and exact disposition are preserved under
 `attempts/oss-pilot-01/29386936311/`.
 
-Protocol v0.2 is a new preregistered successor, not a rerun. It reuses the exact
+Protocol v0.2 remains immutable at protected tag `oss-protocol-v0.2`. Its only
+canonical run, Actions run `29390627493` (attempt 1), failed in all 12 matrix
+jobs before the case runner: the fixed-GID root-filesystem scan exceeded its
+60-second timeout. Cleanup then rejected the not-yet-created fixed user, so no
+infrastructure artifact was released. It produced zero case starts, zero Guard
+invocations, and zero product artifacts. It is also
+`invalid_before_measurement`, not 0/12, and its exact capture is preserved under
+`attempts/oss-pilot-02/29390627493/`.
+
+Protocol v0.3 is a new preregistered successor, not a rerun. It reuses the exact
 same 12 cases, labels, expected outcomes, policies, profiles, and Guard v3.5.2
-digest because v0.1 observed no product result from which those inputs could be
-tuned. The amendment changes only the execution boundary, independent cleanup,
-and early-failure evidence contract. `RECOVERY.json` freezes this relationship.
+digest because neither historical attempt observed a product result from which
+those inputs could be tuned. The amendment combines the UID/GID ownership check
+into one bounded fail-closed scan, persists the infrastructure marker before
+identity preflight, and permits pre-installer marker release only after proving
+that an absent numeric UID has no processes. `RECOVERY.json` freezes the full
+lineage and forbids pooling the historical intended cells as product outcomes.
 
 ## Question under test
 
@@ -41,8 +53,8 @@ environments.
 - Engine: `v3.5.2`, `evo-guard.pyz` SHA-256
   `a370fac23233ea6f317d5d7e5347389197fc936bd9b5903c685b1d3755e0046f`.
 - Record schema: `1.11`.
-- Study: `oss-pilot-02`.
-- Protocol tag: `oss-protocol-v0.2`.
+- Study: `oss-pilot-03`.
+- Protocol tag: `oss-protocol-v0.3`.
 - Roles: curator and runner are both EvoRiseKsa; `independent=false`.
 - Corpus: 12 verbatim historical upstream diffs, two from each repository.
 - Positive cases use `baseline_evidence` so the same suite and setup run on the
@@ -53,12 +65,12 @@ environments.
 
 1. Commit the protocol, selection, exact diffs, provenance, policies, and
    environment declarations.
-2. Generate `manifests/oss-pilot-02.json`; it refuses overwrite.
+2. Generate `manifests/oss-pilot-03.json`; it refuses overwrite.
 3. Merge that manifest and make CI green before the first canonical study
    workflow execution.
 4. Tag the frozen protocol/manifest commit and protect `oss-protocol-v*` tags.
 5. Manually dispatch the read-only Actions matrix from the exact
-   `oss-protocol-v0.2` tag. A preflight query to the Actions API requires the
+   `oss-protocol-v0.3` tag. A preflight query to the Actions API requires the
    current run to be the chronologically first API-visible `workflow_dispatch`
    for the frozen workflow commit; the exact protected tag ref, workflow ref,
    run ID, and attempt 1 are then bound into every envelope. Later API-visible
@@ -244,6 +256,7 @@ Before execution:
 python harness/freeze_oss_cases.py --check
 python harness/make_oss_manifest.py oss-pilot-01 --check
 python harness/make_oss_manifest.py oss-pilot-02 --check
+python harness/make_oss_manifest.py oss-pilot-03 --check --if-present
 python -m unittest discover -s tests -v
 ```
 
@@ -270,7 +283,7 @@ python harness/materialize_oss_artifacts.py \
   --results studies/oss-compat-v1/results \
   --verify-only
 python harness/evaluate_oss.py \
-  --study oss-pilot-02 \
+  --study oss-pilot-03 \
   --results <artifact-root> \
   --github-run-id <canonical-first-api-visible-dispatch-id> \
   --write
