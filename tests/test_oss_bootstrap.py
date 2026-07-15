@@ -148,6 +148,7 @@ class OssBootstrapLifecycleTests(unittest.TestCase):
                 mock.patch.object(bootstrap, "OUTPUT_ROOT", output),
                 mock.patch.object(bootstrap, "STATE_ROOT", state),
                 mock.patch.object(bootstrap, "_directory"),
+                mock.patch.object(bootstrap, "_load_bootstrap"),
                 mock.patch.object(bootstrap.os, "geteuid", return_value=0, create=True),
                 mock.patch.object(bootstrap.os, "chmod", side_effect=portable_chmod),
                 mock.patch.object(
@@ -174,6 +175,7 @@ class OssBootstrapLifecycleTests(unittest.TestCase):
                 mock.patch.object(bootstrap, "OUTPUT_ROOT", output),
                 mock.patch.object(bootstrap, "STATE_ROOT", state),
                 mock.patch.object(bootstrap, "_directory"),
+                mock.patch.object(bootstrap, "_load_bootstrap"),
                 mock.patch.object(bootstrap.os, "geteuid", return_value=0, create=True),
                 mock.patch.object(bootstrap.os, "chown", create=True),
                 mock.patch.object(bootstrap.os, "chmod", side_effect=portable_chmod),
