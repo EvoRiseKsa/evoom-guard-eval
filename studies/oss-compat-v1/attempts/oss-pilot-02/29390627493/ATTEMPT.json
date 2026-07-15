@@ -1,0 +1,651 @@
+{
+  "actions_logs": {
+    "archive_bytes": 231048,
+    "archive_sha256": "44963eded3783bd8d60357d7978634395466066d7ed95fc5de1d083f80cfe86f",
+    "member_count": 138,
+    "uncompressed_bytes": 765474
+  },
+  "artifact_count": 0,
+  "artifact_inventory": [],
+  "canonical_dispatch": {
+    "first_created_at": "2026-07-15T05:07:04Z",
+    "first_run_id": 29390627493,
+    "matching_dispatch_count": 1,
+    "selection": "first API-visible workflow_dispatch for workflow and commit"
+  },
+  "captured_at": "2026-07-15T05:09:48Z",
+  "case_count": 12,
+  "case_steps_non_skipped": 0,
+  "classification": "invalid_or_incomplete_before_product_materialization",
+  "evidence_files": [
+    "FROZEN-MANIFEST.json",
+    "actions-logs.zip",
+    "api/artifacts.json",
+    "api/dispatches.json",
+    "api/jobs.json",
+    "api/run.json",
+    "api/tag-object.json",
+    "api/tag-ref.json",
+    "api/tag-ruleset.json",
+    "api/workflow.json"
+  ],
+  "infrastructure_artifact_count": 0,
+  "manifest_path": "studies/oss-compat-v1/manifests/oss-pilot-02.json",
+  "manifest_sha256": "c5b2ddd34c92838a460865d96d831b6f4aa2b49f032bf6ed066496744408c05e",
+  "matrix_cases": [
+    "cjson-pr-1006-source-only",
+    "cjson-pr-991-test-edit",
+    "express-pr-7265-source-only",
+    "express-pr-7377-test-edit",
+    "fmt-pr-4822-source-only",
+    "fmt-pr-4825-test-edit",
+    "fzf-pr-4734-source-only",
+    "fzf-pr-4797-test-edit",
+    "requests-pr-7498-source-only",
+    "requests-pr-7502-test-edit",
+    "ripgrep-pr-3464-source-only",
+    "ripgrep-pr-3467-test-edit"
+  ],
+  "non_successful_official_steps": [
+    {
+      "case_id": "express-pr-7265-source-only",
+      "conclusion": "failure",
+      "step": "Prepare trusted infrastructure fallback"
+    },
+    {
+      "case_id": "express-pr-7265-source-only",
+      "conclusion": "skipped",
+      "step": "Install trusted execution boundary"
+    },
+    {
+      "case_id": "express-pr-7265-source-only",
+      "conclusion": "skipped",
+      "step": "Run frozen case"
+    },
+    {
+      "case_id": "express-pr-7265-source-only",
+      "conclusion": "failure",
+      "step": "Kill residual untrusted processes"
+    },
+    {
+      "case_id": "express-pr-7265-source-only",
+      "conclusion": "skipped",
+      "step": "Classify trusted case output"
+    },
+    {
+      "case_id": "express-pr-7265-source-only",
+      "conclusion": "skipped",
+      "step": "Upload immutable raw case output"
+    },
+    {
+      "case_id": "express-pr-7265-source-only",
+      "conclusion": "skipped",
+      "step": "Upload immutable infrastructure output"
+    },
+    {
+      "case_id": "fzf-pr-4734-source-only",
+      "conclusion": "failure",
+      "step": "Prepare trusted infrastructure fallback"
+    },
+    {
+      "case_id": "fzf-pr-4734-source-only",
+      "conclusion": "skipped",
+      "step": "Install trusted execution boundary"
+    },
+    {
+      "case_id": "fzf-pr-4734-source-only",
+      "conclusion": "skipped",
+      "step": "Run frozen case"
+    },
+    {
+      "case_id": "fzf-pr-4734-source-only",
+      "conclusion": "failure",
+      "step": "Kill residual untrusted processes"
+    },
+    {
+      "case_id": "fzf-pr-4734-source-only",
+      "conclusion": "skipped",
+      "step": "Classify trusted case output"
+    },
+    {
+      "case_id": "fzf-pr-4734-source-only",
+      "conclusion": "skipped",
+      "step": "Upload immutable raw case output"
+    },
+    {
+      "case_id": "fzf-pr-4734-source-only",
+      "conclusion": "skipped",
+      "step": "Upload immutable infrastructure output"
+    },
+    {
+      "case_id": "requests-pr-7498-source-only",
+      "conclusion": "failure",
+      "step": "Prepare trusted infrastructure fallback"
+    },
+    {
+      "case_id": "requests-pr-7498-source-only",
+      "conclusion": "skipped",
+      "step": "Install trusted execution boundary"
+    },
+    {
+      "case_id": "requests-pr-7498-source-only",
+      "conclusion": "skipped",
+      "step": "Run frozen case"
+    },
+    {
+      "case_id": "requests-pr-7498-source-only",
+      "conclusion": "failure",
+      "step": "Kill residual untrusted processes"
+    },
+    {
+      "case_id": "requests-pr-7498-source-only",
+      "conclusion": "skipped",
+      "step": "Classify trusted case output"
+    },
+    {
+      "case_id": "requests-pr-7498-source-only",
+      "conclusion": "skipped",
+      "step": "Upload immutable raw case output"
+    },
+    {
+      "case_id": "requests-pr-7498-source-only",
+      "conclusion": "skipped",
+      "step": "Upload immutable infrastructure output"
+    },
+    {
+      "case_id": "ripgrep-pr-3464-source-only",
+      "conclusion": "failure",
+      "step": "Prepare trusted infrastructure fallback"
+    },
+    {
+      "case_id": "ripgrep-pr-3464-source-only",
+      "conclusion": "skipped",
+      "step": "Install trusted execution boundary"
+    },
+    {
+      "case_id": "ripgrep-pr-3464-source-only",
+      "conclusion": "skipped",
+      "step": "Run frozen case"
+    },
+    {
+      "case_id": "ripgrep-pr-3464-source-only",
+      "conclusion": "failure",
+      "step": "Kill residual untrusted processes"
+    },
+    {
+      "case_id": "ripgrep-pr-3464-source-only",
+      "conclusion": "skipped",
+      "step": "Classify trusted case output"
+    },
+    {
+      "case_id": "ripgrep-pr-3464-source-only",
+      "conclusion": "skipped",
+      "step": "Upload immutable raw case output"
+    },
+    {
+      "case_id": "ripgrep-pr-3464-source-only",
+      "conclusion": "skipped",
+      "step": "Upload immutable infrastructure output"
+    },
+    {
+      "case_id": "requests-pr-7502-test-edit",
+      "conclusion": "failure",
+      "step": "Prepare trusted infrastructure fallback"
+    },
+    {
+      "case_id": "requests-pr-7502-test-edit",
+      "conclusion": "skipped",
+      "step": "Install trusted execution boundary"
+    },
+    {
+      "case_id": "requests-pr-7502-test-edit",
+      "conclusion": "skipped",
+      "step": "Run frozen case"
+    },
+    {
+      "case_id": "requests-pr-7502-test-edit",
+      "conclusion": "failure",
+      "step": "Kill residual untrusted processes"
+    },
+    {
+      "case_id": "requests-pr-7502-test-edit",
+      "conclusion": "skipped",
+      "step": "Classify trusted case output"
+    },
+    {
+      "case_id": "requests-pr-7502-test-edit",
+      "conclusion": "skipped",
+      "step": "Upload immutable raw case output"
+    },
+    {
+      "case_id": "requests-pr-7502-test-edit",
+      "conclusion": "skipped",
+      "step": "Upload immutable infrastructure output"
+    },
+    {
+      "case_id": "fmt-pr-4825-test-edit",
+      "conclusion": "failure",
+      "step": "Prepare trusted infrastructure fallback"
+    },
+    {
+      "case_id": "fmt-pr-4825-test-edit",
+      "conclusion": "skipped",
+      "step": "Install trusted execution boundary"
+    },
+    {
+      "case_id": "fmt-pr-4825-test-edit",
+      "conclusion": "skipped",
+      "step": "Run frozen case"
+    },
+    {
+      "case_id": "fmt-pr-4825-test-edit",
+      "conclusion": "failure",
+      "step": "Kill residual untrusted processes"
+    },
+    {
+      "case_id": "fmt-pr-4825-test-edit",
+      "conclusion": "skipped",
+      "step": "Classify trusted case output"
+    },
+    {
+      "case_id": "fmt-pr-4825-test-edit",
+      "conclusion": "skipped",
+      "step": "Upload immutable raw case output"
+    },
+    {
+      "case_id": "fmt-pr-4825-test-edit",
+      "conclusion": "skipped",
+      "step": "Upload immutable infrastructure output"
+    },
+    {
+      "case_id": "fzf-pr-4797-test-edit",
+      "conclusion": "failure",
+      "step": "Prepare trusted infrastructure fallback"
+    },
+    {
+      "case_id": "fzf-pr-4797-test-edit",
+      "conclusion": "skipped",
+      "step": "Install trusted execution boundary"
+    },
+    {
+      "case_id": "fzf-pr-4797-test-edit",
+      "conclusion": "skipped",
+      "step": "Run frozen case"
+    },
+    {
+      "case_id": "fzf-pr-4797-test-edit",
+      "conclusion": "failure",
+      "step": "Kill residual untrusted processes"
+    },
+    {
+      "case_id": "fzf-pr-4797-test-edit",
+      "conclusion": "skipped",
+      "step": "Classify trusted case output"
+    },
+    {
+      "case_id": "fzf-pr-4797-test-edit",
+      "conclusion": "skipped",
+      "step": "Upload immutable raw case output"
+    },
+    {
+      "case_id": "fzf-pr-4797-test-edit",
+      "conclusion": "skipped",
+      "step": "Upload immutable infrastructure output"
+    },
+    {
+      "case_id": "express-pr-7377-test-edit",
+      "conclusion": "failure",
+      "step": "Prepare trusted infrastructure fallback"
+    },
+    {
+      "case_id": "express-pr-7377-test-edit",
+      "conclusion": "skipped",
+      "step": "Install trusted execution boundary"
+    },
+    {
+      "case_id": "express-pr-7377-test-edit",
+      "conclusion": "skipped",
+      "step": "Run frozen case"
+    },
+    {
+      "case_id": "express-pr-7377-test-edit",
+      "conclusion": "failure",
+      "step": "Kill residual untrusted processes"
+    },
+    {
+      "case_id": "express-pr-7377-test-edit",
+      "conclusion": "skipped",
+      "step": "Classify trusted case output"
+    },
+    {
+      "case_id": "express-pr-7377-test-edit",
+      "conclusion": "skipped",
+      "step": "Upload immutable raw case output"
+    },
+    {
+      "case_id": "express-pr-7377-test-edit",
+      "conclusion": "skipped",
+      "step": "Upload immutable infrastructure output"
+    },
+    {
+      "case_id": "fmt-pr-4822-source-only",
+      "conclusion": "failure",
+      "step": "Prepare trusted infrastructure fallback"
+    },
+    {
+      "case_id": "fmt-pr-4822-source-only",
+      "conclusion": "skipped",
+      "step": "Install trusted execution boundary"
+    },
+    {
+      "case_id": "fmt-pr-4822-source-only",
+      "conclusion": "skipped",
+      "step": "Run frozen case"
+    },
+    {
+      "case_id": "fmt-pr-4822-source-only",
+      "conclusion": "failure",
+      "step": "Kill residual untrusted processes"
+    },
+    {
+      "case_id": "fmt-pr-4822-source-only",
+      "conclusion": "skipped",
+      "step": "Classify trusted case output"
+    },
+    {
+      "case_id": "fmt-pr-4822-source-only",
+      "conclusion": "skipped",
+      "step": "Upload immutable raw case output"
+    },
+    {
+      "case_id": "fmt-pr-4822-source-only",
+      "conclusion": "skipped",
+      "step": "Upload immutable infrastructure output"
+    },
+    {
+      "case_id": "ripgrep-pr-3467-test-edit",
+      "conclusion": "failure",
+      "step": "Prepare trusted infrastructure fallback"
+    },
+    {
+      "case_id": "ripgrep-pr-3467-test-edit",
+      "conclusion": "skipped",
+      "step": "Install trusted execution boundary"
+    },
+    {
+      "case_id": "ripgrep-pr-3467-test-edit",
+      "conclusion": "skipped",
+      "step": "Run frozen case"
+    },
+    {
+      "case_id": "ripgrep-pr-3467-test-edit",
+      "conclusion": "failure",
+      "step": "Kill residual untrusted processes"
+    },
+    {
+      "case_id": "ripgrep-pr-3467-test-edit",
+      "conclusion": "skipped",
+      "step": "Classify trusted case output"
+    },
+    {
+      "case_id": "ripgrep-pr-3467-test-edit",
+      "conclusion": "skipped",
+      "step": "Upload immutable raw case output"
+    },
+    {
+      "case_id": "ripgrep-pr-3467-test-edit",
+      "conclusion": "skipped",
+      "step": "Upload immutable infrastructure output"
+    },
+    {
+      "case_id": "cjson-pr-1006-source-only",
+      "conclusion": "failure",
+      "step": "Prepare trusted infrastructure fallback"
+    },
+    {
+      "case_id": "cjson-pr-1006-source-only",
+      "conclusion": "skipped",
+      "step": "Install trusted execution boundary"
+    },
+    {
+      "case_id": "cjson-pr-1006-source-only",
+      "conclusion": "skipped",
+      "step": "Run frozen case"
+    },
+    {
+      "case_id": "cjson-pr-1006-source-only",
+      "conclusion": "failure",
+      "step": "Kill residual untrusted processes"
+    },
+    {
+      "case_id": "cjson-pr-1006-source-only",
+      "conclusion": "skipped",
+      "step": "Classify trusted case output"
+    },
+    {
+      "case_id": "cjson-pr-1006-source-only",
+      "conclusion": "skipped",
+      "step": "Upload immutable raw case output"
+    },
+    {
+      "case_id": "cjson-pr-1006-source-only",
+      "conclusion": "skipped",
+      "step": "Upload immutable infrastructure output"
+    },
+    {
+      "case_id": "cjson-pr-991-test-edit",
+      "conclusion": "failure",
+      "step": "Prepare trusted infrastructure fallback"
+    },
+    {
+      "case_id": "cjson-pr-991-test-edit",
+      "conclusion": "skipped",
+      "step": "Install trusted execution boundary"
+    },
+    {
+      "case_id": "cjson-pr-991-test-edit",
+      "conclusion": "skipped",
+      "step": "Run frozen case"
+    },
+    {
+      "case_id": "cjson-pr-991-test-edit",
+      "conclusion": "failure",
+      "step": "Kill residual untrusted processes"
+    },
+    {
+      "case_id": "cjson-pr-991-test-edit",
+      "conclusion": "skipped",
+      "step": "Classify trusted case output"
+    },
+    {
+      "case_id": "cjson-pr-991-test-edit",
+      "conclusion": "skipped",
+      "step": "Upload immutable raw case output"
+    },
+    {
+      "case_id": "cjson-pr-991-test-edit",
+      "conclusion": "skipped",
+      "step": "Upload immutable infrastructure output"
+    }
+  ],
+  "product_artifact_count": 0,
+  "product_evaluation_performed": false,
+  "product_inference_allowed": false,
+  "product_materialization_eligible": false,
+  "protocol_commit": "bc6d2e4d559dbf97b06b3c4f06a6ff46a5c50df7",
+  "protocol_tag": "oss-protocol-v0.2",
+  "repository": "EvoRiseKsa/evoom-guard-eval",
+  "run_attempt": 1,
+  "run_conclusion": "failure",
+  "run_id": 29390627493,
+  "run_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29390627493",
+  "schema": "evoom-oss-attempt-capture/2",
+  "step_observations": {
+    "cjson-pr-1006-source-only": {
+      "Checkout frozen protocol": "success",
+      "Classify trusted case output": "skipped",
+      "Install trusted execution boundary": "skipped",
+      "Kill residual untrusted processes": "failure",
+      "Prepare trusted infrastructure fallback": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Set up Python": "success",
+      "Upload immutable infrastructure output": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "cjson-pr-991-test-edit": {
+      "Checkout frozen protocol": "success",
+      "Classify trusted case output": "skipped",
+      "Install trusted execution boundary": "skipped",
+      "Kill residual untrusted processes": "failure",
+      "Prepare trusted infrastructure fallback": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Set up Python": "success",
+      "Upload immutable infrastructure output": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "express-pr-7265-source-only": {
+      "Checkout frozen protocol": "success",
+      "Classify trusted case output": "skipped",
+      "Install trusted execution boundary": "skipped",
+      "Kill residual untrusted processes": "failure",
+      "Prepare trusted infrastructure fallback": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Set up Node": "success",
+      "Set up Python": "success",
+      "Upload immutable infrastructure output": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "express-pr-7377-test-edit": {
+      "Checkout frozen protocol": "success",
+      "Classify trusted case output": "skipped",
+      "Install trusted execution boundary": "skipped",
+      "Kill residual untrusted processes": "failure",
+      "Prepare trusted infrastructure fallback": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Set up Node": "success",
+      "Set up Python": "success",
+      "Upload immutable infrastructure output": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "fmt-pr-4822-source-only": {
+      "Checkout frozen protocol": "success",
+      "Classify trusted case output": "skipped",
+      "Install trusted execution boundary": "skipped",
+      "Kill residual untrusted processes": "failure",
+      "Prepare trusted infrastructure fallback": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Set up Python": "success",
+      "Upload immutable infrastructure output": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "fmt-pr-4825-test-edit": {
+      "Checkout frozen protocol": "success",
+      "Classify trusted case output": "skipped",
+      "Install trusted execution boundary": "skipped",
+      "Kill residual untrusted processes": "failure",
+      "Prepare trusted infrastructure fallback": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Set up Python": "success",
+      "Upload immutable infrastructure output": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "fzf-pr-4734-source-only": {
+      "Checkout frozen protocol": "success",
+      "Classify trusted case output": "skipped",
+      "Install trusted execution boundary": "skipped",
+      "Kill residual untrusted processes": "failure",
+      "Prepare trusted infrastructure fallback": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Set up Go": "success",
+      "Set up Python": "success",
+      "Upload immutable infrastructure output": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "fzf-pr-4797-test-edit": {
+      "Checkout frozen protocol": "success",
+      "Classify trusted case output": "skipped",
+      "Install trusted execution boundary": "skipped",
+      "Kill residual untrusted processes": "failure",
+      "Prepare trusted infrastructure fallback": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Set up Go": "success",
+      "Set up Python": "success",
+      "Upload immutable infrastructure output": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "requests-pr-7498-source-only": {
+      "Checkout frozen protocol": "success",
+      "Classify trusted case output": "skipped",
+      "Install trusted execution boundary": "skipped",
+      "Kill residual untrusted processes": "failure",
+      "Prepare trusted infrastructure fallback": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Set up Python": "success",
+      "Upload immutable infrastructure output": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "requests-pr-7502-test-edit": {
+      "Checkout frozen protocol": "success",
+      "Classify trusted case output": "skipped",
+      "Install trusted execution boundary": "skipped",
+      "Kill residual untrusted processes": "failure",
+      "Prepare trusted infrastructure fallback": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Set up Python": "success",
+      "Upload immutable infrastructure output": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "ripgrep-pr-3464-source-only": {
+      "Checkout frozen protocol": "success",
+      "Classify trusted case output": "skipped",
+      "Install trusted execution boundary": "skipped",
+      "Kill residual untrusted processes": "failure",
+      "Pin Rust 1.85.0": "success",
+      "Prepare trusted infrastructure fallback": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Set up Python": "success",
+      "Upload immutable infrastructure output": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    },
+    "ripgrep-pr-3467-test-edit": {
+      "Checkout frozen protocol": "success",
+      "Classify trusted case output": "skipped",
+      "Install trusted execution boundary": "skipped",
+      "Kill residual untrusted processes": "failure",
+      "Pin Rust 1.85.0": "success",
+      "Prepare trusted infrastructure fallback": "failure",
+      "Prove first API-visible dispatch": "success",
+      "Run frozen case": "skipped",
+      "Set up Python": "success",
+      "Upload immutable infrastructure output": "skipped",
+      "Upload immutable raw case output": "skipped",
+      "Verify frozen study identity": "success"
+    }
+  },
+  "study_id": "oss-pilot-02",
+  "tag_object": "acd3c035ca4c82545271b064cd710eeae9d24b9a",
+  "unexpected_artifact_count": 0,
+  "workflow_path": ".github/workflows/oss-compat-run.yml"
+}

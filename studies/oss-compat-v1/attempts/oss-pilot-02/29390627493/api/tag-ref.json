@@ -1,0 +1,10 @@
+{
+  "node_id": "REF_kwDOTYnmeLtyZWZzL3RhZ3Mvb3NzLXByb3RvY29sLXYwLjI",
+  "object": {
+    "sha": "acd3c035ca4c82545271b064cd710eeae9d24b9a",
+    "type": "tag",
+    "url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/git/tags/acd3c035ca4c82545271b064cd710eeae9d24b9a"
+  },
+  "ref": "refs/tags/oss-protocol-v0.2",
+  "url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/git/refs/tags/oss-protocol-v0.2"
+}
