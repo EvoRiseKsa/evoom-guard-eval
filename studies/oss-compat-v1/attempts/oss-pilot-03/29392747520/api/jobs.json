@@ -1,0 +1,2101 @@
+{
+  "jobs": [
+    {
+      "check_run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/check-runs/87279568191",
+      "completed_at": "2026-07-15T06:01:15Z",
+      "conclusion": "failure",
+      "created_at": "2026-07-15T05:55:45Z",
+      "head_branch": "oss-protocol-v0.3",
+      "head_sha": "d2ab88924d564a9ab9035195f0933c492edac8e5",
+      "html_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520/job/87279568191",
+      "id": 87279568191,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "name": "ripgrep-pr-3467-test-edit",
+      "node_id": "CR_kwDOTYnmeM8AAAAUUkSFPw",
+      "run_attempt": 1,
+      "run_id": 29392747520,
+      "run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions",
+      "runner_id": 1000005417,
+      "runner_name": "GitHub Actions 1000005417",
+      "started_at": "2026-07-15T05:55:48Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-07-15T05:55:52Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "started_at": "2026-07-15T05:55:49Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:53Z",
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 2,
+          "started_at": "2026-07-15T05:55:52Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:02Z",
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 3,
+          "started_at": "2026-07-15T05:55:53Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:02Z",
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 4,
+          "started_at": "2026-07-15T05:56:02Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:02Z",
+          "conclusion": "skipped",
+          "name": "Set up Node",
+          "number": 5,
+          "started_at": "2026-07-15T05:56:02Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:02Z",
+          "conclusion": "skipped",
+          "name": "Set up Go",
+          "number": 6,
+          "started_at": "2026-07-15T05:56:02Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:11Z",
+          "conclusion": "success",
+          "name": "Pin Rust 1.85.0",
+          "number": 7,
+          "started_at": "2026-07-15T05:56:02Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:11Z",
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 8,
+          "started_at": "2026-07-15T05:56:11Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:11Z",
+          "conclusion": "failure",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 9,
+          "started_at": "2026-07-15T05:56:11Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:11Z",
+          "conclusion": "skipped",
+          "name": "Install trusted execution boundary",
+          "number": 10,
+          "started_at": "2026-07-15T06:01:11Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:11Z",
+          "conclusion": "skipped",
+          "name": "Run frozen case",
+          "number": 11,
+          "started_at": "2026-07-15T06:01:11Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:11Z",
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 12,
+          "started_at": "2026-07-15T06:01:11Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:11Z",
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 13,
+          "started_at": "2026-07-15T06:01:11Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:11Z",
+          "conclusion": "skipped",
+          "name": "Upload immutable raw case output",
+          "number": 14,
+          "started_at": "2026-07-15T06:01:11Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:12Z",
+          "conclusion": "success",
+          "name": "Upload immutable infrastructure output",
+          "number": 15,
+          "started_at": "2026-07-15T06:01:11Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:12Z",
+          "conclusion": "skipped",
+          "name": "Post Set up Python",
+          "number": 29,
+          "started_at": "2026-07-15T06:01:12Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:12Z",
+          "conclusion": "success",
+          "name": "Post Checkout frozen protocol",
+          "number": 30,
+          "started_at": "2026-07-15T06:01:12Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:12Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 31,
+          "started_at": "2026-07-15T06:01:12Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/jobs/87279568191",
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/check-runs/87279568194",
+      "completed_at": "2026-07-15T05:57:22Z",
+      "conclusion": "success",
+      "created_at": "2026-07-15T05:55:45Z",
+      "head_branch": "oss-protocol-v0.3",
+      "head_sha": "d2ab88924d564a9ab9035195f0933c492edac8e5",
+      "html_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520/job/87279568194",
+      "id": 87279568194,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "name": "express-pr-7377-test-edit",
+      "node_id": "CR_kwDOTYnmeM8AAAAUUkSFQg",
+      "run_attempt": 1,
+      "run_id": 29392747520,
+      "run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions",
+      "runner_id": 1000005422,
+      "runner_name": "GitHub Actions 1000005422",
+      "started_at": "2026-07-15T05:55:48Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-07-15T05:55:49Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "started_at": "2026-07-15T05:55:48Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:50Z",
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 2,
+          "started_at": "2026-07-15T05:55:49Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:59Z",
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 3,
+          "started_at": "2026-07-15T05:55:50Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:59Z",
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 4,
+          "started_at": "2026-07-15T05:55:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:05Z",
+          "conclusion": "success",
+          "name": "Set up Node",
+          "number": 5,
+          "started_at": "2026-07-15T05:55:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:05Z",
+          "conclusion": "skipped",
+          "name": "Set up Go",
+          "number": 6,
+          "started_at": "2026-07-15T05:56:05Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:05Z",
+          "conclusion": "skipped",
+          "name": "Pin Rust 1.85.0",
+          "number": 7,
+          "started_at": "2026-07-15T05:56:05Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:05Z",
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 8,
+          "started_at": "2026-07-15T05:56:05Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:57:14Z",
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 9,
+          "started_at": "2026-07-15T05:56:05Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:57:16Z",
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 10,
+          "started_at": "2026-07-15T05:57:14Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:57:19Z",
+          "conclusion": "success",
+          "name": "Run frozen case",
+          "number": 11,
+          "started_at": "2026-07-15T05:57:16Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:57:19Z",
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 12,
+          "started_at": "2026-07-15T05:57:19Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:57:19Z",
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 13,
+          "started_at": "2026-07-15T05:57:19Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:57:20Z",
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 14,
+          "started_at": "2026-07-15T05:57:19Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:57:20Z",
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 15,
+          "started_at": "2026-07-15T05:57:20Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:57:20Z",
+          "conclusion": "success",
+          "name": "Post Set up Node",
+          "number": 28,
+          "started_at": "2026-07-15T05:57:20Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:57:20Z",
+          "conclusion": "success",
+          "name": "Post Set up Python",
+          "number": 29,
+          "started_at": "2026-07-15T05:57:20Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:57:20Z",
+          "conclusion": "success",
+          "name": "Post Checkout frozen protocol",
+          "number": 30,
+          "started_at": "2026-07-15T05:57:20Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:57:20Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 31,
+          "started_at": "2026-07-15T05:57:20Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/jobs/87279568194",
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/check-runs/87279568207",
+      "completed_at": "2026-07-15T06:01:03Z",
+      "conclusion": "failure",
+      "created_at": "2026-07-15T05:55:45Z",
+      "head_branch": "oss-protocol-v0.3",
+      "head_sha": "d2ab88924d564a9ab9035195f0933c492edac8e5",
+      "html_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520/job/87279568207",
+      "id": 87279568207,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "name": "requests-pr-7502-test-edit",
+      "node_id": "CR_kwDOTYnmeM8AAAAUUkSFTw",
+      "run_attempt": 1,
+      "run_id": 29392747520,
+      "run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions",
+      "runner_id": 1000005421,
+      "runner_name": "GitHub Actions 1000005421",
+      "started_at": "2026-07-15T05:55:48Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-07-15T05:55:50Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "started_at": "2026-07-15T05:55:48Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:51Z",
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 2,
+          "started_at": "2026-07-15T05:55:50Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:59Z",
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 3,
+          "started_at": "2026-07-15T05:55:51Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:59Z",
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 4,
+          "started_at": "2026-07-15T05:55:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:59Z",
+          "conclusion": "skipped",
+          "name": "Set up Node",
+          "number": 5,
+          "started_at": "2026-07-15T05:55:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:59Z",
+          "conclusion": "skipped",
+          "name": "Set up Go",
+          "number": 6,
+          "started_at": "2026-07-15T05:55:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:59Z",
+          "conclusion": "skipped",
+          "name": "Pin Rust 1.85.0",
+          "number": 7,
+          "started_at": "2026-07-15T05:55:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:59Z",
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 8,
+          "started_at": "2026-07-15T05:55:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:00Z",
+          "conclusion": "failure",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 9,
+          "started_at": "2026-07-15T05:55:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:00Z",
+          "conclusion": "skipped",
+          "name": "Install trusted execution boundary",
+          "number": 10,
+          "started_at": "2026-07-15T06:01:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:00Z",
+          "conclusion": "skipped",
+          "name": "Run frozen case",
+          "number": 11,
+          "started_at": "2026-07-15T06:01:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:00Z",
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 12,
+          "started_at": "2026-07-15T06:01:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:00Z",
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 13,
+          "started_at": "2026-07-15T06:01:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:00Z",
+          "conclusion": "skipped",
+          "name": "Upload immutable raw case output",
+          "number": 14,
+          "started_at": "2026-07-15T06:01:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:01Z",
+          "conclusion": "success",
+          "name": "Upload immutable infrastructure output",
+          "number": 15,
+          "started_at": "2026-07-15T06:01:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:01Z",
+          "conclusion": "skipped",
+          "name": "Post Set up Python",
+          "number": 29,
+          "started_at": "2026-07-15T06:01:01Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:01Z",
+          "conclusion": "success",
+          "name": "Post Checkout frozen protocol",
+          "number": 30,
+          "started_at": "2026-07-15T06:01:01Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:01Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 31,
+          "started_at": "2026-07-15T06:01:01Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/jobs/87279568207",
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/check-runs/87279568215",
+      "completed_at": "2026-07-15T05:59:05Z",
+      "conclusion": "success",
+      "created_at": "2026-07-15T05:55:45Z",
+      "head_branch": "oss-protocol-v0.3",
+      "head_sha": "d2ab88924d564a9ab9035195f0933c492edac8e5",
+      "html_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520/job/87279568215",
+      "id": 87279568215,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "name": "fzf-pr-4734-source-only",
+      "node_id": "CR_kwDOTYnmeM8AAAAUUkSFVw",
+      "run_attempt": 1,
+      "run_id": 29392747520,
+      "run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions",
+      "runner_id": 1000005419,
+      "runner_name": "GitHub Actions 1000005419",
+      "started_at": "2026-07-15T05:55:48Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-07-15T05:55:50Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "started_at": "2026-07-15T05:55:48Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:51Z",
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 2,
+          "started_at": "2026-07-15T05:55:50Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:59Z",
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 3,
+          "started_at": "2026-07-15T05:55:51Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:00Z",
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 4,
+          "started_at": "2026-07-15T05:55:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:00Z",
+          "conclusion": "skipped",
+          "name": "Set up Node",
+          "number": 5,
+          "started_at": "2026-07-15T05:56:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:08Z",
+          "conclusion": "success",
+          "name": "Set up Go",
+          "number": 6,
+          "started_at": "2026-07-15T05:56:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:08Z",
+          "conclusion": "skipped",
+          "name": "Pin Rust 1.85.0",
+          "number": 7,
+          "started_at": "2026-07-15T05:56:08Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:09Z",
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 8,
+          "started_at": "2026-07-15T05:56:08Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:27Z",
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 9,
+          "started_at": "2026-07-15T05:56:09Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:29Z",
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 10,
+          "started_at": "2026-07-15T05:58:27Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:01Z",
+          "conclusion": "success",
+          "name": "Run frozen case",
+          "number": 11,
+          "started_at": "2026-07-15T05:58:29Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:01Z",
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 12,
+          "started_at": "2026-07-15T05:59:01Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:01Z",
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 13,
+          "started_at": "2026-07-15T05:59:01Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:02Z",
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 14,
+          "started_at": "2026-07-15T05:59:01Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:02Z",
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 15,
+          "started_at": "2026-07-15T05:59:02Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:02Z",
+          "conclusion": "success",
+          "name": "Post Set up Go",
+          "number": 28,
+          "started_at": "2026-07-15T05:59:02Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:02Z",
+          "conclusion": "success",
+          "name": "Post Set up Python",
+          "number": 29,
+          "started_at": "2026-07-15T05:59:02Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:03Z",
+          "conclusion": "success",
+          "name": "Post Checkout frozen protocol",
+          "number": 30,
+          "started_at": "2026-07-15T05:59:02Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:03Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 31,
+          "started_at": "2026-07-15T05:59:03Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/jobs/87279568215",
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/check-runs/87279568219",
+      "completed_at": "2026-07-15T06:01:11Z",
+      "conclusion": "failure",
+      "created_at": "2026-07-15T05:55:45Z",
+      "head_branch": "oss-protocol-v0.3",
+      "head_sha": "d2ab88924d564a9ab9035195f0933c492edac8e5",
+      "html_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520/job/87279568219",
+      "id": 87279568219,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "name": "fzf-pr-4797-test-edit",
+      "node_id": "CR_kwDOTYnmeM8AAAAUUkSFWw",
+      "run_attempt": 1,
+      "run_id": 29392747520,
+      "run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions",
+      "runner_id": 1000005420,
+      "runner_name": "GitHub Actions 1000005420",
+      "started_at": "2026-07-15T05:55:48Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-07-15T05:55:50Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "started_at": "2026-07-15T05:55:48Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:52Z",
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 2,
+          "started_at": "2026-07-15T05:55:50Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:59Z",
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 3,
+          "started_at": "2026-07-15T05:55:52Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:00Z",
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 4,
+          "started_at": "2026-07-15T05:55:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:00Z",
+          "conclusion": "skipped",
+          "name": "Set up Node",
+          "number": 5,
+          "started_at": "2026-07-15T05:56:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:08Z",
+          "conclusion": "success",
+          "name": "Set up Go",
+          "number": 6,
+          "started_at": "2026-07-15T05:56:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:08Z",
+          "conclusion": "skipped",
+          "name": "Pin Rust 1.85.0",
+          "number": 7,
+          "started_at": "2026-07-15T05:56:08Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:08Z",
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 8,
+          "started_at": "2026-07-15T05:56:08Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:08Z",
+          "conclusion": "failure",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 9,
+          "started_at": "2026-07-15T05:56:08Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:08Z",
+          "conclusion": "skipped",
+          "name": "Install trusted execution boundary",
+          "number": 10,
+          "started_at": "2026-07-15T06:01:08Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:08Z",
+          "conclusion": "skipped",
+          "name": "Run frozen case",
+          "number": 11,
+          "started_at": "2026-07-15T06:01:08Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:08Z",
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 12,
+          "started_at": "2026-07-15T06:01:08Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:08Z",
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 13,
+          "started_at": "2026-07-15T06:01:08Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:08Z",
+          "conclusion": "skipped",
+          "name": "Upload immutable raw case output",
+          "number": 14,
+          "started_at": "2026-07-15T06:01:08Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:09Z",
+          "conclusion": "success",
+          "name": "Upload immutable infrastructure output",
+          "number": 15,
+          "started_at": "2026-07-15T06:01:08Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:09Z",
+          "conclusion": "skipped",
+          "name": "Post Set up Go",
+          "number": 28,
+          "started_at": "2026-07-15T06:01:09Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:09Z",
+          "conclusion": "skipped",
+          "name": "Post Set up Python",
+          "number": 29,
+          "started_at": "2026-07-15T06:01:09Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:09Z",
+          "conclusion": "success",
+          "name": "Post Checkout frozen protocol",
+          "number": 30,
+          "started_at": "2026-07-15T06:01:09Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:01:09Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 31,
+          "started_at": "2026-07-15T06:01:09Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/jobs/87279568219",
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/check-runs/87279568229",
+      "completed_at": "2026-07-15T06:00:03Z",
+      "conclusion": "failure",
+      "created_at": "2026-07-15T05:55:45Z",
+      "head_branch": "oss-protocol-v0.3",
+      "head_sha": "d2ab88924d564a9ab9035195f0933c492edac8e5",
+      "html_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520/job/87279568229",
+      "id": 87279568229,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "name": "fmt-pr-4822-source-only",
+      "node_id": "CR_kwDOTYnmeM8AAAAUUkSFZQ",
+      "run_attempt": 1,
+      "run_id": 29392747520,
+      "run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions",
+      "runner_id": 1000005418,
+      "runner_name": "GitHub Actions 1000005418",
+      "started_at": "2026-07-15T05:55:48Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-07-15T05:55:51Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "started_at": "2026-07-15T05:55:49Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:53Z",
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 2,
+          "started_at": "2026-07-15T05:55:51Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:02Z",
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 3,
+          "started_at": "2026-07-15T05:55:53Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:02Z",
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 4,
+          "started_at": "2026-07-15T05:56:02Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:02Z",
+          "conclusion": "skipped",
+          "name": "Set up Node",
+          "number": 5,
+          "started_at": "2026-07-15T05:56:02Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:02Z",
+          "conclusion": "skipped",
+          "name": "Set up Go",
+          "number": 6,
+          "started_at": "2026-07-15T05:56:02Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:02Z",
+          "conclusion": "skipped",
+          "name": "Pin Rust 1.85.0",
+          "number": 7,
+          "started_at": "2026-07-15T05:56:02Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:03Z",
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 8,
+          "started_at": "2026-07-15T05:56:02Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:57:43Z",
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 9,
+          "started_at": "2026-07-15T05:56:03Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:57:46Z",
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 10,
+          "started_at": "2026-07-15T05:57:43Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:58Z",
+          "conclusion": "failure",
+          "name": "Run frozen case",
+          "number": 11,
+          "started_at": "2026-07-15T05:57:46Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:58Z",
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 12,
+          "started_at": "2026-07-15T05:59:58Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:58Z",
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 13,
+          "started_at": "2026-07-15T05:59:58Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:59Z",
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 14,
+          "started_at": "2026-07-15T05:59:58Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:59Z",
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 15,
+          "started_at": "2026-07-15T05:59:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:59Z",
+          "conclusion": "skipped",
+          "name": "Post Set up Python",
+          "number": 29,
+          "started_at": "2026-07-15T05:59:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:59Z",
+          "conclusion": "success",
+          "name": "Post Checkout frozen protocol",
+          "number": 30,
+          "started_at": "2026-07-15T05:59:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:59Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 31,
+          "started_at": "2026-07-15T05:59:59Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/jobs/87279568229",
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/check-runs/87279568232",
+      "completed_at": "2026-07-15T05:59:43Z",
+      "conclusion": "success",
+      "created_at": "2026-07-15T05:55:45Z",
+      "head_branch": "oss-protocol-v0.3",
+      "head_sha": "d2ab88924d564a9ab9035195f0933c492edac8e5",
+      "html_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520/job/87279568232",
+      "id": 87279568232,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "name": "cjson-pr-1006-source-only",
+      "node_id": "CR_kwDOTYnmeM8AAAAUUkSFaA",
+      "run_attempt": 1,
+      "run_id": 29392747520,
+      "run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions",
+      "runner_id": 1000005423,
+      "runner_name": "GitHub Actions 1000005423",
+      "started_at": "2026-07-15T05:55:48Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-07-15T05:55:49Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "started_at": "2026-07-15T05:55:48Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:50Z",
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 2,
+          "started_at": "2026-07-15T05:55:49Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:59Z",
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 3,
+          "started_at": "2026-07-15T05:55:50Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:00Z",
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 4,
+          "started_at": "2026-07-15T05:55:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:00Z",
+          "conclusion": "skipped",
+          "name": "Set up Node",
+          "number": 5,
+          "started_at": "2026-07-15T05:56:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:00Z",
+          "conclusion": "skipped",
+          "name": "Set up Go",
+          "number": 6,
+          "started_at": "2026-07-15T05:56:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:00Z",
+          "conclusion": "skipped",
+          "name": "Pin Rust 1.85.0",
+          "number": 7,
+          "started_at": "2026-07-15T05:56:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:00Z",
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 8,
+          "started_at": "2026-07-15T05:56:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:01Z",
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 9,
+          "started_at": "2026-07-15T05:56:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:04Z",
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 10,
+          "started_at": "2026-07-15T05:59:01Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:41Z",
+          "conclusion": "success",
+          "name": "Run frozen case",
+          "number": 11,
+          "started_at": "2026-07-15T05:59:04Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:41Z",
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 12,
+          "started_at": "2026-07-15T05:59:41Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:41Z",
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 13,
+          "started_at": "2026-07-15T05:59:41Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:42Z",
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 14,
+          "started_at": "2026-07-15T05:59:41Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:42Z",
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 15,
+          "started_at": "2026-07-15T05:59:42Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:42Z",
+          "conclusion": "success",
+          "name": "Post Set up Python",
+          "number": 29,
+          "started_at": "2026-07-15T05:59:42Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:42Z",
+          "conclusion": "success",
+          "name": "Post Checkout frozen protocol",
+          "number": 30,
+          "started_at": "2026-07-15T05:59:42Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:59:42Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 31,
+          "started_at": "2026-07-15T05:59:42Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/jobs/87279568232",
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/check-runs/87279568234",
+      "completed_at": "2026-07-15T05:58:40Z",
+      "conclusion": "success",
+      "created_at": "2026-07-15T05:55:45Z",
+      "head_branch": "oss-protocol-v0.3",
+      "head_sha": "d2ab88924d564a9ab9035195f0933c492edac8e5",
+      "html_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520/job/87279568234",
+      "id": 87279568234,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "name": "express-pr-7265-source-only",
+      "node_id": "CR_kwDOTYnmeM8AAAAUUkSFag",
+      "run_attempt": 1,
+      "run_id": 29392747520,
+      "run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions",
+      "runner_id": 1000005425,
+      "runner_name": "GitHub Actions 1000005425",
+      "started_at": "2026-07-15T05:55:48Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-07-15T05:55:50Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "started_at": "2026-07-15T05:55:49Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:51Z",
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 2,
+          "started_at": "2026-07-15T05:55:50Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:59Z",
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 3,
+          "started_at": "2026-07-15T05:55:51Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:00Z",
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 4,
+          "started_at": "2026-07-15T05:55:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:04Z",
+          "conclusion": "success",
+          "name": "Set up Node",
+          "number": 5,
+          "started_at": "2026-07-15T05:56:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:04Z",
+          "conclusion": "skipped",
+          "name": "Set up Go",
+          "number": 6,
+          "started_at": "2026-07-15T05:56:04Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:04Z",
+          "conclusion": "skipped",
+          "name": "Pin Rust 1.85.0",
+          "number": 7,
+          "started_at": "2026-07-15T05:56:04Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:04Z",
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 8,
+          "started_at": "2026-07-15T05:56:04Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:11Z",
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 9,
+          "started_at": "2026-07-15T05:56:04Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:13Z",
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 10,
+          "started_at": "2026-07-15T05:58:11Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:36Z",
+          "conclusion": "success",
+          "name": "Run frozen case",
+          "number": 11,
+          "started_at": "2026-07-15T05:58:13Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:36Z",
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 12,
+          "started_at": "2026-07-15T05:58:36Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:36Z",
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 13,
+          "started_at": "2026-07-15T05:58:36Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:37Z",
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 14,
+          "started_at": "2026-07-15T05:58:36Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:37Z",
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 15,
+          "started_at": "2026-07-15T05:58:37Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:37Z",
+          "conclusion": "success",
+          "name": "Post Set up Node",
+          "number": 28,
+          "started_at": "2026-07-15T05:58:37Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:38Z",
+          "conclusion": "success",
+          "name": "Post Set up Python",
+          "number": 29,
+          "started_at": "2026-07-15T05:58:37Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:38Z",
+          "conclusion": "success",
+          "name": "Post Checkout frozen protocol",
+          "number": 30,
+          "started_at": "2026-07-15T05:58:38Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:38Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 31,
+          "started_at": "2026-07-15T05:58:38Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/jobs/87279568234",
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/check-runs/87279568245",
+      "completed_at": "2026-07-15T05:58:25Z",
+      "conclusion": "success",
+      "created_at": "2026-07-15T05:55:45Z",
+      "head_branch": "oss-protocol-v0.3",
+      "head_sha": "d2ab88924d564a9ab9035195f0933c492edac8e5",
+      "html_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520/job/87279568245",
+      "id": 87279568245,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "name": "fmt-pr-4825-test-edit",
+      "node_id": "CR_kwDOTYnmeM8AAAAUUkSFdQ",
+      "run_attempt": 1,
+      "run_id": 29392747520,
+      "run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions",
+      "runner_id": 1000005424,
+      "runner_name": "GitHub Actions 1000005424",
+      "started_at": "2026-07-15T05:55:48Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-07-15T05:55:49Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "started_at": "2026-07-15T05:55:48Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:50Z",
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 2,
+          "started_at": "2026-07-15T05:55:49Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:58Z",
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 3,
+          "started_at": "2026-07-15T05:55:50Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:59Z",
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 4,
+          "started_at": "2026-07-15T05:55:58Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:59Z",
+          "conclusion": "skipped",
+          "name": "Set up Node",
+          "number": 5,
+          "started_at": "2026-07-15T05:55:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:59Z",
+          "conclusion": "skipped",
+          "name": "Set up Go",
+          "number": 6,
+          "started_at": "2026-07-15T05:55:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:59Z",
+          "conclusion": "skipped",
+          "name": "Pin Rust 1.85.0",
+          "number": 7,
+          "started_at": "2026-07-15T05:55:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:59Z",
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 8,
+          "started_at": "2026-07-15T05:55:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:14Z",
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 9,
+          "started_at": "2026-07-15T05:55:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:17Z",
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 10,
+          "started_at": "2026-07-15T05:58:14Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:22Z",
+          "conclusion": "success",
+          "name": "Run frozen case",
+          "number": 11,
+          "started_at": "2026-07-15T05:58:17Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:23Z",
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 12,
+          "started_at": "2026-07-15T05:58:22Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:23Z",
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 13,
+          "started_at": "2026-07-15T05:58:23Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:23Z",
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 14,
+          "started_at": "2026-07-15T05:58:23Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:23Z",
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 15,
+          "started_at": "2026-07-15T05:58:23Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:23Z",
+          "conclusion": "success",
+          "name": "Post Set up Python",
+          "number": 29,
+          "started_at": "2026-07-15T05:58:23Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:24Z",
+          "conclusion": "success",
+          "name": "Post Checkout frozen protocol",
+          "number": 30,
+          "started_at": "2026-07-15T05:58:23Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:24Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 31,
+          "started_at": "2026-07-15T05:58:24Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/jobs/87279568245",
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/check-runs/87279568252",
+      "completed_at": "2026-07-15T06:00:46Z",
+      "conclusion": "success",
+      "created_at": "2026-07-15T05:55:45Z",
+      "head_branch": "oss-protocol-v0.3",
+      "head_sha": "d2ab88924d564a9ab9035195f0933c492edac8e5",
+      "html_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520/job/87279568252",
+      "id": 87279568252,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "name": "requests-pr-7498-source-only",
+      "node_id": "CR_kwDOTYnmeM8AAAAUUkSFfA",
+      "run_attempt": 1,
+      "run_id": 29392747520,
+      "run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions",
+      "runner_id": 1000005426,
+      "runner_name": "GitHub Actions 1000005426",
+      "started_at": "2026-07-15T05:55:49Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-07-15T05:55:52Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "started_at": "2026-07-15T05:55:50Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:53Z",
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 2,
+          "started_at": "2026-07-15T05:55:52Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:02Z",
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 3,
+          "started_at": "2026-07-15T05:55:53Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:03Z",
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 4,
+          "started_at": "2026-07-15T05:56:02Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:03Z",
+          "conclusion": "skipped",
+          "name": "Set up Node",
+          "number": 5,
+          "started_at": "2026-07-15T05:56:03Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:03Z",
+          "conclusion": "skipped",
+          "name": "Set up Go",
+          "number": 6,
+          "started_at": "2026-07-15T05:56:03Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:03Z",
+          "conclusion": "skipped",
+          "name": "Pin Rust 1.85.0",
+          "number": 7,
+          "started_at": "2026-07-15T05:56:03Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:03Z",
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 8,
+          "started_at": "2026-07-15T05:56:03Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:57:41Z",
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 9,
+          "started_at": "2026-07-15T05:56:03Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:57:43Z",
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 10,
+          "started_at": "2026-07-15T05:57:41Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:00:42Z",
+          "conclusion": "success",
+          "name": "Run frozen case",
+          "number": 11,
+          "started_at": "2026-07-15T05:57:43Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:00:42Z",
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 12,
+          "started_at": "2026-07-15T06:00:42Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:00:42Z",
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 13,
+          "started_at": "2026-07-15T06:00:42Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:00:44Z",
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 14,
+          "started_at": "2026-07-15T06:00:42Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:00:44Z",
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 15,
+          "started_at": "2026-07-15T06:00:44Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:00:44Z",
+          "conclusion": "success",
+          "name": "Post Set up Python",
+          "number": 29,
+          "started_at": "2026-07-15T06:00:44Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:00:44Z",
+          "conclusion": "success",
+          "name": "Post Checkout frozen protocol",
+          "number": 30,
+          "started_at": "2026-07-15T06:00:44Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T06:00:44Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 31,
+          "started_at": "2026-07-15T06:00:44Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/jobs/87279568252",
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/check-runs/87279568318",
+      "completed_at": "2026-07-15T05:58:40Z",
+      "conclusion": "success",
+      "created_at": "2026-07-15T05:55:45Z",
+      "head_branch": "oss-protocol-v0.3",
+      "head_sha": "d2ab88924d564a9ab9035195f0933c492edac8e5",
+      "html_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520/job/87279568318",
+      "id": 87279568318,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "name": "cjson-pr-991-test-edit",
+      "node_id": "CR_kwDOTYnmeM8AAAAUUkSFvg",
+      "run_attempt": 1,
+      "run_id": 29392747520,
+      "run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions",
+      "runner_id": 1000005427,
+      "runner_name": "GitHub Actions 1000005427",
+      "started_at": "2026-07-15T05:55:48Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-07-15T05:55:51Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "started_at": "2026-07-15T05:55:48Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:52Z",
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 2,
+          "started_at": "2026-07-15T05:55:51Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:59Z",
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 3,
+          "started_at": "2026-07-15T05:55:52Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:00Z",
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 4,
+          "started_at": "2026-07-15T05:55:59Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:00Z",
+          "conclusion": "skipped",
+          "name": "Set up Node",
+          "number": 5,
+          "started_at": "2026-07-15T05:56:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:00Z",
+          "conclusion": "skipped",
+          "name": "Set up Go",
+          "number": 6,
+          "started_at": "2026-07-15T05:56:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:00Z",
+          "conclusion": "skipped",
+          "name": "Pin Rust 1.85.0",
+          "number": 7,
+          "started_at": "2026-07-15T05:56:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:00Z",
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 8,
+          "started_at": "2026-07-15T05:56:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:33Z",
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 9,
+          "started_at": "2026-07-15T05:56:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:35Z",
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 10,
+          "started_at": "2026-07-15T05:58:33Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:37Z",
+          "conclusion": "success",
+          "name": "Run frozen case",
+          "number": 11,
+          "started_at": "2026-07-15T05:58:35Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:37Z",
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 12,
+          "started_at": "2026-07-15T05:58:37Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:37Z",
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 13,
+          "started_at": "2026-07-15T05:58:37Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:38Z",
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 14,
+          "started_at": "2026-07-15T05:58:37Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:38Z",
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 15,
+          "started_at": "2026-07-15T05:58:38Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:38Z",
+          "conclusion": "success",
+          "name": "Post Set up Python",
+          "number": 29,
+          "started_at": "2026-07-15T05:58:38Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:38Z",
+          "conclusion": "success",
+          "name": "Post Checkout frozen protocol",
+          "number": 30,
+          "started_at": "2026-07-15T05:58:38Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:38Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 31,
+          "started_at": "2026-07-15T05:58:38Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/jobs/87279568318",
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "check_run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/check-runs/87279568702",
+      "completed_at": "2026-07-15T05:58:41Z",
+      "conclusion": "failure",
+      "created_at": "2026-07-15T05:55:45Z",
+      "head_branch": "oss-protocol-v0.3",
+      "head_sha": "d2ab88924d564a9ab9035195f0933c492edac8e5",
+      "html_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520/job/87279568702",
+      "id": 87279568702,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "name": "ripgrep-pr-3464-source-only",
+      "node_id": "CR_kwDOTYnmeM8AAAAUUkSHPg",
+      "run_attempt": 1,
+      "run_id": 29392747520,
+      "run_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions",
+      "runner_id": 1000005428,
+      "runner_name": "GitHub Actions 1000005428",
+      "started_at": "2026-07-15T05:55:48Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-07-15T05:55:50Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "number": 1,
+          "started_at": "2026-07-15T05:55:48Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:55:51Z",
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 2,
+          "started_at": "2026-07-15T05:55:50Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:00Z",
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 3,
+          "started_at": "2026-07-15T05:55:51Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:01Z",
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 4,
+          "started_at": "2026-07-15T05:56:00Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:01Z",
+          "conclusion": "skipped",
+          "name": "Set up Node",
+          "number": 5,
+          "started_at": "2026-07-15T05:56:01Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:01Z",
+          "conclusion": "skipped",
+          "name": "Set up Go",
+          "number": 6,
+          "started_at": "2026-07-15T05:56:01Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:09Z",
+          "conclusion": "success",
+          "name": "Pin Rust 1.85.0",
+          "number": 7,
+          "started_at": "2026-07-15T05:56:01Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:56:09Z",
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 8,
+          "started_at": "2026-07-15T05:56:09Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:33Z",
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 9,
+          "started_at": "2026-07-15T05:56:09Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:35Z",
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 10,
+          "started_at": "2026-07-15T05:58:33Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:39Z",
+          "conclusion": "failure",
+          "name": "Run frozen case",
+          "number": 11,
+          "started_at": "2026-07-15T05:58:35Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:39Z",
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 12,
+          "started_at": "2026-07-15T05:58:39Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:39Z",
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 13,
+          "started_at": "2026-07-15T05:58:39Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:39Z",
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 14,
+          "started_at": "2026-07-15T05:58:39Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:39Z",
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 15,
+          "started_at": "2026-07-15T05:58:39Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:39Z",
+          "conclusion": "skipped",
+          "name": "Post Set up Python",
+          "number": 29,
+          "started_at": "2026-07-15T05:58:39Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:40Z",
+          "conclusion": "success",
+          "name": "Post Checkout frozen protocol",
+          "number": 30,
+          "started_at": "2026-07-15T05:58:39Z",
+          "status": "completed"
+        },
+        {
+          "completed_at": "2026-07-15T05:58:40Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "number": 31,
+          "started_at": "2026-07-15T05:58:40Z",
+          "status": "completed"
+        }
+      ],
+      "url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/jobs/87279568702",
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    }
+  ],
+  "total_count": 12
+}
