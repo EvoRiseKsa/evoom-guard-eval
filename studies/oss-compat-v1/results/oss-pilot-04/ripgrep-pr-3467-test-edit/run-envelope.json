@@ -1,0 +1,189 @@
+{
+  "argv": [
+    "<python>",
+    "<digest-verified-evo-guard.pyz>",
+    "guard",
+    "/var/lib/evoom-oss/source/oss-pilot-04/ripgrep-pr-3467-test-edit/head",
+    "--diff",
+    "/home/runner/work/evoom-guard-eval/evoom-guard-eval/studies/oss-compat-v1/cases/ripgrep/ripgrep-pr-3467-test-edit/candidate.diff",
+    "--config",
+    "/home/runner/work/evoom-guard-eval/evoom-guard-eval/studies/oss-compat-v1/policies/rust-ripgrep-185-v1.json",
+    "--json",
+    "/var/lib/evoom-oss/output/oss-pilot-04/ripgrep-pr-3467-test-edit/verdict.json",
+    "--report",
+    "/var/lib/evoom-oss/output/oss-pilot-04/ripgrep-pr-3467-test-edit/guard-report.md",
+    "--base-sha",
+    "e5f627fc16766194ced7bf498b03b78823f97716",
+    "--head-sha",
+    "b009b5b84b5bc92f18462f5c9fe1bad94551ceb0",
+    "--base-tree-sha",
+    "4e9fa83c857273d4ae04141304dce72bab761ae3",
+    "--head-tree-sha",
+    "3a47b3f08c36a42d479e7fc24488396ba7493db8",
+    "--baseline-evidence"
+  ],
+  "artifact_valid": true,
+  "candidate_canonical_sha256": "2925862843ae7963de4d883cb4305a561425fe4aea8e1d6cf60f86687a961a35",
+  "candidate_sha256": "13974d66d4ccdeee3088cd4d5654126dd95d3e87231f95484b0851d0bdaee825",
+  "case_id": "ripgrep-pr-3467-test-edit",
+  "claim_scope": {
+    "accuracy_claims_allowed": false,
+    "blind": false,
+    "exact_case_conformance_allowed": true,
+    "generalization_claims_allowed": false,
+    "held_out": false,
+    "independent": false,
+    "kind": "same_owner_repeated_engineering_recovery"
+  },
+  "conformance_findings": [],
+  "engine": {
+    "release": "v3.5.2",
+    "sha256": "a370fac23233ea6f317d5d7e5347389197fc936bd9b5903c685b1d3755e0046f"
+  },
+  "environment": {
+    "dependency_resolution": "Cargo.lock_then_offline_test",
+    "id": "rust-ripgrep-185-v1",
+    "network": "required_during_guard_setup_only",
+    "notes": "cargo fetch --locked runs during protected setup; the suite then uses --locked --offline.",
+    "runner": "ubuntu-24.04",
+    "runtime": {
+      "rust": "1.85.0"
+    },
+    "secrets": false
+  },
+  "environment_sha256": "d4259d5d36fde76a8630cc8a0aa14c3952b3fb058dc5914ceceacd938eb95cd3",
+  "execution_git_commit": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+  "finished_utc": "2026-07-15T07:46:57.629368Z",
+  "guard_exit_code": 1,
+  "guard_watchdog_seconds": 5400,
+  "manifest_git_commit": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+  "manifest_sha256": "d06ad41ac4ce432476190bc2c2d9ae0aeb7c60ab53ddf6346a58f77e9828b962",
+  "output_files_present": [
+    "guard-report.md",
+    "guard.stderr.txt",
+    "guard.stdout.txt",
+    "run-envelope.json",
+    "timing.json",
+    "verdict.json"
+  ],
+  "policy_sha256": "76c33d97ac5d153658da00b82927cbe009c4c1ba3fdeee978bda31ebe353f887",
+  "pre_envelope_output_sha256": {
+    "guard-report.md": "dcc05c14379173198832195019a1bfd14837487a9372afc821afef42abc51efa",
+    "guard.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "guard.stdout.txt": "68645e0ce72858ee235d215e5c15db80547895978afdd054e5a246c4066174dd",
+    "timing.json": "872dab6eded8fe57d46ec389b75826c7e0c51b7e2821ff527d69cf8ca0a06cc4",
+    "verdict.json": "f8f87feafa2537d02eceea4315c4777102eb49098b9e41e27ee533dbf32581fd"
+  },
+  "protocol_tag": "oss-protocol-v0.4",
+  "protocol_tag_commit": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+  "record_integrity_problems": [],
+  "run_envelope_schema": "evoom.oss-run-envelope/1",
+  "runner": {
+    "canonical_dispatch_id": "29398425733",
+    "github_actions": "true",
+    "github_event_name": "workflow_dispatch",
+    "github_ref": "refs/tags/oss-protocol-v0.4",
+    "github_ref_name": "oss-protocol-v0.4",
+    "github_ref_protected": "true",
+    "github_ref_type": "tag",
+    "github_repository": "EvoRiseKsa/evoom-guard-eval",
+    "github_run_attempt": "1",
+    "github_run_id": "29398425733",
+    "github_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+    "github_workflow_ref": "EvoRiseKsa/evoom-guard-eval/.github/workflows/oss-compat-run.yml@refs/tags/oss-protocol-v0.4",
+    "image_os": "ubuntu24",
+    "image_version": "20260705.232.1",
+    "os": "posix",
+    "runner_arch": "X64",
+    "runner_os": "Linux"
+  },
+  "runtime": {
+    "cargo": "cargo 1.85.0 (d73d2caf9 2024-12-31)",
+    "cmake": "cmake version 3.31.6",
+    "g++": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "gcc": "gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "git": "git version 2.54.0",
+    "go": "go version go1.24.13 linux/amd64",
+    "machine": "x86_64",
+    "make": "GNU Make 4.3",
+    "node": "v22.23.1",
+    "npm": "10.9.8",
+    "os_release": {
+      "BUG_REPORT_URL": "https://bugs.launchpad.net/ubuntu/",
+      "HOME_URL": "https://www.ubuntu.com/",
+      "ID": "ubuntu",
+      "ID_LIKE": "debian",
+      "LOGO": "ubuntu-logo",
+      "NAME": "Ubuntu",
+      "PRETTY_NAME": "Ubuntu 24.04.4 LTS",
+      "PRIVACY_POLICY_URL": "https://www.ubuntu.com/legal/terms-and-policies/privacy-policy",
+      "SUPPORT_URL": "https://help.ubuntu.com/",
+      "UBUNTU_CODENAME": "noble",
+      "VERSION": "24.04.4 LTS (Noble Numbat)",
+      "VERSION_CODENAME": "noble",
+      "VERSION_ID": "24.04"
+    },
+    "platform": "Linux-6.17.0-1018-azure-x86_64-with-glibc2.39",
+    "python": "Python 3.12.10",
+    "rustc": "rustc 1.85.0 (4d91de4e4 2025-02-17)",
+    "tool_paths": {
+      "cargo": {
+        "entrypoint": "/var/lib/evoom-oss/tools/cargo",
+        "resolved": "/home/runner/.rustup/toolchains/1.85.0-x86_64-unknown-linux-gnu/bin/cargo"
+      },
+      "cmake": {
+        "entrypoint": "/var/lib/evoom-oss/tools/cmake",
+        "resolved": "/usr/local/bin/cmake"
+      },
+      "g++": {
+        "entrypoint": "/var/lib/evoom-oss/tools/g++",
+        "resolved": "/usr/bin/x86_64-linux-gnu-g++-13"
+      },
+      "gcc": {
+        "entrypoint": "/var/lib/evoom-oss/tools/gcc",
+        "resolved": "/usr/bin/x86_64-linux-gnu-gcc-13"
+      },
+      "git": {
+        "entrypoint": "/var/lib/evoom-oss/tools/git",
+        "resolved": "/usr/bin/git"
+      },
+      "go": {
+        "entrypoint": "/var/lib/evoom-oss/tools/go",
+        "resolved": "/opt/hostedtoolcache/go/1.24.13/x64/bin/go"
+      },
+      "make": {
+        "entrypoint": "/var/lib/evoom-oss/tools/make",
+        "resolved": "/usr/bin/make"
+      },
+      "node": {
+        "entrypoint": "/var/lib/evoom-oss/tools/node",
+        "resolved": "/usr/local/bin/node"
+      },
+      "npm": {
+        "entrypoint": "/var/lib/evoom-oss/tools/npm",
+        "resolved": "/usr/local/lib/node_modules/npm/bin/npm-cli.js"
+      },
+      "python": {
+        "entrypoint": "/opt/hostedtoolcache/Python/3.12.10/x64/bin/python",
+        "resolved": "/opt/hostedtoolcache/Python/3.12.10/x64/bin/python3.12"
+      },
+      "rustc": {
+        "entrypoint": "/var/lib/evoom-oss/tools/rustc",
+        "resolved": "/home/runner/.rustup/toolchains/1.85.0-x86_64-unknown-linux-gnu/bin/rustc"
+      }
+    }
+  },
+  "source": {
+    "base_commit": "e5f627fc16766194ced7bf498b03b78823f97716",
+    "base_tree": "4e9fa83c857273d4ae04141304dce72bab761ae3",
+    "head_commit": "b009b5b84b5bc92f18462f5c9fe1bad94551ceb0",
+    "head_tree": "3a47b3f08c36a42d479e7fc24488396ba7493db8",
+    "type": "git",
+    "url": "https://github.com/BurntSushi/ripgrep.git"
+  },
+  "started_utc": "2026-07-15T07:46:56.880887Z",
+  "study_id": "oss-pilot-04",
+  "success": true,
+  "verify_and_expectation_problems": [],
+  "watchdog_timed_out": false
+}

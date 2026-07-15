@@ -1,0 +1,189 @@
+{
+  "argv": [
+    "<python>",
+    "<digest-verified-evo-guard.pyz>",
+    "guard",
+    "/var/lib/evoom-oss/source/oss-pilot-04/requests-pr-7498-source-only/head",
+    "--diff",
+    "/home/runner/work/evoom-guard-eval/evoom-guard-eval/studies/oss-compat-v1/cases/requests/requests-pr-7498-source-only/candidate.diff",
+    "--config",
+    "/home/runner/work/evoom-guard-eval/evoom-guard-eval/studies/oss-compat-v1/policies/python-requests-py312-v1.json",
+    "--json",
+    "/var/lib/evoom-oss/output/oss-pilot-04/requests-pr-7498-source-only/verdict.json",
+    "--report",
+    "/var/lib/evoom-oss/output/oss-pilot-04/requests-pr-7498-source-only/guard-report.md",
+    "--base-sha",
+    "e50e5945294f79ee9ab4ec69de24d14f9b26a7ae",
+    "--head-sha",
+    "1190afd14fca74292946d62c4c8169880a47ff67",
+    "--base-tree-sha",
+    "15178dfdd64b69f76b97f50398ebdb5dc5f12b80",
+    "--head-tree-sha",
+    "035f0ad7df8ceeee902309cd8e1a644943872fd6",
+    "--baseline-evidence"
+  ],
+  "artifact_valid": true,
+  "candidate_canonical_sha256": "95304892723030d17672d02d650aa08019feb487722ed68131227091f162f27a",
+  "candidate_sha256": "39d132949b887748800754eed85bcc3b9ec93ed754d371ace11bea8f962ff087",
+  "case_id": "requests-pr-7498-source-only",
+  "claim_scope": {
+    "accuracy_claims_allowed": false,
+    "blind": false,
+    "exact_case_conformance_allowed": true,
+    "generalization_claims_allowed": false,
+    "held_out": false,
+    "independent": false,
+    "kind": "same_owner_repeated_engineering_recovery"
+  },
+  "conformance_findings": [],
+  "engine": {
+    "release": "v3.5.2",
+    "sha256": "a370fac23233ea6f317d5d7e5347389197fc936bd9b5903c685b1d3755e0046f"
+  },
+  "environment": {
+    "dependency_resolution": "live_ranges_not_hash_locked_or_fully_captured",
+    "id": "python-requests-py312-v1",
+    "network": "required_during_guard_setup",
+    "notes": "Upstream requirements-dev.txt contains ranges and an editable project install. The harness captures tool versions but not a complete pip resolution; this profile is time-bound compatibility evidence, not a hermetic rebuild.",
+    "runner": "ubuntu-24.04",
+    "runtime": {
+      "python": "3.12.10"
+    },
+    "secrets": false
+  },
+  "environment_sha256": "e1c47fdc2a809bab1ff87d30487988c42398113981413f9dd79c4712a6ab09f8",
+  "execution_git_commit": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+  "finished_utc": "2026-07-15T07:50:50.932242Z",
+  "guard_exit_code": 0,
+  "guard_watchdog_seconds": 4200,
+  "manifest_git_commit": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+  "manifest_sha256": "d06ad41ac4ce432476190bc2c2d9ae0aeb7c60ab53ddf6346a58f77e9828b962",
+  "output_files_present": [
+    "guard-report.md",
+    "guard.stderr.txt",
+    "guard.stdout.txt",
+    "run-envelope.json",
+    "timing.json",
+    "verdict.json"
+  ],
+  "policy_sha256": "fa30b16b7c94d8d4dad1660781b1b4990898a3bf06c2ecca4602fc5b9ff2e7bf",
+  "pre_envelope_output_sha256": {
+    "guard-report.md": "22a13e075ed1b723daeaa1f3a7b6bf562707496905176e8eec4ef990c6f22447",
+    "guard.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "guard.stdout.txt": "6cea9fc4031e7b90f60842dd30552c10d797aced3cd78abbc8da21c566107760",
+    "timing.json": "f6213f0c61cb099b4c0af5a445cd8d0f2f74c7af49d5ca67e50514783f6aecbf",
+    "verdict.json": "af57d1669c352b6cdf30f94ecb0f26783d81f52a912151111e20fe208aa6ca9f"
+  },
+  "protocol_tag": "oss-protocol-v0.4",
+  "protocol_tag_commit": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+  "record_integrity_problems": [],
+  "run_envelope_schema": "evoom.oss-run-envelope/1",
+  "runner": {
+    "canonical_dispatch_id": "29398425733",
+    "github_actions": "true",
+    "github_event_name": "workflow_dispatch",
+    "github_ref": "refs/tags/oss-protocol-v0.4",
+    "github_ref_name": "oss-protocol-v0.4",
+    "github_ref_protected": "true",
+    "github_ref_type": "tag",
+    "github_repository": "EvoRiseKsa/evoom-guard-eval",
+    "github_run_attempt": "1",
+    "github_run_id": "29398425733",
+    "github_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+    "github_workflow_ref": "EvoRiseKsa/evoom-guard-eval/.github/workflows/oss-compat-run.yml@refs/tags/oss-protocol-v0.4",
+    "image_os": "ubuntu24",
+    "image_version": "20260714.240.1",
+    "os": "posix",
+    "runner_arch": "X64",
+    "runner_os": "Linux"
+  },
+  "runtime": {
+    "cargo": "error: rustup could not choose a version of cargo to run, because one wasn't specified explicitly, and no default is configured.",
+    "cmake": "cmake version 3.31.6",
+    "g++": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "gcc": "gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "git": "git version 2.54.0",
+    "go": "go version go1.24.13 linux/amd64",
+    "machine": "x86_64",
+    "make": "GNU Make 4.3",
+    "node": "v22.23.1",
+    "npm": "10.9.8",
+    "os_release": {
+      "BUG_REPORT_URL": "https://bugs.launchpad.net/ubuntu/",
+      "HOME_URL": "https://www.ubuntu.com/",
+      "ID": "ubuntu",
+      "ID_LIKE": "debian",
+      "LOGO": "ubuntu-logo",
+      "NAME": "Ubuntu",
+      "PRETTY_NAME": "Ubuntu 24.04.4 LTS",
+      "PRIVACY_POLICY_URL": "https://www.ubuntu.com/legal/terms-and-policies/privacy-policy",
+      "SUPPORT_URL": "https://help.ubuntu.com/",
+      "UBUNTU_CODENAME": "noble",
+      "VERSION": "24.04.4 LTS (Noble Numbat)",
+      "VERSION_CODENAME": "noble",
+      "VERSION_ID": "24.04"
+    },
+    "platform": "Linux-6.17.0-1020-azure-x86_64-with-glibc2.39",
+    "python": "Python 3.12.10",
+    "rustc": "error: rustup could not choose a version of rustc to run, because one wasn't specified explicitly, and no default is configured.",
+    "tool_paths": {
+      "cargo": {
+        "entrypoint": "/var/lib/evoom-oss/tools/cargo",
+        "resolved": "/home/runner/.cargo/bin/rustup"
+      },
+      "cmake": {
+        "entrypoint": "/var/lib/evoom-oss/tools/cmake",
+        "resolved": "/usr/local/bin/cmake"
+      },
+      "g++": {
+        "entrypoint": "/var/lib/evoom-oss/tools/g++",
+        "resolved": "/usr/bin/x86_64-linux-gnu-g++-13"
+      },
+      "gcc": {
+        "entrypoint": "/var/lib/evoom-oss/tools/gcc",
+        "resolved": "/usr/bin/x86_64-linux-gnu-gcc-13"
+      },
+      "git": {
+        "entrypoint": "/var/lib/evoom-oss/tools/git",
+        "resolved": "/usr/bin/git"
+      },
+      "go": {
+        "entrypoint": "/var/lib/evoom-oss/tools/go",
+        "resolved": "/opt/hostedtoolcache/go/1.24.13/x64/bin/go"
+      },
+      "make": {
+        "entrypoint": "/var/lib/evoom-oss/tools/make",
+        "resolved": "/usr/bin/make"
+      },
+      "node": {
+        "entrypoint": "/var/lib/evoom-oss/tools/node",
+        "resolved": "/usr/local/bin/node"
+      },
+      "npm": {
+        "entrypoint": "/var/lib/evoom-oss/tools/npm",
+        "resolved": "/usr/local/lib/node_modules/npm/bin/npm-cli.js"
+      },
+      "python": {
+        "entrypoint": "/opt/hostedtoolcache/Python/3.12.10/x64/bin/python",
+        "resolved": "/opt/hostedtoolcache/Python/3.12.10/x64/bin/python3.12"
+      },
+      "rustc": {
+        "entrypoint": "/var/lib/evoom-oss/tools/rustc",
+        "resolved": "/home/runner/.cargo/bin/rustup"
+      }
+    }
+  },
+  "source": {
+    "base_commit": "e50e5945294f79ee9ab4ec69de24d14f9b26a7ae",
+    "base_tree": "15178dfdd64b69f76b97f50398ebdb5dc5f12b80",
+    "head_commit": "1190afd14fca74292946d62c4c8169880a47ff67",
+    "head_tree": "035f0ad7df8ceeee902309cd8e1a644943872fd6",
+    "type": "git",
+    "url": "https://github.com/psf/requests.git"
+  },
+  "started_utc": "2026-07-15T07:47:53.250101Z",
+  "study_id": "oss-pilot-04",
+  "success": true,
+  "verify_and_expectation_problems": [],
+  "watchdog_timed_out": false
+}

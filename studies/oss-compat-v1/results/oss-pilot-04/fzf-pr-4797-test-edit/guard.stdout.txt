@@ -1,0 +1,1 @@
+wrote /var/lib/evoom-oss/output/oss-pilot-04/fzf-pr-4797-test-edit/guard-report.md

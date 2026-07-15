@@ -1,0 +1,363 @@
+{
+  "actions_artifact_provenance": {
+    "archived_and_locally_verified": true,
+    "artifact_count": 12,
+    "run_index_sha256": "9c47bc189afdd8667e3c7e32af29aad3af5a0699a1c208092608409395102d83"
+  },
+  "all_cases_conformant": false,
+  "by_category": {
+    "verbatim_upstream_policy_trip": 6,
+    "verbatim_upstream_source_only": 6
+  },
+  "by_ecosystem": {
+    "c": 2,
+    "cpp": 2,
+    "go": 2,
+    "node": 2,
+    "python": 2,
+    "rust": 2
+  },
+  "case_count": 12,
+  "cases": [
+    {
+      "artifact_integrity_valid": true,
+      "category": "verbatim_upstream_source_only",
+      "conformant": true,
+      "ecosystem": "c",
+      "expected": {
+        "reason_code": "tests_passed",
+        "verdict": "PASS"
+      },
+      "guard_seconds": 25.66602643600004,
+      "id": "cjson-pr-1006-source-only",
+      "integrity_problems": [],
+      "observed": {
+        "reason_code": "tests_passed",
+        "verdict": "PASS"
+      },
+      "outcome_findings": [],
+      "problems": [],
+      "repository": "DaveGamble/cJSON",
+      "total_seconds": 26.758291199999974
+    },
+    {
+      "artifact_integrity_valid": true,
+      "category": "verbatim_upstream_policy_trip",
+      "conformant": true,
+      "ecosystem": "c",
+      "expected": {
+        "reason_code": "protected_harness_edit",
+        "verdict": "REJECTED"
+      },
+      "guard_seconds": 1.3814778109999963,
+      "id": "cjson-pr-991-test-edit",
+      "integrity_problems": [],
+      "observed": {
+        "reason_code": "protected_harness_edit",
+        "verdict": "REJECTED"
+      },
+      "outcome_findings": [],
+      "problems": [],
+      "repository": "DaveGamble/cJSON",
+      "total_seconds": 2.2693527029999814
+    },
+    {
+      "artifact_integrity_valid": true,
+      "category": "verbatim_upstream_source_only",
+      "conformant": true,
+      "ecosystem": "node",
+      "expected": {
+        "reason_code": "tests_passed",
+        "verdict": "PASS"
+      },
+      "guard_seconds": 25.301888784000027,
+      "id": "express-pr-7265-source-only",
+      "integrity_problems": [],
+      "observed": {
+        "reason_code": "tests_passed",
+        "verdict": "PASS"
+      },
+      "outcome_findings": [],
+      "problems": [],
+      "repository": "expressjs/express",
+      "total_seconds": 26.321914157000037
+    },
+    {
+      "artifact_integrity_valid": true,
+      "category": "verbatim_upstream_policy_trip",
+      "conformant": true,
+      "ecosystem": "node",
+      "expected": {
+        "reason_code": "protected_harness_edit",
+        "verdict": "REJECTED"
+      },
+      "guard_seconds": 2.053183689000008,
+      "id": "express-pr-7377-test-edit",
+      "integrity_problems": [],
+      "observed": {
+        "reason_code": "protected_harness_edit",
+        "verdict": "REJECTED"
+      },
+      "outcome_findings": [],
+      "problems": [],
+      "repository": "expressjs/express",
+      "total_seconds": 3.638735663999995
+    },
+    {
+      "artifact_integrity_valid": true,
+      "category": "verbatim_upstream_source_only",
+      "conformant": false,
+      "ecosystem": "cpp",
+      "expected": {
+        "reason_code": "tests_passed",
+        "verdict": "PASS"
+      },
+      "guard_seconds": 128.199650831,
+      "id": "fmt-pr-4822-source-only",
+      "integrity_problems": [],
+      "observed": {
+        "reason_code": "no_test_verdict",
+        "verdict": "ERROR"
+      },
+      "outcome_findings": [
+        "outcome mismatch: expected PASS/tests_passed, got ERROR/no_test_verdict",
+        "source-only case has no green reconstructed baseline"
+      ],
+      "problems": [
+        "outcome mismatch: expected PASS/tests_passed, got ERROR/no_test_verdict",
+        "source-only case has no green reconstructed baseline"
+      ],
+      "repository": "fmtlib/fmt",
+      "total_seconds": 131.744779982
+    },
+    {
+      "artifact_integrity_valid": true,
+      "category": "verbatim_upstream_policy_trip",
+      "conformant": true,
+      "ecosystem": "cpp",
+      "expected": {
+        "reason_code": "protected_harness_edit",
+        "verdict": "REJECTED"
+      },
+      "guard_seconds": 1.577195904000007,
+      "id": "fmt-pr-4825-test-edit",
+      "integrity_problems": [],
+      "observed": {
+        "reason_code": "protected_harness_edit",
+        "verdict": "REJECTED"
+      },
+      "outcome_findings": [],
+      "problems": [],
+      "repository": "fmtlib/fmt",
+      "total_seconds": 5.451971286000003
+    },
+    {
+      "artifact_integrity_valid": true,
+      "category": "verbatim_upstream_source_only",
+      "conformant": true,
+      "ecosystem": "go",
+      "expected": {
+        "reason_code": "tests_passed",
+        "verdict": "PASS"
+      },
+      "guard_seconds": 29.517141587000012,
+      "id": "fzf-pr-4734-source-only",
+      "integrity_problems": [],
+      "observed": {
+        "reason_code": "tests_passed",
+        "verdict": "PASS"
+      },
+      "outcome_findings": [],
+      "problems": [],
+      "repository": "junegunn/fzf",
+      "total_seconds": 30.941159786000014
+    },
+    {
+      "artifact_integrity_valid": true,
+      "category": "verbatim_upstream_policy_trip",
+      "conformant": true,
+      "ecosystem": "go",
+      "expected": {
+        "reason_code": "protected_harness_edit",
+        "verdict": "REJECTED"
+      },
+      "guard_seconds": 1.012126075999987,
+      "id": "fzf-pr-4797-test-edit",
+      "integrity_problems": [],
+      "observed": {
+        "reason_code": "protected_harness_edit",
+        "verdict": "REJECTED"
+      },
+      "outcome_findings": [],
+      "problems": [],
+      "repository": "junegunn/fzf",
+      "total_seconds": 2.3927723420000007
+    },
+    {
+      "artifact_integrity_valid": true,
+      "category": "verbatim_upstream_source_only",
+      "conformant": true,
+      "ecosystem": "python",
+      "expected": {
+        "reason_code": "tests_passed",
+        "verdict": "PASS"
+      },
+      "guard_seconds": 177.68211193099995,
+      "id": "requests-pr-7498-source-only",
+      "integrity_problems": [],
+      "observed": {
+        "reason_code": "tests_passed",
+        "verdict": "PASS"
+      },
+      "outcome_findings": [],
+      "problems": [],
+      "repository": "psf/requests",
+      "total_seconds": 178.810529222
+    },
+    {
+      "artifact_integrity_valid": true,
+      "category": "verbatim_upstream_policy_trip",
+      "conformant": true,
+      "ecosystem": "python",
+      "expected": {
+        "reason_code": "protected_harness_edit",
+        "verdict": "REJECTED"
+      },
+      "guard_seconds": 1.354059135,
+      "id": "requests-pr-7502-test-edit",
+      "integrity_problems": [],
+      "observed": {
+        "reason_code": "protected_harness_edit",
+        "verdict": "REJECTED"
+      },
+      "outcome_findings": [],
+      "problems": [],
+      "repository": "psf/requests",
+      "total_seconds": 2.3450563810000062
+    },
+    {
+      "artifact_integrity_valid": true,
+      "category": "verbatim_upstream_source_only",
+      "conformant": false,
+      "ecosystem": "rust",
+      "expected": {
+        "reason_code": "tests_passed",
+        "verdict": "PASS"
+      },
+      "guard_seconds": 1.4234976049999943,
+      "id": "ripgrep-pr-3464-source-only",
+      "integrity_problems": [],
+      "observed": {
+        "reason_code": "setup_failed",
+        "verdict": "ERROR"
+      },
+      "outcome_findings": [
+        "outcome mismatch: expected PASS/tests_passed, got ERROR/setup_failed",
+        "source-only case has no green reconstructed baseline",
+        "source-only case did not run the declared suite"
+      ],
+      "problems": [
+        "outcome mismatch: expected PASS/tests_passed, got ERROR/setup_failed",
+        "source-only case has no green reconstructed baseline",
+        "source-only case did not run the declared suite"
+      ],
+      "repository": "BurntSushi/ripgrep",
+      "total_seconds": 2.394405873000011
+    },
+    {
+      "artifact_integrity_valid": true,
+      "category": "verbatim_upstream_policy_trip",
+      "conformant": true,
+      "ecosystem": "rust",
+      "expected": {
+        "reason_code": "protected_harness_edit",
+        "verdict": "REJECTED"
+      },
+      "guard_seconds": 0.7484605070000043,
+      "id": "ripgrep-pr-3467-test-edit",
+      "integrity_problems": [],
+      "observed": {
+        "reason_code": "protected_harness_edit",
+        "verdict": "REJECTED"
+      },
+      "outcome_findings": [],
+      "problems": [],
+      "repository": "BurntSushi/ripgrep",
+      "total_seconds": 2.219517750999998
+    }
+  ],
+  "claim_scope": {
+    "accuracy_claims_allowed": false,
+    "blind": false,
+    "exact_case_conformance_allowed": true,
+    "generalization_claims_allowed": false,
+    "held_out": false,
+    "independent": false,
+    "kind": "same_owner_repeated_engineering_recovery"
+  },
+  "conformance_denominator_kind": "fixed_repeated_engineering_case_inventory",
+  "corpus_sha256": "d8af03919b3e63b849b40118d19e27ff1aa940148abfd118a2164b57de49606b",
+  "engine": {
+    "evo_guard_pyz_sha256": "a370fac23233ea6f317d5d7e5347389197fc936bd9b5903c685b1d3755e0046f",
+    "record_schema": "1.11",
+    "release": "v3.5.2"
+  },
+  "execution": {
+    "first_api_visible_dispatch_enforced_by_actions_api": true,
+    "github_run_id": "29398425733",
+    "github_run_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29398425733",
+    "owner_deleted_prior_runs_detectable": false,
+    "protocol_tag": "oss-protocol-v0.4",
+    "required_attempt": 1
+  },
+  "execution_coverage": {
+    "case_runner_evidence_count": 12,
+    "fixed_case_denominator": 12,
+    "guard_invocation_count": 12,
+    "pre_guard_infrastructure_error_count": 0,
+    "product_outcome_denominator": 12,
+    "verified_guard_record_count": 12
+  },
+  "green_reconstructed_baselines": {
+    "count": 4,
+    "total": 6
+  },
+  "infrastructure_errors": 2,
+  "integrity_problems": [],
+  "outcome_findings": [
+    "fmt-pr-4822-source-only: outcome mismatch: expected PASS/tests_passed, got ERROR/no_test_verdict",
+    "fmt-pr-4822-source-only: source-only case has no green reconstructed baseline",
+    "ripgrep-pr-3464-source-only: outcome mismatch: expected PASS/tests_passed, got ERROR/setup_failed",
+    "ripgrep-pr-3464-source-only: source-only case has no green reconstructed baseline",
+    "ripgrep-pr-3464-source-only: source-only case did not run the declared suite"
+  ],
+  "protected_policy_trip_detection": {
+    "conformant": 6,
+    "total": 6
+  },
+  "repository_compatibility": {
+    "conformant": 4,
+    "total": 6
+  },
+  "repository_count": 6,
+  "source_only_conformance": {
+    "conformant": 4,
+    "total": 6
+  },
+  "study_design": {
+    "evidence_kind": "repeated_engineering_case_conformance",
+    "held_out": false,
+    "prior_product_exposure": true,
+    "unique_case_inventory": 12
+  },
+  "study_id": "oss-pilot-04",
+  "study_integrity_valid": true,
+  "summary_schema": "evoom.oss-study-summary/4",
+  "timing_seconds": {
+    "guard_median": 1.8151897965000074,
+    "guard_p95_nearest_rank": 177.68211193099995,
+    "total_median": 4.545353474999999,
+    "total_p95_nearest_rank": 178.810529222,
+    "valid_case_count": 12
+  }
+}

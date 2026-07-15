@@ -1,0 +1,1 @@
+wrote /var/lib/evoom-oss/output/oss-pilot-04/cjson-pr-991-test-edit/guard-report.md
