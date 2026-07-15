@@ -381,7 +381,11 @@ def _identity_partitions(
     phase: str = "inventory",
     max_partitions: int = IDENTITY_SCAN_MAX_PARTITIONS,
     output_limit: int = IDENTITY_SCAN_MAX_INVENTORY_BYTES,
-) -> tuple[list[tuple[Path, int, int]], dict[str, Any]]:
+) -> tuple[
+    list[tuple[Path, int, int]],
+    list[tuple[Path, int, int]],
+    dict[str, Any],
+]:
     command = [
         "/usr/bin/find",
         os.fspath(root),
@@ -402,8 +406,9 @@ def _identity_partitions(
         output_limit=output_limit,
     )
     if output is None or record["status"] != "clean":
-        return [], record
+        return [], [], record
     partitions: list[tuple[Path, int, int]] = []
+    boundary_fingerprints: list[tuple[Path, int, int]] = []
     skipped_mounts = 0
     seen: set[Path] = set()
     inventory_entries = 0
@@ -411,13 +416,13 @@ def _identity_partitions(
     while offset < len(output):
         if time.monotonic() >= deadline:
             record["status"] = "timeout"
-            return [], record
+            return [], [], record
         end = output.find(b"\0", offset)
         if end < 0:
             record.update(
                 {"detail": "unterminated inventory path", "status": "error"}
             )
-            return [], record
+            return [], [], record
         encoded = output[offset:end]
         offset = end + 1
         if not encoded:
@@ -430,7 +435,7 @@ def _identity_partitions(
                     "status": "error",
                 }
             )
-            return [], record
+            return [], [], record
         candidate = Path(os.fsdecode(encoded))
         try:
             if not candidate.is_absolute():
@@ -444,29 +449,38 @@ def _identity_partitions(
                     "status": "error",
                 }
             )
-            return [], record
+            return [], [], record
         if time.monotonic() >= deadline:
             record["status"] = "timeout"
-            return [], record
+            return [], [], record
         if candidate in seen:
             record.update(
                 {"detail": f"duplicate partition: {candidate}", "status": "error"}
             )
-            return [], record
+            return [], [], record
         seen.add(candidate)
         if not stat.S_ISDIR(metadata.st_mode) or stat.S_ISLNK(metadata.st_mode):
             record.update(
                 {"detail": f"partition is not a real directory: {candidate}", "status": "error"}
             )
-            return [], record
+            return [], [], record
+        fingerprint = (candidate, metadata.st_dev, metadata.st_ino)
+        boundary_fingerprints.append(fingerprint)
         if metadata.st_dev != root_device:
             skipped_mounts += 1
             continue
-        partitions.append((candidate, metadata.st_dev, metadata.st_ino))
+        partitions.append(fingerprint)
     record["inventory_entries"] = inventory_entries
     record["skipped_mounts"] = skipped_mounts
     record["partitions"] = len(partitions)
-    return sorted(partitions, key=lambda value: os.fspath(value[0])), record
+    def sort_key(value: tuple[Path, int, int]) -> str:
+        return os.fspath(value[0])
+
+    return (
+        sorted(partitions, key=sort_key),
+        sorted(boundary_fingerprints, key=sort_key),
+        record,
+    )
 
 
 def _assert_no_preexisting_identity_files(
@@ -521,7 +535,7 @@ def _assert_no_preexisting_identity_files(
     _emit_identity_scan(shallow_record)
     _raise_identity_scan_failure(shallow_record)
 
-    partitions, inventory_record = _identity_partitions(
+    partitions, boundary_fingerprints, inventory_record = _identity_partitions(
         root,
         root_device=root_status.st_dev,
         depth=partition_depth,
@@ -599,7 +613,8 @@ def _assert_no_preexisting_identity_files(
         records.append(record)
         _emit_identity_scan(record)
 
-    final_partitions, final_inventory_record = _identity_partitions(
+    final_partitions, final_boundary_fingerprints, final_inventory_record = (
+        _identity_partitions(
         root,
         root_device=root_status.st_dev,
         depth=partition_depth,
@@ -607,9 +622,11 @@ def _assert_no_preexisting_identity_files(
         phase="inventory-after",
         max_partitions=max_partitions,
         output_limit=inventory_output_limit,
+        )
     )
     if final_inventory_record["status"] == "clean" and (
         final_partitions != partitions
+        or final_boundary_fingerprints != boundary_fingerprints
         or final_inventory_record["skipped_mounts"]
         != inventory_record["skipped_mounts"]
     ):

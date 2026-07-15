@@ -354,6 +354,46 @@ class OssBootstrapLifecycleTests(unittest.TestCase):
                     root, partition_depth=3, workers=1, timeout_seconds=10
                 )
 
+    def test_skipped_mount_fingerprint_drift_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            mountpoint = root / "one" / "two" / "mounted"
+            mountpoint.mkdir(parents=True)
+            native_lstat = os.lstat
+            root_device = native_lstat(root).st_dev
+            mountpoint_stats = 0
+
+            def fake_lstat(
+                path: str | bytes | os.PathLike[str] | os.PathLike[bytes],
+            ) -> os.stat_result:
+                nonlocal mountpoint_stats
+                metadata = native_lstat(path)
+                if Path(path) != mountpoint:
+                    return metadata
+                mountpoint_stats += 1
+                values = list(metadata)
+                values[1] = metadata.st_ino + (1 if mountpoint_stats > 1 else 0)
+                values[2] = root_device + 1
+                return os.stat_result(values)
+
+            def fake_find(
+                command: list[str], **kwargs: object
+            ) -> subprocess.CompletedProcess[bytes]:
+                del kwargs
+                output = b""
+                if "-mindepth" in command:
+                    output = os.fsencode(mountpoint) + b"\0"
+                return subprocess.CompletedProcess(command, 0, output, b"")
+
+            with (
+                mock.patch.object(bootstrap.os, "lstat", side_effect=fake_lstat),
+                mock.patch.object(subprocess, "run", side_effect=fake_find),
+                self.assertRaisesRegex(bootstrap.BootstrapError, "inventory changed"),
+            ):
+                bootstrap._assert_no_preexisting_identity_files(  # noqa: SLF001
+                    root, partition_depth=3, workers=1, timeout_seconds=10
+                )
+
     def test_partition_inventory_resource_bounds_fail_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary).resolve()

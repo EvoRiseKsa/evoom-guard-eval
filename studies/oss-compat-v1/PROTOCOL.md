@@ -158,6 +158,9 @@ is exposed only to the preflight Actions-API query. The whole harness then runs
 as root under `env -i` with only the frozen GitHub identity fields and trusted
 tool paths; no `GITHUB_TOKEN`, `ACTIONS_RUNTIME_TOKEN`, artifact service token,
 or runner credential is passed to repository code.
+An API-visible first step fails closed unless GitHub's immutable
+`runner.environment` context is exactly `github-hosted`; the 12-runner
+qualification and privileged boundary job enforce the same assertion.
 
 Before the fixed uid/gid is created, a bounded, partitioned ownership scan
 checks for preexisting numeric collisions on the root device. Its declared

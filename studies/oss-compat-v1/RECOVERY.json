@@ -133,6 +133,7 @@
       "partition the same root-device uid/gid ownership coverage across a bounded queue and bounded workers",
       "retain fail-closed handling for every collision, scan or inventory error, OS-enforced live inventory stream limit or partition bound violation, global deadline, and depth-3 partition-boundary path/device/inode drift on the declared trusted responsive runner",
       "emit per-partition scan timing and status telemetry",
+      "fail closed unless GitHub's runner.environment context attests github-hosted in qualification, privileged integration, and canonical jobs",
       "qualify the exact bootstrap path across multiple independent GitHub-hosted Ubuntu 24.04 runners"
     ],
     "design": "repeated_non_blind_not_held_out",

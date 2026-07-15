@@ -41,6 +41,14 @@ jobs:
           - {case: cjson-pr-1006-source-only, runtime: c}
           - {case: cjson-pr-991-test-edit, runtime: c}
     steps:
+      - name: Assert GitHub-hosted runner
+        shell: bash
+        env:
+          RUNNER_ENVIRONMENT: ${{ runner.environment }}
+        run: |
+          set -euo pipefail
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+
       - name: Checkout frozen protocol
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:

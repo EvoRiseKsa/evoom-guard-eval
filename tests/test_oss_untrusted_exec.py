@@ -22,6 +22,7 @@ POLICY_ROOT = ROOT / "studies" / "oss-compat-v1" / "policies"
 BOUNDARY_EXEC = "/usr/local/sbin/evoom-oss-untrusted-exec"
 
 EXPECTED_STEPS = [
+    "Assert GitHub-hosted runner",
     "Checkout frozen protocol",
     "Set up Python",
     "Prove first API-visible dispatch",
@@ -101,6 +102,16 @@ class OssBoundaryWorkflowContractTests(unittest.TestCase):
 
     def test_boundary_steps_have_exact_api_visible_names_and_order(self) -> None:
         self.assertEqual(EXPECTED_STEPS, _step_names(_workflow_text()))
+
+    def test_runner_environment_is_attested_before_checkout(self) -> None:
+        text = _workflow_text()
+        block = _step_block(text, "Assert GitHub-hosted runner")
+        self.assertIn("${{ runner.environment }}", block)
+        self.assertIn('test "$RUNNER_ENVIRONMENT" = github-hosted', block)
+        self.assertLess(
+            text.index("- name: Assert GitHub-hosted runner"),
+            text.index("- name: Checkout frozen protocol"),
+        )
 
     def test_run_is_success_gated_and_uses_a_clean_root_environment(self) -> None:
         block = _step_block(_workflow_text(), "Run frozen case")
@@ -184,6 +195,10 @@ class OssBoundaryQualificationWorkflowTests(unittest.TestCase):
         self.assertIn("prepare_oss_bootstrap.py prepare", text)
         self.assertIn("prepare_oss_bootstrap.py release-infra", text)
         self.assertIn("grep -Fx 'classification=infra'", text)
+        self.assertGreaterEqual(text.count("${{ runner.environment }}"), 2)
+        self.assertGreaterEqual(
+            text.count('test "$RUNNER_ENVIRONMENT" = github-hosted'), 2
+        )
 
     def test_privileged_container_runs_the_boundary_integration_suite(self) -> None:
         text = CI_WORKFLOW_PATH.read_text(encoding="utf-8")

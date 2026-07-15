@@ -46,6 +46,7 @@ def api_step(name: str, number: int, conclusion: str = "success") -> dict[str, o
 
 def required_python_steps(run_conclusion: str = "failure") -> list[dict[str, object]]:
     names = (
+        artifacts.RUNNER_ATTESTATION_STEP,
         artifacts.CHECKOUT_STEP,
         artifacts.SETUP_PYTHON_STEP,
         artifacts.PREFLIGHT_STEP,
@@ -374,6 +375,7 @@ class ArtifactIndexTests(unittest.TestCase):
     def test_jobs_reject_failed_or_missing_official_steps(self) -> None:
         case = {"case-a": (None, {"ecosystem": "python"})}
         required_success = (
+            artifacts.RUNNER_ATTESTATION_STEP,
             artifacts.CHECKOUT_STEP,
             artifacts.SETUP_PYTHON_STEP,
             artifacts.PREFLIGHT_STEP,
@@ -414,7 +416,14 @@ class ArtifactIndexTests(unittest.TestCase):
                     {"total_count": 1, "jobs": [job]}, "123", "a" * 40
                 )
             steps = job["steps"]  # type: ignore[assignment]
-            steps.insert(3, api_step(artifacts.SETUP_NODE_STEP, 5))  # type: ignore[union-attr]
+            runtime_index = next(  # type: ignore[union-attr]
+                index
+                for index, step in enumerate(steps)
+                if step["name"] == artifacts.PREFLIGHT_STEP
+            ) + 1
+            steps.insert(  # type: ignore[union-attr]
+                runtime_index, api_step(artifacts.SETUP_NODE_STEP, 5)
+            )
             for number, step in enumerate(steps, start=2):  # type: ignore[union-attr]
                 step["number"] = number
             selected = artifacts._selected_jobs(  # noqa: SLF001
