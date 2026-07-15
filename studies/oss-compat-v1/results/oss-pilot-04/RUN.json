@@ -1,0 +1,1288 @@
+{
+  "api_version": "2026-03-10",
+  "artifacts": [
+    {
+      "archive_download_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/artifacts/8336103268/zip",
+      "archive_file": "archives/oss-cjson-pr-1006-source-only.zip",
+      "archive_sha256": "391ab7c14dbbf3aaf65aa68ad7a9d09791b50a51996fb6ae53cf612c1fcb0d8f",
+      "case_id": "cjson-pr-1006-source-only",
+      "created_at": "2026-07-15T07:48:07Z",
+      "digest": "sha256:391ab7c14dbbf3aaf65aa68ad7a9d09791b50a51996fb6ae53cf612c1fcb0d8f",
+      "expires_at": "2026-10-13T07:45:39Z",
+      "id": 8336103268,
+      "name": "oss-cjson-pr-1006-source-only",
+      "node_id": "MDg6QXJ0aWZhY3Q4MzM2MTAzMjY4",
+      "size_in_bytes": 6625,
+      "updated_at": "2026-07-15T07:48:07Z",
+      "workflow_head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "workflow_run_id": 29398425733
+    },
+    {
+      "archive_download_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/artifacts/8336092821/zip",
+      "archive_file": "archives/oss-cjson-pr-991-test-edit.zip",
+      "archive_sha256": "af1a8dca99dfc25f4eb42a45f53291b53c09b95971fc583fdd369320be721b26",
+      "case_id": "cjson-pr-991-test-edit",
+      "created_at": "2026-07-15T07:47:38Z",
+      "digest": "sha256:af1a8dca99dfc25f4eb42a45f53291b53c09b95971fc583fdd369320be721b26",
+      "expires_at": "2026-10-13T07:45:39Z",
+      "id": 8336092821,
+      "name": "oss-cjson-pr-991-test-edit",
+      "node_id": "MDg6QXJ0aWZhY3Q4MzM2MDkyODIx",
+      "size_in_bytes": 5986,
+      "updated_at": "2026-07-15T07:47:38Z",
+      "workflow_head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "workflow_run_id": 29398425733
+    },
+    {
+      "archive_download_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/artifacts/8336094431/zip",
+      "archive_file": "archives/oss-express-pr-7265-source-only.zip",
+      "archive_sha256": "b4895661e4218a043714366ff6cbf4e011930920c19d419a875b7902ab694f1c",
+      "case_id": "express-pr-7265-source-only",
+      "created_at": "2026-07-15T07:47:42Z",
+      "digest": "sha256:b4895661e4218a043714366ff6cbf4e011930920c19d419a875b7902ab694f1c",
+      "expires_at": "2026-10-13T07:45:39Z",
+      "id": 8336094431,
+      "name": "oss-express-pr-7265-source-only",
+      "node_id": "MDg6QXJ0aWZhY3Q4MzM2MDk0NDMx",
+      "size_in_bytes": 6374,
+      "updated_at": "2026-07-15T07:47:42Z",
+      "workflow_head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "workflow_run_id": 29398425733
+    },
+    {
+      "archive_download_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/artifacts/8336080069/zip",
+      "archive_file": "archives/oss-express-pr-7377-test-edit.zip",
+      "archive_sha256": "e2901dc15720e7e76f3898e645d05d8e5a609d3f50fae8b1ad243afa1d79e4a9",
+      "case_id": "express-pr-7377-test-edit",
+      "created_at": "2026-07-15T07:47:02Z",
+      "digest": "sha256:e2901dc15720e7e76f3898e645d05d8e5a609d3f50fae8b1ad243afa1d79e4a9",
+      "expires_at": "2026-10-13T07:45:39Z",
+      "id": 8336080069,
+      "name": "oss-express-pr-7377-test-edit",
+      "node_id": "MDg6QXJ0aWZhY3Q4MzM2MDgwMDY5",
+      "size_in_bytes": 5915,
+      "updated_at": "2026-07-15T07:47:02Z",
+      "workflow_head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "workflow_run_id": 29398425733
+    },
+    {
+      "archive_download_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/artifacts/8336141454/zip",
+      "archive_file": "archives/oss-fmt-pr-4822-source-only.zip",
+      "archive_sha256": "4f06ca8a0c04b713c7394630d4c3929b712b0bf00609ac9a9714334037ea323b",
+      "case_id": "fmt-pr-4822-source-only",
+      "created_at": "2026-07-15T07:49:53Z",
+      "digest": "sha256:4f06ca8a0c04b713c7394630d4c3929b712b0bf00609ac9a9714334037ea323b",
+      "expires_at": "2026-10-13T07:45:39Z",
+      "id": 8336141454,
+      "name": "oss-fmt-pr-4822-source-only",
+      "node_id": "MDg6QXJ0aWZhY3Q4MzM2MTQxNDU0",
+      "size_in_bytes": 6361,
+      "updated_at": "2026-07-15T07:49:53Z",
+      "workflow_head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "workflow_run_id": 29398425733
+    },
+    {
+      "archive_download_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/artifacts/8336096708/zip",
+      "archive_file": "archives/oss-fmt-pr-4825-test-edit.zip",
+      "archive_sha256": "60b01c37ecb292d13878189cdc9b18a98ae7acaa2d83d4f380b5586cf16bf1fa",
+      "case_id": "fmt-pr-4825-test-edit",
+      "created_at": "2026-07-15T07:47:49Z",
+      "digest": "sha256:60b01c37ecb292d13878189cdc9b18a98ae7acaa2d83d4f380b5586cf16bf1fa",
+      "expires_at": "2026-10-13T07:45:39Z",
+      "id": 8336096708,
+      "name": "oss-fmt-pr-4825-test-edit",
+      "node_id": "MDg6QXJ0aWZhY3Q4MzM2MDk2NzA4",
+      "size_in_bytes": 5967,
+      "updated_at": "2026-07-15T07:47:49Z",
+      "workflow_head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "workflow_run_id": 29398425733
+    },
+    {
+      "archive_download_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/artifacts/8336089567/zip",
+      "archive_file": "archives/oss-fzf-pr-4734-source-only.zip",
+      "archive_sha256": "473297d4cfc05808ed3f0e348b583a3ab50833a209083b848c0076961ad1496d",
+      "case_id": "fzf-pr-4734-source-only",
+      "created_at": "2026-07-15T07:47:29Z",
+      "digest": "sha256:473297d4cfc05808ed3f0e348b583a3ab50833a209083b848c0076961ad1496d",
+      "expires_at": "2026-10-13T07:45:39Z",
+      "id": 8336089567,
+      "name": "oss-fzf-pr-4734-source-only",
+      "node_id": "MDg6QXJ0aWZhY3Q4MzM2MDg5NTY3",
+      "size_in_bytes": 6290,
+      "updated_at": "2026-07-15T07:47:29Z",
+      "workflow_head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "workflow_run_id": 29398425733
+    },
+    {
+      "archive_download_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/artifacts/8336077237/zip",
+      "archive_file": "archives/oss-fzf-pr-4797-test-edit.zip",
+      "archive_sha256": "84ac6410e23e5fb5705edcd8c0ac5760e02b308f7d0859ac98cd638684e02a37",
+      "case_id": "fzf-pr-4797-test-edit",
+      "created_at": "2026-07-15T07:46:54Z",
+      "digest": "sha256:84ac6410e23e5fb5705edcd8c0ac5760e02b308f7d0859ac98cd638684e02a37",
+      "expires_at": "2026-10-13T07:45:39Z",
+      "id": 8336077237,
+      "name": "oss-fzf-pr-4797-test-edit",
+      "node_id": "MDg6QXJ0aWZhY3Q4MzM2MDc3MjM3",
+      "size_in_bytes": 5825,
+      "updated_at": "2026-07-15T07:46:54Z",
+      "workflow_head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "workflow_run_id": 29398425733
+    },
+    {
+      "archive_download_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/artifacts/8336162557/zip",
+      "archive_file": "archives/oss-requests-pr-7498-source-only.zip",
+      "archive_sha256": "7fa97ef1ade5fbf8e2f8100a0f6a312c70306a55d819c09a72aef0abc1b8a2d7",
+      "case_id": "requests-pr-7498-source-only",
+      "created_at": "2026-07-15T07:50:51Z",
+      "digest": "sha256:7fa97ef1ade5fbf8e2f8100a0f6a312c70306a55d819c09a72aef0abc1b8a2d7",
+      "expires_at": "2026-10-13T07:45:39Z",
+      "id": 8336162557,
+      "name": "oss-requests-pr-7498-source-only",
+      "node_id": "MDg6QXJ0aWZhY3Q4MzM2MTYyNTU3",
+      "size_in_bytes": 6522,
+      "updated_at": "2026-07-15T07:50:51Z",
+      "workflow_head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "workflow_run_id": 29398425733
+    },
+    {
+      "archive_download_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/artifacts/8336096834/zip",
+      "archive_file": "archives/oss-requests-pr-7502-test-edit.zip",
+      "archive_sha256": "dc0d5256da3a5601a8bfe86c1e1c5d8dab016d070902f21207f8a26a44688a7e",
+      "case_id": "requests-pr-7502-test-edit",
+      "created_at": "2026-07-15T07:47:49Z",
+      "digest": "sha256:dc0d5256da3a5601a8bfe86c1e1c5d8dab016d070902f21207f8a26a44688a7e",
+      "expires_at": "2026-10-13T07:45:39Z",
+      "id": 8336096834,
+      "name": "oss-requests-pr-7502-test-edit",
+      "node_id": "MDg6QXJ0aWZhY3Q4MzM2MDk2ODM0",
+      "size_in_bytes": 5977,
+      "updated_at": "2026-07-15T07:47:49Z",
+      "workflow_head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "workflow_run_id": 29398425733
+    },
+    {
+      "archive_download_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/artifacts/8336077239/zip",
+      "archive_file": "archives/oss-ripgrep-pr-3464-source-only.zip",
+      "archive_sha256": "27cdded875d0c7023539ec257164507c3ea3b20c3357689edceb8f7f8bd8ab68",
+      "case_id": "ripgrep-pr-3464-source-only",
+      "created_at": "2026-07-15T07:46:54Z",
+      "digest": "sha256:27cdded875d0c7023539ec257164507c3ea3b20c3357689edceb8f7f8bd8ab68",
+      "expires_at": "2026-10-13T07:45:39Z",
+      "id": 8336077239,
+      "name": "oss-ripgrep-pr-3464-source-only",
+      "node_id": "MDg6QXJ0aWZhY3Q4MzM2MDc3MjM5",
+      "size_in_bytes": 5954,
+      "updated_at": "2026-07-15T07:46:54Z",
+      "workflow_head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "workflow_run_id": 29398425733
+    },
+    {
+      "archive_download_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/artifacts/8336078965/zip",
+      "archive_file": "archives/oss-ripgrep-pr-3467-test-edit.zip",
+      "archive_sha256": "664645c59fe3c267b6f4ccfe511954a22568ff7b8547666da51ae99b2faddc97",
+      "case_id": "ripgrep-pr-3467-test-edit",
+      "created_at": "2026-07-15T07:46:59Z",
+      "digest": "sha256:664645c59fe3c267b6f4ccfe511954a22568ff7b8547666da51ae99b2faddc97",
+      "expires_at": "2026-10-13T07:45:39Z",
+      "id": 8336078965,
+      "name": "oss-ripgrep-pr-3467-test-edit",
+      "node_id": "MDg6QXJ0aWZhY3Q4MzM2MDc4OTY1",
+      "size_in_bytes": 5895,
+      "updated_at": "2026-07-15T07:46:59Z",
+      "workflow_head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "workflow_run_id": 29398425733
+    }
+  ],
+  "canonical_dispatch": {
+    "event": "workflow_dispatch",
+    "first_created_at": "2026-07-15T07:45:38Z",
+    "first_run_id": 29398425733,
+    "head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+    "selection": "earliest_api_visible_workflow_dispatch_for_protocol_commit",
+    "workflow_path": ".github/workflows/oss-compat-run.yml"
+  },
+  "jobs": [
+    {
+      "conclusion": "success",
+      "head_branch": "oss-protocol-v0.4",
+      "head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "id": 87297144023,
+      "name": "cjson-pr-1006-source-only",
+      "run_attempt": 1,
+      "run_id": 29398425733,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Assert GitHub-hosted runner",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 11,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run frozen case",
+          "number": 12,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 13,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 14,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 15,
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 16,
+          "status": "completed"
+        }
+      ],
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "conclusion": "success",
+      "head_branch": "oss-protocol-v0.4",
+      "head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "id": 87297144092,
+      "name": "cjson-pr-991-test-edit",
+      "run_attempt": 1,
+      "run_id": 29398425733,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Assert GitHub-hosted runner",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 11,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run frozen case",
+          "number": 12,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 13,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 14,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 15,
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 16,
+          "status": "completed"
+        }
+      ],
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "conclusion": "success",
+      "head_branch": "oss-protocol-v0.4",
+      "head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "id": 87297143940,
+      "name": "express-pr-7265-source-only",
+      "run_attempt": 1,
+      "run_id": 29398425733,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Assert GitHub-hosted runner",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Node",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 11,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run frozen case",
+          "number": 12,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 13,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 14,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 15,
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 16,
+          "status": "completed"
+        }
+      ],
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "conclusion": "success",
+      "head_branch": "oss-protocol-v0.4",
+      "head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "id": 87297143934,
+      "name": "express-pr-7377-test-edit",
+      "run_attempt": 1,
+      "run_id": 29398425733,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Assert GitHub-hosted runner",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Node",
+          "number": 6,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 11,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run frozen case",
+          "number": 12,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 13,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 14,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 15,
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 16,
+          "status": "completed"
+        }
+      ],
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "conclusion": "failure",
+      "head_branch": "oss-protocol-v0.4",
+      "head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "id": 87297143977,
+      "name": "fmt-pr-4822-source-only",
+      "run_attempt": 1,
+      "run_id": 29398425733,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Assert GitHub-hosted runner",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 11,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Run frozen case",
+          "number": 12,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 13,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 14,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 15,
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 16,
+          "status": "completed"
+        }
+      ],
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "conclusion": "success",
+      "head_branch": "oss-protocol-v0.4",
+      "head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "id": 87297144009,
+      "name": "fmt-pr-4825-test-edit",
+      "run_attempt": 1,
+      "run_id": 29398425733,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Assert GitHub-hosted runner",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 11,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run frozen case",
+          "number": 12,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 13,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 14,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 15,
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 16,
+          "status": "completed"
+        }
+      ],
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "conclusion": "success",
+      "head_branch": "oss-protocol-v0.4",
+      "head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "id": 87297144185,
+      "name": "fzf-pr-4734-source-only",
+      "run_attempt": 1,
+      "run_id": 29398425733,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Assert GitHub-hosted runner",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Go",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 11,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run frozen case",
+          "number": 12,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 13,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 14,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 15,
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 16,
+          "status": "completed"
+        }
+      ],
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "conclusion": "success",
+      "head_branch": "oss-protocol-v0.4",
+      "head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "id": 87297143957,
+      "name": "fzf-pr-4797-test-edit",
+      "run_attempt": 1,
+      "run_id": 29398425733,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Assert GitHub-hosted runner",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Go",
+          "number": 7,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 11,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run frozen case",
+          "number": 12,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 13,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 14,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 15,
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 16,
+          "status": "completed"
+        }
+      ],
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "conclusion": "success",
+      "head_branch": "oss-protocol-v0.4",
+      "head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "id": 87297143974,
+      "name": "requests-pr-7498-source-only",
+      "run_attempt": 1,
+      "run_id": 29398425733,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Assert GitHub-hosted runner",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 11,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run frozen case",
+          "number": 12,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 13,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 14,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 15,
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 16,
+          "status": "completed"
+        }
+      ],
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "conclusion": "success",
+      "head_branch": "oss-protocol-v0.4",
+      "head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "id": 87297143986,
+      "name": "requests-pr-7502-test-edit",
+      "run_attempt": 1,
+      "run_id": 29398425733,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Assert GitHub-hosted runner",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 11,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run frozen case",
+          "number": 12,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 13,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 14,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 15,
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 16,
+          "status": "completed"
+        }
+      ],
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "conclusion": "failure",
+      "head_branch": "oss-protocol-v0.4",
+      "head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "id": 87297143950,
+      "name": "ripgrep-pr-3464-source-only",
+      "run_attempt": 1,
+      "run_id": 29398425733,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Assert GitHub-hosted runner",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Pin Rust 1.85.0",
+          "number": 8,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 11,
+          "status": "completed"
+        },
+        {
+          "conclusion": "failure",
+          "name": "Run frozen case",
+          "number": 12,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 13,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 14,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 15,
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 16,
+          "status": "completed"
+        }
+      ],
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    },
+    {
+      "conclusion": "success",
+      "head_branch": "oss-protocol-v0.4",
+      "head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+      "id": 87297144227,
+      "name": "ripgrep-pr-3467-test-edit",
+      "run_attempt": 1,
+      "run_id": 29398425733,
+      "status": "completed",
+      "steps": [
+        {
+          "conclusion": "success",
+          "name": "Assert GitHub-hosted runner",
+          "number": 2,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Checkout frozen protocol",
+          "number": 3,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Set up Python",
+          "number": 4,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prove first API-visible dispatch",
+          "number": 5,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Pin Rust 1.85.0",
+          "number": 8,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Verify frozen study identity",
+          "number": 9,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Prepare trusted infrastructure fallback",
+          "number": 10,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Install trusted execution boundary",
+          "number": 11,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Run frozen case",
+          "number": 12,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Kill residual untrusted processes",
+          "number": 13,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Classify trusted case output",
+          "number": 14,
+          "status": "completed"
+        },
+        {
+          "conclusion": "success",
+          "name": "Upload immutable raw case output",
+          "number": 15,
+          "status": "completed"
+        },
+        {
+          "conclusion": "skipped",
+          "name": "Upload immutable infrastructure output",
+          "number": 16,
+          "status": "completed"
+        }
+      ],
+      "workflow_name": "OSS compatibility study (manual, frozen)"
+    }
+  ],
+  "manifest_sha256": "d06ad41ac4ce432476190bc2c2d9ae0aeb7c60ab53ddf6346a58f77e9828b962",
+  "protocol_commit": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+  "protocol_tag": "oss-protocol-v0.4",
+  "repository": "EvoRiseKsa/evoom-guard-eval",
+  "run": {
+    "actor": "EvoRiseKsa",
+    "artifacts_url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/actions/runs/29398425733/artifacts",
+    "conclusion": "failure",
+    "created_at": "2026-07-15T07:45:38Z",
+    "event": "workflow_dispatch",
+    "head_branch": "oss-protocol-v0.4",
+    "head_sha": "982e428172c7e8f80e3cfe0d65b85593d1ac6ba5",
+    "html_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29398425733",
+    "id": 29398425733,
+    "path": ".github/workflows/oss-compat-run.yml",
+    "run_attempt": 1,
+    "run_number": 4,
+    "run_started_at": "2026-07-15T07:45:38Z",
+    "status": "completed",
+    "triggering_actor": "EvoRiseKsa",
+    "updated_at": "2026-07-15T07:50:54Z",
+    "workflow_id": 313430175
+  },
+  "run_index_schema": "evoom.oss-actions-run/1",
+  "study_id": "oss-pilot-04"
+}
