@@ -101,7 +101,10 @@ jobs:
           set -euo pipefail
           readonly CASE_ROOT=/var/lib/evoom-oss/work/evo_repo_cmake_qualification
           readonly REPO="$CASE_ROOT/repo"
-          sudo install -d -o root -g root -m 0700 "$CASE_ROOT" "$REPO"
+          # The Actions runner needs traverse-only access for `cd`; source
+          # bytes remain root-only until the trusted launcher transfers the
+          # ephemeral repo to the fixed untrusted uid.
+          sudo install -d -o root -g root -m 0711 "$CASE_ROOT" "$REPO"
           printf '%s\n' \
             'cmake_minimum_required(VERSION 3.16)' \
             'project(evoom_boundary_smoke LANGUAGES C)' \

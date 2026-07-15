@@ -168,6 +168,13 @@ class OssBoundaryQualificationWorkflowTests(unittest.TestCase):
         self.assertIn('go-version: "1.23.12"', text)
         self.assertIn("rustup toolchain install 1.85.0 --profile minimal", text)
         self.assertIn("bash harness/install_oss_boundary.sh", text)
+        self.assertIn(
+            'sudo install -d -o root -g root -m 0711 "$CASE_ROOT" "$REPO"',
+            text,
+        )
+        self.assertIn(
+            'sudo chmod 0600 "$REPO/CMakeLists.txt" "$REPO/main.c"', text
+        )
         self.assertIn("--phase setup -- cmake -S . -B build", text)
         self.assertIn("--phase test -- cmake --build build", text)
 
