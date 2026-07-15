@@ -14,10 +14,11 @@ from typing import Any, Callable, Iterable
 
 ROOT = Path(__file__).resolve().parents[1]
 STUDY_ROOT = ROOT / "studies" / "oss-compat-v1"
-STUDY_ID = "oss-pilot-03"
+STUDY_ID = "oss-pilot-04"
 PROTOCOL_ID = "oss-compat"
-PROTOCOL_VERSION = "0.3"
-PROTOCOL_TAG = "oss-protocol-v0.3"
+PROTOCOL_VERSION = "0.4"
+PROTOCOL_TAG = "oss-protocol-v0.4"
+MANIFEST_SCHEMA = "evoom.oss-study-manifest/2"
 ENGINE_VERSION = "v3.5.2"
 ENGINE_SHA256 = "a370fac23233ea6f317d5d7e5347389197fc936bd9b5903c685b1d3755e0046f"
 SCHEMA_VERSION = "1.11"
@@ -33,6 +34,11 @@ LEGACY_STUDIES = {
         "protocol_tag": "oss-protocol-v0.2",
         "protocol_version": "0.2",
         "manifest_sha256": "c5b2ddd34c92838a460865d96d831b6f4aa2b49f032bf6ed066496744408c05e",
+    },
+    "oss-pilot-03": {
+        "protocol_tag": "oss-protocol-v0.3",
+        "protocol_version": "0.3",
+        "manifest_sha256": "bee00b8f1142fa9f9bddf53bb7354a06e79055b658b308517a225371ab0f5b7c",
     },
 }
 
@@ -85,6 +91,39 @@ def load_json(path: str | Path) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise ValueError(f"expected a JSON object: {path}")
     return value
+
+
+def manifest_claim_scope() -> dict[str, Any]:
+    """Return the explicit non-held-out claim boundary for the successor."""
+    return {
+        "accuracy_claims_allowed": False,
+        "blind": False,
+        "exact_case_conformance_allowed": True,
+        "generalization_claims_allowed": False,
+        "held_out": False,
+        "independent": False,
+        "kind": "same_owner_repeated_engineering_recovery",
+    }
+
+
+def manifest_selection() -> dict[str, Any]:
+    """Bind the repeated-corpus exposure and infrastructure-only tuning scope."""
+    selection = load_json(STUDY_ROOT / "SELECTION.json")
+    return {
+        "case_inputs_frozen": selection["case_inputs_frozen"],
+        "held_out": selection["held_out"],
+        "method": selection["selection_method"],
+        "prior_product_exposure": selection["prior_product_exposure"],
+        "representative_sample": False,
+        "reused_from_study": selection["reused_from_study"],
+        "seed": selection["selection_seed"],
+        "snapshot_utc": selection["snapshot_utc"],
+        "infrastructure_tuning_permitted": selection[
+            "infrastructure_tuning_permitted"
+        ],
+        "product_tuning_permitted": selection["product_tuning_permitted"],
+        "tuning_scope": selection["tuning_scope"],
+    }
 
 
 def write_new(path: Path, data: bytes) -> None:
@@ -666,7 +705,7 @@ def verify_manifest(study_id: str = STUDY_ID) -> tuple[dict[str, Any], list[str]
         problems.append("manifest top-level field set mismatch")
     if manifest.get("study_id") != study_id:
         problems.append("study_id mismatch")
-    if manifest.get("manifest_schema") != "evoom.oss-study-manifest/1":
+    if manifest.get("manifest_schema") != MANIFEST_SCHEMA:
         problems.append("unsupported OSS manifest schema")
     expected_protocol = {
         "id": PROTOCOL_ID,
@@ -677,13 +716,9 @@ def verify_manifest(study_id: str = STUDY_ID) -> tuple[dict[str, Any], list[str]
     if protocol != expected_protocol:
         problems.append("protocol identity mismatch")
     scope = manifest.get("claim_scope")
-    if scope != {
-        "accuracy_claims_allowed": False,
-        "independent": False,
-        "kind": "same_owner_compatibility",
-    }:
+    if scope != manifest_claim_scope():
         problems.append(
-            "claim scope must remain explicitly same-owner and non-independent"
+            "claim scope must remain repeated, non-held-out, and non-independent"
         )
     if manifest.get("roles") != {
         "curator": "EvoRiseKsa",
@@ -692,14 +727,7 @@ def verify_manifest(study_id: str = STUDY_ID) -> tuple[dict[str, Any], list[str]
         "same_owner_declared": True,
     }:
         problems.append("roles must remain explicitly same-owner and unseparated")
-    selection = load_json(STUDY_ROOT / "SELECTION.json")
-    expected_selection = {
-        "method": selection["selection_method"],
-        "seed": selection["selection_seed"],
-        "snapshot_utc": selection["snapshot_utc"],
-        "representative_sample": False,
-        "tuning_permitted": False,
-    }
+    expected_selection = manifest_selection()
     if manifest.get("selection") != expected_selection:
         problems.append("selection declaration mismatch")
     expected_engine = {

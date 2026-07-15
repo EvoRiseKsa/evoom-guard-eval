@@ -653,9 +653,15 @@ def evaluate(
 
     repository_compatible = sum(all(values) for values in repo_status.values())
     summary: dict[str, Any] = {
-        "summary_schema": "evoom.oss-study-summary/3",
+        "summary_schema": "evoom.oss-study-summary/4",
         "study_id": study_id,
         "claim_scope": manifest.get("claim_scope"),
+        "study_design": {
+            "evidence_kind": "repeated_engineering_case_conformance",
+            "held_out": False,
+            "prior_product_exposure": True,
+            "unique_case_inventory": len(rows),
+        },
         "engine": manifest.get("engine"),
         "execution": {
             "github_run_id": github_run_id,
@@ -699,7 +705,7 @@ def evaluate(
             ),
             "product_outcome_denominator": verified_guard_record_count,
         },
-        "conformance_denominator_kind": "fixed_preregistered_case_inventory",
+        "conformance_denominator_kind": "fixed_repeated_engineering_case_inventory",
         "repository_count": len(repo_status),
         "repository_compatibility": {
             "conformant": repository_compatible,
@@ -731,8 +737,9 @@ def evaluate(
     lines = [
         f"# OSS compatibility study — {study_id}",
         "",
-        "> **Same-owner compatibility evidence only.** This is not Round 1, not an",
-        "> independent audit, and not a population accuracy estimate.",
+        "> **Repeated same-owner engineering evidence only.** This corpus had prior",
+        "> product-phase exposure; it is not held-out validation, an independent audit,",
+        "> a population accuracy estimate, or evidence of generalization.",
         "",
         f"- Frozen engine: `{ENGINE_VERSION}` (`{ENGINE_SHA256}`)",
         f"- Repositories: {len(repo_status)}; cases: {len(rows)}",
@@ -741,7 +748,7 @@ def evaluate(
         f"{verified_guard_record_count}/{len(rows)}",
         "- Product-outcome denominator: "
         f"{verified_guard_record_count} verified Guard records; fixed conformance "
-        f"denominator: {len(rows)} preregistered cases",
+        f"denominator: {len(rows)} repeated engineering cases",
         f"- Source-only conformance: {source_conformant}/{source_total}",
         f"- Protected test/CI policy trips detected: {policy_conformant}/{policy_total}",
         f"- Green reconstructed baselines: {baseline_green}/{source_total}",
@@ -774,6 +781,8 @@ def evaluate(
             "change in the captured environment. It does not prove the change or upstream",
             "project universally correct or secure. A protected-harness REJECTED result is",
             "a policy escalation, not an accusation that the upstream contributor cheated.",
+            "These repeated cases had prior product-phase exposure and do not constitute",
+            "a held-out sample or increase the unique sample size beyond 12.",
         ]
     )
     if integrity_problems:

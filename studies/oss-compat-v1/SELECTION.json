@@ -1,8 +1,15 @@
 {
   "snapshot_utc": "2026-07-15T00:44:48Z",
-  "selection_method": "purposive_stratified_publicly_frozen_canonical_run_protocol",
+  "selection_method": "post_exposure_same_corpus_engineering_recovery",
   "selection_seed": null,
-  "selection_notes": "Six well-known repositories were purposively selected to span Python, JavaScript, Go, Rust, C++, and C. Static-policy and harness validation occurred during study construction before the first canonical workflow execution, so this is not a blind or model-independent evaluation. Each repository contributes one merged source-only change and one merged protected-harness policy trip. The inputs and analysis plan are publicly frozen for the canonical run, but the sample is not random or population-representative.",
+  "selection_notes": "The same 12 cases from oss-pilot-03 are repeated only to test infrastructure recovery and exact-case conformance. The v0.3 workflow exposed product-phase outcomes for part of the corpus, so oss-pilot-04 is post-exposure, non-blind, non-held-out, same-owner engineering evidence. It does not increase the unique sample size and cannot support accuracy, false-positive-rate, generalization, or independent-validation claims. Candidate diffs, labels, expectations, policies, profiles, environments, licenses, and the EvoOM Guard engine remain frozen; tuning is restricted to the trusted execution infrastructure.",
+  "held_out": false,
+  "prior_product_exposure": true,
+  "reused_from_study": "oss-pilot-03",
+  "infrastructure_tuning_permitted": true,
+  "product_tuning_permitted": false,
+  "tuning_scope": "infrastructure_recovery_only",
+  "case_inputs_frozen": true,
   "eligibility_criteria": [
     "public well-known upstream repository with a redistribution-compatible named license",
     "no secrets, credentials, privileged service, self-hosted runner, or external account required by the selected study profile",

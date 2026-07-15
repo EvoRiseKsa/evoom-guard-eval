@@ -47,6 +47,7 @@ MAX_UNCOMPRESSED_BYTES = 200 * 1024 * 1024
 MAX_ZIP_ENTRIES = 20
 MAX_COMPRESSION_RATIO = 1000
 SHA256_PATTERN = re.compile(r"sha256:([0-9a-f]{64})\Z")
+RUNNER_ATTESTATION_STEP = "Assert GitHub-hosted runner"
 CHECKOUT_STEP = "Checkout frozen protocol"
 SETUP_PYTHON_STEP = "Set up Python"
 PREFLIGHT_STEP = "Prove first API-visible dispatch"
@@ -323,7 +324,12 @@ def _required_step_names(case_id: str) -> tuple[str, ...]:
         "go": SETUP_GO_STEP,
         "rust": SETUP_RUST_STEP,
     }.get(ecosystem)
-    names = [CHECKOUT_STEP, SETUP_PYTHON_STEP, PREFLIGHT_STEP]
+    names = [
+        RUNNER_ATTESTATION_STEP,
+        CHECKOUT_STEP,
+        SETUP_PYTHON_STEP,
+        PREFLIGHT_STEP,
+    ]
     if runtime_step:
         names.append(runtime_step)
     names.extend(

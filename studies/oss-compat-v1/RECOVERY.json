@@ -59,27 +59,101 @@
       "protocol_tag": "oss-protocol-v0.2",
       "scientific_disposition": "invalid_before_measurement",
       "study_id": "oss-pilot-02"
+    },
+    {
+      "canonical_run_attempt": 1,
+      "canonical_run_id": 29392747520,
+      "canonical_run_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29392747520",
+      "capture_classification": "invalid_or_incomplete_before_product_materialization",
+      "capture_path": "studies/oss-compat-v1/attempts/oss-pilot-03/29392747520",
+      "checksum_index_sha256": "84c2eb98466afc1176e69d4c36c4e7298c9465c8aa858e120bde28d3d38bede1",
+      "failure": {
+        "pre_product": {
+          "case_ids": [
+            "fzf-pr-4797-test-edit",
+            "requests-pr-7502-test-edit",
+            "ripgrep-pr-3467-test-edit"
+          ],
+          "message": "the partitionless root ownership scan exceeded its 300-second deadline",
+          "phase": "trusted_bootstrap_identity_preflight"
+        },
+        "workflow_reported_product_steps": [
+          {
+            "case_id": "fmt-pr-4822-source-only",
+            "message": "Run frozen case reported ERROR/no_test_verdict",
+            "scientific_use": "workflow_metadata_only_not_an_evaluated_product_verdict"
+          },
+          {
+            "case_id": "ripgrep-pr-3464-source-only",
+            "message": "Run frozen case reported ERROR/setup_failed",
+            "scientific_use": "workflow_metadata_only_not_an_evaluated_product_verdict"
+          }
+        ]
+      },
+      "manifest_sha256": "bee00b8f1142fa9f9bddf53bb7354a06e79055b658b308517a225371ab0f5b7c",
+      "observations": {
+        "case_runner_step_failures": 2,
+        "case_runner_step_successes": 7,
+        "case_runner_steps_skipped": 3,
+        "case_runner_steps_started": 9,
+        "guard_invocations": null,
+        "guard_invocations_reason": "not_determined_without_product_artifact_inspection",
+        "infrastructure_artifacts": 3,
+        "jobs": 12,
+        "product_artifacts": 9,
+        "product_evaluation_performed": false,
+        "product_materialization_eligible": false,
+        "product_outcome_denominator_contribution": 0,
+        "published_verified_guard_records": 0,
+        "unexpected_artifacts": 0
+      },
+      "preregistered_case_inventory": 12,
+      "product_inference_allowed": false,
+      "protocol_commit": "d2ab88924d564a9ab9035195f0933c492edac8e5",
+      "protocol_tag": "oss-protocol-v0.3",
+      "scientific_disposition": "invalid_or_incomplete_before_product_materialization",
+      "study_id": "oss-pilot-03"
     }
   ],
   "pooling_rules": {
     "historical_attempts_are_product_observations": false,
     "historical_product_denominator": 0,
-    "maximum_unique_successor_case_denominator": 12,
-    "repeated_preregistered_cases_increase_unique_n": false,
-    "rule": "Do not pool 12 intended matrix cells from v0.1, v0.2, and v0.3 as 36 product outcomes. Only verified v0.3 product records may enter a product denominator, whose maximum unique case count is 12."
+    "repeated_case_runs_increase_unique_n": false,
+    "rule": "Do not pool v0.1 through v0.4 or represent repeated intended cells as new observations. The unique case inventory remains 12. V0.4 may report exact repeated-case engineering conformance only after complete verified materialization; it cannot report held-out accuracy or generalization.",
+    "successor_held_out": false,
+    "unique_case_inventory": 12
   },
-  "recovery_schema": "evoom.oss-study-recovery/2",
+  "recovery_schema": "evoom.oss-study-recovery/3",
   "successor": {
-    "amendments": [
-      "combine the fixed uid/gid ownership preflight into one bounded root-filesystem traversal with a 300-second fail-closed timeout",
-      "persist the root-owned infrastructure marker before identity preflight",
-      "allow fallback release when the passwd entry is absent only if numeric uid 60001 has no processes",
-      "qualify the exact bootstrap and pre-installer recovery path on GitHub-hosted Ubuntu 24.04"
+    "allowed_claims": [
+      "whether the revised infrastructure completed all 12 repeated cells",
+      "descriptive exact-case conformance if and only if all product evidence verifies"
     ],
-    "protocol_tag": "oss-protocol-v0.3",
-    "relationship": "new_preregistered_successor_not_a_rerun_or_replacement",
-    "reuse_rationale": "Neither historical attempt started a case runner or EvoOM Guard invocation, so no product outcome was observed and no case, label, expectation, policy, profile, or engine choice was tuned from product results.",
-    "study_id": "oss-pilot-03",
+    "amendments": [
+      "partition the same root-device uid/gid ownership coverage across a bounded queue and bounded workers",
+      "retain fail-closed handling for every collision, scan or inventory error, OS-enforced live inventory stream limit or partition bound violation, global deadline, and depth-3 partition-boundary path/device/inode drift on the declared trusted responsive runner",
+      "emit per-partition scan timing and status telemetry",
+      "fail closed unless GitHub's runner.environment context attests github-hosted in qualification, privileged integration, and canonical jobs",
+      "qualify the exact bootstrap path across multiple independent GitHub-hosted Ubuntu 24.04 runners"
+    ],
+    "design": "repeated_non_blind_not_held_out",
+    "forbidden_claims": [
+      "accuracy",
+      "false-positive rate",
+      "generalization",
+      "held-out validation",
+      "independent validation",
+      "population representativeness"
+    ],
+    "prior_product_exposure": true,
+    "product_specific_tuning_permitted": false,
+    "protocol_tag": "oss-protocol-v0.4",
+    "relationship": "post_exposure_same_corpus_engineering_recovery",
+    "reuse_rationale": "V0.3 exposed product-phase workflow outcomes for part of the corpus. The same cases are repeated only to recover infrastructure completion, never to increase unique n or claim held-out performance. Product artifacts were not extracted or evaluated when designing the infrastructure amendment.",
+    "runtime_recovery_informed_by_prior_logs": true,
+    "scanner_threat_model": "preexisting numeric uid/gid collision detection on a trusted quiescent GitHub-hosted runner before any third-party code executes; not a TOCTOU defense against a concurrent privileged filesystem mutator or an unresponsive kernel/filesystem syscall",
+    "study_id": "oss-pilot-04",
+    "tuning_scope": "infrastructure_recovery_only",
     "unchanged_inputs": [
       "12 frozen candidate diffs",
       "case labels and expected Guard outcomes",

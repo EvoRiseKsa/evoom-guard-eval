@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import contextlib
+import io
 import json
 import os
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -107,26 +110,379 @@ class OssBootstrapLifecycleTests(unittest.TestCase):
             with self.assertRaises(bootstrap.BootstrapError):
                 bootstrap._append_github_output(destination, "ambiguous")  # noqa: SLF001
 
-    def test_new_fixed_identity_refuses_preexisting_owned_files(self) -> None:
-        occupied = subprocess.CompletedProcess(
-            [], 0, stdout="/host/object\n", stderr=""
+    def test_partitioned_identity_scan_refuses_a_deep_owned_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            clean = root / "one" / "two" / "clean"
+            occupied = root / "one" / "two" / "occupied"
+            clean.mkdir(parents=True)
+            occupied.mkdir()
+            finding = occupied / "host-object"
+
+            def fake_find(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[bytes]:
+                del kwargs
+                if "-mindepth" in command:
+                    output = os.fsencode(clean) + b"\0" + os.fsencode(occupied) + b"\0"
+                elif command[1] == os.fspath(occupied):
+                    output = os.fsencode(finding) + b"\0"
+                else:
+                    output = b""
+                return subprocess.CompletedProcess(command, 0, output, b"")
+
+            output = io.StringIO()
+            with (
+                mock.patch.object(subprocess, "run", side_effect=fake_find) as run,
+                contextlib.redirect_stdout(output),
+                self.assertRaisesRegex(bootstrap.BootstrapError, "already owns"),
+            ):
+                bootstrap._assert_no_preexisting_identity_files(  # noqa: SLF001
+                    root, partition_depth=3, workers=2, timeout_seconds=10
+                )
+
+            commands = [call.args[0] for call in run.call_args_list]
+            shallow = next(command for command in commands if "-maxdepth" in command and "-uid" in command)
+            self.assertIn("-xdev", shallow)
+            self.assertIn("-uid", shallow)
+            self.assertIn(str(bootstrap.UNTRUSTED_UID), shallow)
+            self.assertIn("-gid", shallow)
+            self.assertIn(str(bootstrap.UNTRUSTED_GID), shallow)
+            self.assertIn("-print0", shallow)
+            self.assertTrue(
+                any(command[1] == os.fspath(clean) and "-xdev" in command for command in commands)
+            )
+            self.assertTrue(
+                any(command[1] == os.fspath(occupied) and "-xdev" in command for command in commands)
+            )
+            telemetry = [
+                json.loads(line.removeprefix(bootstrap.IDENTITY_SCAN_PREFIX))
+                for line in output.getvalue().splitlines()
+            ]
+            partition_statuses = {
+                record["partition"]: record["status"]
+                for record in telemetry
+                if record["phase"] == "partition"
+            }
+            self.assertEqual("clean", partition_statuses[os.fspath(clean)])
+            self.assertEqual("collision", partition_statuses[os.fspath(occupied)])
+            self.assertEqual("error", telemetry[-1]["status"])
+
+    def test_partitioned_identity_scan_fails_closed_on_timeout(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            partition = root / "one" / "two" / "three"
+            partition.mkdir(parents=True)
+
+            def fake_find(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[bytes]:
+                del kwargs
+                if "-mindepth" in command:
+                    output = os.fsencode(partition) + b"\0"
+                    return subprocess.CompletedProcess(command, 0, output, b"")
+                if command[1] == os.fspath(partition):
+                    raise subprocess.TimeoutExpired(command, 1)
+                return subprocess.CompletedProcess(command, 0, b"", b"")
+
+            output = io.StringIO()
+            with (
+                mock.patch.object(subprocess, "run", side_effect=fake_find),
+                contextlib.redirect_stdout(output),
+                self.assertRaisesRegex(bootstrap.BootstrapError, "timed out"),
+            ):
+                bootstrap._assert_no_preexisting_identity_files(  # noqa: SLF001
+                    root, partition_depth=3, workers=1, timeout_seconds=10
+                )
+            telemetry = [
+                json.loads(line.removeprefix(bootstrap.IDENTITY_SCAN_PREFIX))
+                for line in output.getvalue().splitlines()
+            ]
+            self.assertTrue(
+                any(
+                    record["phase"] == "partition" and record["status"] == "timeout"
+                    for record in telemetry
+                )
+            )
+
+    def test_partitioned_identity_scan_fails_closed_on_find_error(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            failed = subprocess.CompletedProcess(
+                [], 1, stdout=b"", stderr=b"permission denied"
+            )
+            output = io.StringIO()
+            with (
+                mock.patch.object(subprocess, "run", return_value=failed),
+                contextlib.redirect_stdout(output),
+                self.assertRaisesRegex(bootstrap.BootstrapError, "scan failed"),
+            ):
+                bootstrap._assert_no_preexisting_identity_files(  # noqa: SLF001
+                    root, partition_depth=3, workers=1, timeout_seconds=10
+                )
+            telemetry = json.loads(
+                output.getvalue().removeprefix(bootstrap.IDENTITY_SCAN_PREFIX)
+            )
+            self.assertEqual("shallow", telemetry["phase"])
+            self.assertEqual("error", telemetry["status"])
+            self.assertEqual("permission denied", telemetry["detail"])
+
+    def test_partitioning_preserves_xdev_mount_boundary(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            local = root / "one" / "two" / "local"
+            mounted = root / "one" / "two" / "mounted"
+            local.mkdir(parents=True)
+            mounted.mkdir()
+            native_lstat = os.lstat
+            root_device = native_lstat(root).st_dev
+
+            def fake_lstat(path: str | bytes | os.PathLike[str] | os.PathLike[bytes]) -> os.stat_result:
+                metadata = native_lstat(path)
+                if Path(path) != mounted:
+                    return metadata
+                values = list(metadata)
+                values[2] = root_device + 1
+                return os.stat_result(values)
+
+            def fake_find(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[bytes]:
+                del kwargs
+                output = b""
+                if "-mindepth" in command:
+                    output = os.fsencode(local) + b"\0" + os.fsencode(mounted) + b"\0"
+                return subprocess.CompletedProcess(command, 0, output, b"")
+
+            output = io.StringIO()
+            with (
+                mock.patch.object(bootstrap.os, "lstat", side_effect=fake_lstat),
+                mock.patch.object(subprocess, "run", side_effect=fake_find) as run,
+                contextlib.redirect_stdout(output),
+            ):
+                bootstrap._assert_no_preexisting_identity_files(  # noqa: SLF001
+                    root, partition_depth=3, workers=2, timeout_seconds=10
+                )
+
+            partition_roots = {
+                call.args[0][1]
+                for call in run.call_args_list
+                if "-uid" in call.args[0] and "-maxdepth" not in call.args[0]
+            }
+            self.assertEqual({os.fspath(local)}, partition_roots)
+            telemetry = [
+                json.loads(line.removeprefix(bootstrap.IDENTITY_SCAN_PREFIX))
+                for line in output.getvalue().splitlines()
+            ]
+            inventory = next(
+                record for record in telemetry if record["phase"] == "inventory-before"
+            )
+            self.assertEqual(1, inventory["skipped_mounts"])
+            self.assertEqual("clean", telemetry[-1]["status"])
+
+    def test_partition_inventory_drift_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            first = root / "one" / "two" / "first"
+            added = root / "one" / "two" / "added"
+            first.mkdir(parents=True)
+            added.mkdir()
+            inventory_calls = 0
+
+            def fake_find(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[bytes]:
+                nonlocal inventory_calls
+                del kwargs
+                if "-mindepth" not in command:
+                    return subprocess.CompletedProcess(command, 0, b"", b"")
+                inventory_calls += 1
+                paths = [first] if inventory_calls == 1 else [first, added]
+                output = b"".join(os.fsencode(path) + b"\0" for path in paths)
+                return subprocess.CompletedProcess(command, 0, output, b"")
+
+            output = io.StringIO()
+            with (
+                mock.patch.object(subprocess, "run", side_effect=fake_find),
+                contextlib.redirect_stdout(output),
+                self.assertRaisesRegex(bootstrap.BootstrapError, "inventory changed"),
+            ):
+                bootstrap._assert_no_preexisting_identity_files(  # noqa: SLF001
+                    root, partition_depth=3, workers=1, timeout_seconds=10
+                )
+            telemetry = [
+                json.loads(line.removeprefix(bootstrap.IDENTITY_SCAN_PREFIX))
+                for line in output.getvalue().splitlines()
+            ]
+            final_inventory = next(
+                record for record in telemetry if record["phase"] == "inventory-after"
+            )
+            self.assertEqual("error", final_inventory["status"])
+            self.assertEqual(
+                "partition inventory changed during scan", final_inventory["detail"]
+            )
+
+    def test_partition_fingerprint_drift_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            partition = root / "one" / "two" / "three"
+            partition.mkdir(parents=True)
+            native_lstat = os.lstat
+            partition_stats = 0
+
+            def fake_lstat(
+                path: str | bytes | os.PathLike[str] | os.PathLike[bytes],
+            ) -> os.stat_result:
+                nonlocal partition_stats
+                metadata = native_lstat(path)
+                if Path(path) != partition:
+                    return metadata
+                partition_stats += 1
+                if partition_stats == 1:
+                    return metadata
+                values = list(metadata)
+                values[1] = metadata.st_ino + 1
+                return os.stat_result(values)
+
+            def fake_find(
+                command: list[str], **kwargs: object
+            ) -> subprocess.CompletedProcess[bytes]:
+                del kwargs
+                output = b""
+                if "-mindepth" in command:
+                    output = os.fsencode(partition) + b"\0"
+                return subprocess.CompletedProcess(command, 0, output, b"")
+
+            with (
+                mock.patch.object(bootstrap.os, "lstat", side_effect=fake_lstat),
+                mock.patch.object(subprocess, "run", side_effect=fake_find),
+                self.assertRaisesRegex(bootstrap.BootstrapError, "inventory changed"),
+            ):
+                bootstrap._assert_no_preexisting_identity_files(  # noqa: SLF001
+                    root, partition_depth=3, workers=1, timeout_seconds=10
+                )
+
+    def test_skipped_mount_fingerprint_drift_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            mountpoint = root / "one" / "two" / "mounted"
+            mountpoint.mkdir(parents=True)
+            native_lstat = os.lstat
+            root_device = native_lstat(root).st_dev
+            mountpoint_stats = 0
+
+            def fake_lstat(
+                path: str | bytes | os.PathLike[str] | os.PathLike[bytes],
+            ) -> os.stat_result:
+                nonlocal mountpoint_stats
+                metadata = native_lstat(path)
+                if Path(path) != mountpoint:
+                    return metadata
+                mountpoint_stats += 1
+                values = list(metadata)
+                values[1] = metadata.st_ino + (1 if mountpoint_stats > 1 else 0)
+                values[2] = root_device + 1
+                return os.stat_result(values)
+
+            def fake_find(
+                command: list[str], **kwargs: object
+            ) -> subprocess.CompletedProcess[bytes]:
+                del kwargs
+                output = b""
+                if "-mindepth" in command:
+                    output = os.fsencode(mountpoint) + b"\0"
+                return subprocess.CompletedProcess(command, 0, output, b"")
+
+            with (
+                mock.patch.object(bootstrap.os, "lstat", side_effect=fake_lstat),
+                mock.patch.object(subprocess, "run", side_effect=fake_find),
+                self.assertRaisesRegex(bootstrap.BootstrapError, "inventory changed"),
+            ):
+                bootstrap._assert_no_preexisting_identity_files(  # noqa: SLF001
+                    root, partition_depth=3, workers=1, timeout_seconds=10
+                )
+
+    def test_partition_inventory_resource_bounds_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            first = root / "one" / "two" / "first"
+            second = root / "one" / "two" / "second"
+            first.mkdir(parents=True)
+            second.mkdir()
+            inventory = b"".join(
+                os.fsencode(path) + b"\0" for path in (first, second)
+            )
+
+            def fake_find(
+                command: list[str], **kwargs: object
+            ) -> subprocess.CompletedProcess[bytes]:
+                del kwargs
+                output = inventory if "-mindepth" in command else b""
+                return subprocess.CompletedProcess(command, 0, output, b"")
+
+            with (
+                mock.patch.object(subprocess, "run", side_effect=fake_find),
+                self.assertRaisesRegex(bootstrap.BootstrapError, "exceeded 1 entries"),
+            ):
+                bootstrap._assert_no_preexisting_identity_files(  # noqa: SLF001
+                    root,
+                    partition_depth=3,
+                    workers=1,
+                    timeout_seconds=10,
+                    max_partitions=1,
+                )
+
+            with (
+                mock.patch.object(subprocess, "run", side_effect=fake_find),
+                self.assertRaisesRegex(bootstrap.BootstrapError, "output exceeded"),
+            ):
+                bootstrap._assert_no_preexisting_identity_files(  # noqa: SLF001
+                    root,
+                    partition_depth=3,
+                    workers=1,
+                    timeout_seconds=10,
+                    inventory_output_limit=len(inventory) - 1,
+                )
+
+    @unittest.skipUnless(
+        os.name == "posix" and Path("/usr/bin/find").is_file(),
+        "requires GNU find on a POSIX filesystem",
+    )
+    def test_inventory_live_output_is_cut_off_by_posix_rlimit(self) -> None:
+        output, record = bootstrap._run_identity_inventory_command(  # noqa: SLF001
+            [
+                sys.executable,
+                "-c",
+                "import os; os.write(1, b'x' * 4096); os.write(1, b'y')",
+            ],
+            deadline=time.monotonic() + 10,
+            phase="inventory-limit-test",
+            partition=Path("/"),
+            output_limit=4096,
         )
-        with (
-            mock.patch.object(subprocess, "run", return_value=occupied) as run,
-            self.assertRaisesRegex(bootstrap.BootstrapError, "already owns"),
-        ):
-            bootstrap._assert_no_preexisting_identity_files()  # noqa: SLF001
-        command = run.call_args.args[0]
-        self.assertEqual(1, command.count("/usr/bin/find"))
-        self.assertIn("-xdev", command)
-        self.assertIn("-uid", command)
-        self.assertIn(str(bootstrap.UNTRUSTED_UID), command)
-        self.assertIn("-gid", command)
-        self.assertIn(str(bootstrap.UNTRUSTED_GID), command)
-        self.assertEqual(
-            bootstrap.IDENTITY_SCAN_TIMEOUT_SECONDS,
-            run.call_args.kwargs["timeout"],
-        )
+        self.assertIsNone(output)
+        self.assertEqual("error", record["status"])
+
+    @unittest.skipUnless(
+        os.name == "posix" and Path("/usr/bin/find").is_file(),
+        "requires GNU find on a POSIX filesystem",
+    )
+    def test_partitioned_identity_scan_runs_against_a_real_tree(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            (root / "one" / "two" / "three").mkdir(parents=True)
+            (root / "one" / "two" / "three" / "file").write_text(
+                "content\n", encoding="utf-8"
+            )
+            output = io.StringIO()
+            with (
+                mock.patch.object(bootstrap, "UNTRUSTED_UID", 2_000_000_001),
+                mock.patch.object(bootstrap, "UNTRUSTED_GID", 2_000_000_001),
+                contextlib.redirect_stdout(output),
+            ):
+                bootstrap._assert_no_preexisting_identity_files(  # noqa: SLF001
+                    root, partition_depth=2, workers=2, timeout_seconds=10
+                )
+            telemetry = [
+                json.loads(line.removeprefix(bootstrap.IDENTITY_SCAN_PREFIX))
+                for line in output.getvalue().splitlines()
+            ]
+            self.assertTrue(
+                any(record["phase"] == "partition" for record in telemetry)
+            )
+            self.assertEqual("clean", telemetry[-1]["status"])
 
     def test_identity_failure_leaves_a_durable_infrastructure_marker(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

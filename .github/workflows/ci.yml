@@ -43,12 +43,13 @@ jobs:
         run: |
           python harness/make_oss_manifest.py oss-pilot-01 --check
           python harness/make_oss_manifest.py oss-pilot-02 --check
+          python harness/make_oss_manifest.py oss-pilot-03 --check
       - name: Reproduce current OSS manifest when frozen
-        run: python harness/make_oss_manifest.py oss-pilot-03 --check --if-present
+        run: python harness/make_oss_manifest.py oss-pilot-04 --check --if-present
       - name: Verify published OSS compatibility results when present
         run: >-
           python harness/evaluate_oss.py
-          --study oss-pilot-03
+          --study oss-pilot-04
           --results studies/oss-compat-v1/results
           --check --if-present
       - name: Verify published artifacts against the live Actions API
@@ -61,11 +62,23 @@ jobs:
           --verify-only --if-present
 
   oss-boundary-qualification:
-    name: OSS boundary qualification / Ubuntu 24.04
+    name: OSS boundary qualification / Ubuntu 24.04 / Replica ${{ matrix.replica }}
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        replica: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     steps:
+      - name: Assert GitHub-hosted runner
+        shell: bash
+        env:
+          RUNNER_ENVIRONMENT: ${{ runner.environment }}
+        run: |
+          set -euo pipefail
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
@@ -75,17 +88,20 @@ jobs:
           python-version: "3.12.10"
 
       - name: Set up Node 24.14.1
+        if: matrix.replica == 1
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: "24.14.1"
 
       - name: Set up Go 1.23.12
+        if: matrix.replica == 1
         uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
         with:
           go-version: "1.23.12"
           cache: false
 
       - name: Pin Rust 1.85.0
+        if: matrix.replica == 1
         shell: bash
         run: |
           set -euo pipefail
@@ -99,10 +115,10 @@ jobs:
           set -euo pipefail
           readonly CASE_ID=cjson-pr-1006-source-only
           PYTHON_BIN="$(command -v python)"
-          if test -f studies/oss-compat-v1/manifests/oss-pilot-03.json; then
-            python harness/make_oss_manifest.py oss-pilot-03 --check
+          if test -f studies/oss-compat-v1/manifests/oss-pilot-04.json; then
+            python harness/make_oss_manifest.py oss-pilot-04 --check
           else
-            python harness/make_oss_manifest.py oss-pilot-03
+            python harness/make_oss_manifest.py oss-pilot-04
           fi
           readonly -a TRUSTED_IDENTITY=(
             "GITHUB_ACTIONS=$GITHUB_ACTIONS"
@@ -121,7 +137,7 @@ jobs:
             PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
             "${TRUSTED_IDENTITY[@]}" \
             "$PYTHON_BIN" harness/prepare_oss_bootstrap.py prepare \
-              --study oss-pilot-03 \
+              --study oss-pilot-04 \
               --case "$CASE_ID" \
               --output-root /var/lib/evoom-oss/output \
               --publisher-uid "$(id -u)" \
@@ -130,7 +146,7 @@ jobs:
             PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
             "${TRUSTED_IDENTITY[@]}" \
             "$PYTHON_BIN" harness/prepare_oss_bootstrap.py release-infra \
-              --study oss-pilot-03 \
+              --study oss-pilot-04 \
               --case "$CASE_ID" \
               --output-root /var/lib/evoom-oss/output \
               --publisher-uid "$(id -u)" \
@@ -138,21 +154,23 @@ jobs:
           readonly CLASSIFICATION_OUTPUT="$RUNNER_TEMP/bootstrap-classification"
           test ! -e "$CLASSIFICATION_OUTPUT"
           python harness/prepare_oss_bootstrap.py classify \
-            --study oss-pilot-03 \
+            --study oss-pilot-04 \
             --case "$CASE_ID" \
             --output-root /var/lib/evoom-oss/output \
             --github-output "$CLASSIFICATION_OUTPUT"
           grep -Fx 'classification=infra' "$CLASSIFICATION_OUTPUT"
           test "$(stat -c %u \
-            "/var/lib/evoom-oss/output/oss-pilot-03/$CASE_ID/bootstrap-envelope.json")" \
+            "/var/lib/evoom-oss/output/oss-pilot-04/$CASE_ID/bootstrap-envelope.json")" \
             = "$(id -u)"
           sudo rm -rf -- /var/lib/evoom-oss
 
       - name: Install and self-test trusted execution boundary
+        if: matrix.replica == 1
         shell: bash
         run: bash harness/install_oss_boundary.sh
 
       - name: Configure and build a real CMake project through the boundary
+        if: matrix.replica == 1
         shell: bash
         run: |
           set -euo pipefail
@@ -187,6 +205,14 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
+      - name: Assert GitHub-hosted runner
+        shell: bash
+        env:
+          RUNNER_ENVIRONMENT: ${{ runner.environment }}
+        run: |
+          set -euo pipefail
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 

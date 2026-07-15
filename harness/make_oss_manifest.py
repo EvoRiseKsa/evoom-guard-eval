@@ -9,18 +9,19 @@ from oss_common import (
     ENGINE_SHA256,
     ENGINE_VERSION,
     EXPECTED_CASE_COUNT,
+    MANIFEST_SCHEMA,
     PROTOCOL_ID,
     PROTOCOL_TAG,
     PROTOCOL_VERSION,
     ROOT,
     SCHEMA_VERSION,
     STUDY_ID,
-    STUDY_ROOT,
     canonical_json_bytes,
     hashed_entries,
-    load_json,
+    manifest_claim_scope,
     manifest_case_entries,
     manifest_path,
+    manifest_selection,
     study_input_paths,
     verify_manifest,
     working_study_problems,
@@ -31,7 +32,6 @@ from oss_common import (
 def build_manifest(study_id: str = STUDY_ID) -> dict[str, Any]:
     if study_id != STUDY_ID:
         raise ValueError(f"current protocol defines only {STUDY_ID!r}")
-    selection = load_json(STUDY_ROOT / "SELECTION.json")
     problems = working_study_problems()
     if problems:
         raise ValueError("invalid working OSS study: " + "; ".join(problems))
@@ -47,31 +47,21 @@ def build_manifest(study_id: str = STUDY_ID) -> dict[str, Any]:
     if len(cases) != EXPECTED_CASE_COUNT:
         raise ValueError(f"expected {EXPECTED_CASE_COUNT} frozen cases, got {len(cases)}")
     return {
-        "manifest_schema": "evoom.oss-study-manifest/1",
+        "manifest_schema": MANIFEST_SCHEMA,
         "study_id": study_id,
         "protocol": {
             "id": PROTOCOL_ID,
             "tag": PROTOCOL_TAG,
             "version": PROTOCOL_VERSION,
         },
-        "claim_scope": {
-            "accuracy_claims_allowed": False,
-            "independent": False,
-            "kind": "same_owner_compatibility",
-        },
+        "claim_scope": manifest_claim_scope(),
         "roles": {
             "curator": "EvoRiseKsa",
             "runner": "EvoRiseKsa",
             "separated": False,
             "same_owner_declared": True,
         },
-        "selection": {
-            "method": selection["selection_method"],
-            "seed": selection["selection_seed"],
-            "snapshot_utc": selection["snapshot_utc"],
-            "representative_sample": False,
-            "tuning_permitted": False,
-        },
+        "selection": manifest_selection(),
         "engine": {
             "release": ENGINE_VERSION,
             "evo_guard_pyz_sha256": ENGINE_SHA256,
