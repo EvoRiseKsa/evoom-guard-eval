@@ -1,0 +1,55 @@
+diff --git a/include/fmt/base.h b/include/fmt/base.h
+index 5d0241c8cad4b293f060f2dfa568bdc5542e37fa..60d1b7928f736927ffb82aba7571adc198ccbfab 100644
+--- a/include/fmt/base.h
++++ b/include/fmt/base.h
+@@ -493,9 +493,10 @@ inline FMT_CONSTEXPR auto get_container(OutputIt it) ->
+ template <typename T, typename Enable = void>
+ struct is_contiguous : std::false_type {};
+ template <typename T>
+-struct is_contiguous<T, void_t<decltype(std::declval<T&>().data()),
+-                               decltype(std::declval<T&>().size()),
+-                               decltype(std::declval<T&>()[size_t()])>>
++struct is_contiguous<T,
++                     void_t<decltype(std::declval<T&>().data()),
++                            decltype(std::declval<T&>().size()),
++                            decltype(std::declval<T&>().operator[](size_t()))>>
+     : std::true_type {};
+ }  // namespace detail
+ 
+diff --git a/test/base-test.cc b/test/base-test.cc
+index 40cc3810f7f81b526da1852b5a47880bd0c165b6..92415cbdf79d9b83a288edb1358f85e7f669ab19 100644
+--- a/test/base-test.cc
++++ b/test/base-test.cc
+@@ -874,6 +874,24 @@ struct custom_container {
+   auto operator[](size_t) -> char& { return data; }
+ };
+ 
++struct phantom_subscript_operator_container {
++  std::vector<char> buffer;
++
++  using value_type = char;
++
++  auto size() const noexcept -> size_t { return buffer.size(); }
++
++  auto data() noexcept -> char* { return buffer.data(); }
++
++  auto data() const noexcept -> const char* { return buffer.data(); }
++
++  void resize(size_t n) { buffer.resize(n); }
++
++  void push_back(const char& value) { buffer.push_back(value); }
++
++  operator const char*() const noexcept { return data(); }
++};
++
+ FMT_BEGIN_NAMESPACE
+ template <> struct is_contiguous<custom_container> : std::true_type {};
+ FMT_END_NAMESPACE
+@@ -884,6 +902,7 @@ TEST(base_test, is_contiguous) {
+   EXPECT_TRUE((fmt::is_contiguous<fmt::string_view>::value));
+   EXPECT_TRUE((fmt::is_contiguous<std::vector<char>>::value));
+   EXPECT_FALSE((fmt::is_contiguous<std::list<char>>::value));
++  EXPECT_FALSE((fmt::is_contiguous<phantom_subscript_operator_container>::value));
+ }
+ 
+ TEST(base_test, format_to_custom_container) {

@@ -1,0 +1,49 @@
+{
+  "base_commit": "b2890c8d76bbb64e710585ebc0a917196b9c67e7",
+  "base_tree": "ab2a8925131e889e06c7925f3fcd613ce094c1dd",
+  "candidate_canonical_sha256": "538c66f19509472a5ba2456de235c601b73dede23cdb6623efe72280c386597a",
+  "candidate_sha256": "11c7fc701db9b50a4d2f50078dc53525220159e550a1731f7c0191a2df67b277",
+  "canonical_url": "https://github.com/DaveGamble/cJSON.git",
+  "changed_paths": [
+    {
+      "path": "cJSON_Utils.c",
+      "status": "M"
+    }
+  ],
+  "commit": {
+    "author_date": "2026-04-09T09:59:11+08:00",
+    "author_email": "62094604+Ssh1y@users.noreply.github.com",
+    "author_name": "Ssh1y Ripple",
+    "committer_date": "2026-04-09T09:59:11+08:00",
+    "committer_email": "noreply@github.com",
+    "committer_name": "GitHub",
+    "has_embedded_signature": true
+  },
+  "diff_command": "git -c core.safecrlf=false -c diff.algorithm=myers -c diff.indentHeuristic=true -c diff.compactionHeuristic=false -c diff.interHunkContext=0 diff --no-ext-diff --no-textconv --no-renames --unified=3 --binary --full-index b2890c8d76bbb64e710585ebc0a917196b9c67e7 fb16e5cf358798aabb049655975cde8427101056 --",
+  "head_commit": "fb16e5cf358798aabb049655975cde8427101056",
+  "head_tree": "e01489f142ec404fb133529eb9433acabceb4ead",
+  "license": {
+    "files": [
+      {
+        "git_blob": "78deb0406d713ab9730e3c2447be1abdbd70b9a2",
+        "path": "LICENSE",
+        "redistributed_path": "licenses/cjson/fb16e5cf358798aabb049655975cde8427101056/LICENSE",
+        "sha256": "a36dda207c36db5818729c54e7ad4e8b0c6fba847491ba64f372c1a2037b6d5c"
+      }
+    ],
+    "redistribution_review": "permitted_by_named_upstream_license",
+    "spdx": "MIT"
+  },
+  "provenance_schema": "evoom.oss-case-provenance/1",
+  "pull_request": {
+    "merge_commit": "fb16e5cf358798aabb049655975cde8427101056",
+    "merged_at_utc": "2026-04-09T01:59:11Z",
+    "number": 1006,
+    "original_head_commit": "cd14a72963ebc1a77d387771104730beb5bb63ef",
+    "title": "Fix: Type Confusion vulnerability in cJSONUtils_ApplyPatches",
+    "url": "https://github.com/DaveGamble/cJSON/pull/1006"
+  },
+  "relationship": "first-parent-to-merged-commit",
+  "repository": "DaveGamble/cJSON",
+  "selection_and_metadata_frozen_at_utc": "2026-07-15T00:44:48Z"
+}

@@ -1,0 +1,61 @@
+{
+  "baseline_evidence": true,
+  "candidate_canonical_sha256": "95304892723030d17672d02d650aa08019feb487722ed68131227091f162f27a",
+  "candidate_kind": "verbatim_upstream",
+  "candidate_sha256": "39d132949b887748800754eed85bcc3b9ec93ed754d371ace11bea8f962ff087",
+  "case_schema": "evoom.oss-compat-case/1",
+  "category": "verbatim_upstream_source_only",
+  "change_class": "typing_maintenance",
+  "ecosystem": "python",
+  "environment": "environments/python-requests-py312-v1.json",
+  "expected_guard": {
+    "reason_code": "tests_passed",
+    "verdict": "PASS"
+  },
+  "id": "requests-pr-7498-source-only",
+  "license": {
+    "files": [
+      {
+        "git_blob": "67db8588217f266eb561f75fae738656325deac9",
+        "path": "LICENSE",
+        "redistributed_path": "licenses/requests/1190afd14fca74292946d62c4c8169880a47ff67/LICENSE",
+        "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b"
+      },
+      {
+        "git_blob": "1ff62db688277b77c83c1766dac7f165364d3528",
+        "path": "NOTICE",
+        "redistributed_path": "licenses/requests/1190afd14fca74292946d62c4c8169880a47ff67/NOTICE",
+        "sha256": "f5110972dedad2b4e9d314518daf3b7d72d6e02e499acd802181de6f74571dcc"
+      }
+    ],
+    "spdx": "Apache-2.0"
+  },
+  "mode": "diff",
+  "policy": "policies/python-requests-py312-v1.json",
+  "profile": "python-requests-py312-v1",
+  "provenance_sha256": "c1c953f6498cb1462fe8862fbd293aed6f5af01f4c5fe35e3613fb519adceae5",
+  "repository": "psf/requests",
+  "repository_key": "requests",
+  "same_owner_oracle": {
+    "basis": "same-owner curator classification assigned during study construction before the canonical Guard workflow execution",
+    "disposition": "admit",
+    "independent": false
+  },
+  "source": {
+    "base_commit": "e50e5945294f79ee9ab4ec69de24d14f9b26a7ae",
+    "base_tree": "15178dfdd64b69f76b97f50398ebdb5dc5f12b80",
+    "head_commit": "1190afd14fca74292946d62c4c8169880a47ff67",
+    "head_tree": "035f0ad7df8ceeee902309cd8e1a644943872fd6",
+    "type": "git",
+    "url": "https://github.com/psf/requests.git"
+  },
+  "test_scope": "declared_repo_suite_for_profile",
+  "upstream": {
+    "merge_commit": "1190afd14fca74292946d62c4c8169880a47ff67",
+    "merged_at_utc": "2026-06-04T21:43:21Z",
+    "original_head_commit": "1e0fa672ed7185d5c408e2dc6ce1e15abf1d488f",
+    "pull_request": 7498,
+    "title": "Add type annotation for `Request.hooks`",
+    "url": "https://github.com/psf/requests/pull/7498"
+  }
+}

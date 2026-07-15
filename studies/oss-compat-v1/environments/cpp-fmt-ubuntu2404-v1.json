@@ -1,0 +1,9 @@
+{
+  "id": "cpp-fmt-ubuntu2404-v1",
+  "runner": "ubuntu-24.04",
+  "runtime": {"compiler": "runner-provided-gcc", "cmake": "runner-provided"},
+  "dependency_resolution": "no_external_project_dependencies_in_selected_suite",
+  "network": "not_required_by_setup_or_test",
+  "secrets": false,
+  "notes": "Compiler and CMake versions are captured at execution. The GitHub runner label is mutable, so this is reproducible source replay with a captured, not image-digest-pinned, toolchain."
+}

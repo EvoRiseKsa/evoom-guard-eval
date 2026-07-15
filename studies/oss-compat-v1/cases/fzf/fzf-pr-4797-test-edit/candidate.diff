@@ -1,0 +1,463 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 5cbbcdac9607dfa468694df57930bb5710e8c94d..4cc0700b1f775ade982bb3e0c6b69f9878a8907f 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -3,6 +3,19 @@ CHANGELOG
+ 
+ 0.73.0
+ ------
++- Timer-driven `every(N)` event for `--bind`, where `N` is seconds (fractional, floored to `0.01`). Ticks that overlap an in-flight action are coalesced, so a slow `reload` cannot accumulate a backlog.
++- New `FZF_IDLE_TIME` (whole seconds) and `FZF_IDLE_TIME_MS` (milliseconds) environment variables exported to child processes, holding the elapsed time since the last user activity. Pair with `every(N)` to build idle-based behavior such as auto-accept or auto-quit (#1211).
++      ```sh
++      # Live process list; --track --id-nth 2 keeps the cursor on the same PID across reloads
++      fzf --header-lines 1 --track --id-nth 2 --bind 'start,every(2):reload-sync:ps -ef'
++
++      # Auto-accept after 10 seconds of inactivity, with a countdown in the footer after 5s
++      fzf --bind 'every(1):bg-transform:
++        if   [[ $FZF_IDLE_TIME -lt 5  ]]; then echo change-footer:
++        elif [[ $FZF_IDLE_TIME -lt 10 ]]; then echo "change-footer:auto-accept in $((10 - FZF_IDLE_TIME))s"
++        else echo accept
++        fi'
++      ```
+ - Bug fixes
+     - `change-preview-window` no longer resets `wrap` / `wrap-word` state set via `toggle-preview-wrap` / `toggle-preview-wrap-word`. Layout fields still snap to the preset, so cycling and the empty-token reset behave as before. The new spec can still override by including `wrap` or `nowrap` explicitly. (#4791)
+ 
+diff --git a/man/man1/fzf.1 b/man/man1/fzf.1
+index 00e3b5fcdafad16af55aafd45bb40123fcb38568..ad5c83c399412cce57d676a7d9f8bbe5489267cc 100644
+--- a/man/man1/fzf.1
++++ b/man/man1/fzf.1
+@@ -1500,6 +1500,10 @@ fzf exports the following environment variables to its child processes.
+ .br
+ .BR FZF_KEY "             The name of the last key pressed"
+ .br
++.BR FZF_IDLE_TIME "       Whole seconds since the last user activity"
++.br
++.BR FZF_IDLE_TIME_MS "    Milliseconds since the last user activity"
++.br
+ .BR FZF_PORT "            Port number when \-\-listen option is used"
+ .br
+ .BR FZF_SOCK "            Unix socket path when \-\-listen option is used"
+@@ -1939,6 +1943,30 @@ variables starting from 1. It optionally sets \fBFZF_CLICK_FOOTER_WORD\fR
+ if clicked on a word.
+ .RE
+ 
++\fIevery(N)\fR
++.RS
++Triggered every \fIN\fR seconds (\fIN\fR can be a fractional number, e.g.
++\fB0.5\fR). The minimum interval is \fB0.01\fR seconds; values are floored
++to that.
++
++Combine with the \fBFZF_IDLE_TIME\fR (whole seconds) and
++\fBFZF_IDLE_TIME_MS\fR (milliseconds) environment variables to build
++idle\-based behavior without a separate event.
++
++e.g.
++     \fB# Live process list, refreshed every 2 seconds.
++     # --track --id-nth 2 keeps the cursor on the same PID across reloads.
++     fzf \-\-header\-lines 1 \-\-track \-\-id\-nth 2 \\
++         \-\-bind 'start,every(2):reload\-sync:ps \-ef'
++
++     # Auto\-accept after 10 seconds of inactivity, with a countdown in the footer after 5s.
++     fzf \-\-bind 'every(1):bg\-transform:
++       if   [[ $FZF_IDLE_TIME \-lt 5  ]]; then echo change\-footer:
++       elif [[ $FZF_IDLE_TIME \-lt 10 ]]; then echo "change\-footer:auto\-accept in $((10 \- FZF_IDLE_TIME))s"
++       else echo accept
++       fi'\fR
++.RE
++
+ .SS AVAILABLE ACTIONS:
+ A key or an event can be bound to one or more of the following actions.
+ 
+diff --git a/src/options.go b/src/options.go
+index 9e9f9f5bc7d4058c655bd26f80e21f99519f4aba..0ebca52b90f01d8d71c2eb3d1de3d26db033a4ce 100644
+--- a/src/options.go
++++ b/src/options.go
+@@ -4,6 +4,7 @@ import (
+ 	"errors"
+ 	"fmt"
+ 	"maps"
++	"math"
+ 	"os"
+ 	"regexp"
+ 	"strconv"
+@@ -1257,7 +1258,14 @@ func parseKeyChords(str string, message string) (map[tui.Event]string, []tui.Eve
+ 			add(tui.F12)
+ 		default:
+ 			runes := []rune(key)
+-			if len(key) == 10 && strings.HasPrefix(lkey, "ctrl-alt-") && isAlphabet(lkey[9]) {
++			if strings.HasPrefix(lkey, "every(") && strings.HasSuffix(lkey, ")") {
++				evt, err := parseEveryEvent(key[6 : len(key)-1])
++				if err != nil {
++					return nil, list, err
++				}
++				chords[evt] = key
++				list = append(list, evt)
++			} else if len(key) == 10 && strings.HasPrefix(lkey, "ctrl-alt-") && isAlphabet(lkey[9]) {
+ 				r := rune(lkey[9])
+ 				evt := tui.CtrlAltKey(r)
+ 				if r == 'h' && !util.IsWindows() {
+@@ -1299,6 +1307,21 @@ func parseKeyChords(str string, message string) (map[tui.Event]string, []tui.Eve
+ 	return chords, list, nil
+ }
+ 
++func parseEveryEvent(arg string) (tui.Event, error) {
++	secs, err := strconv.ParseFloat(strings.TrimSpace(arg), 64)
++	if err != nil || math.IsNaN(secs) || math.IsInf(secs, 0) || secs <= 0 {
++		return tui.Event{}, errors.New("every() requires a positive number of seconds")
++	}
++	if secs < 0.01 {
++		secs = 0.01
++	}
++	ms := math.Round(secs * 1000)
++	if ms > math.MaxInt32 {
++		return tui.Event{}, errors.New("every() interval is too large")
++	}
++	return tui.Event{Type: tui.Every, Char: rune(int32(ms))}, nil
++}
++
+ func parseScheme(str string) (string, []criterion, error) {
+ 	str = strings.ToLower(str)
+ 	switch str {
+diff --git a/src/options_test.go b/src/options_test.go
+index a8c42cef35a5c0f82024aef6f3ff75e21025b76e..7e23215d1814accf7a84101c3d817e4ffe17986f 100644
+--- a/src/options_test.go
++++ b/src/options_test.go
+@@ -299,6 +299,39 @@ func TestBind(t *testing.T) {
+ 	check(tui.F1.AsEvent(), "", actAbort)
+ }
+ 
++func TestParseEveryEvent(t *testing.T) {
++	pairs, _, err := parseKeyChords("every(2),every(0.5)", "")
++	if err != nil {
++		t.Fatalf("unexpected error: %v", err)
++	}
++	if len(pairs) != 2 {
++		t.Errorf("expected 2 distinct every events, got %d", len(pairs))
++	}
++	if pairs[(tui.Event{Type: tui.Every, Char: 2000})] != "every(2)" {
++		t.Errorf("every(2) not registered")
++	}
++	if pairs[(tui.Event{Type: tui.Every, Char: 500})] != "every(0.5)" {
++		t.Errorf("every(0.5) not registered")
++	}
++
++	// Floor at 0.01s -> 10ms
++	pairs, _, err = parseKeyChords("every(0.001)", "")
++	if err != nil {
++		t.Fatalf("unexpected error: %v", err)
++	}
++	if pairs[(tui.Event{Type: tui.Every, Char: 10})] != "every(0.001)" {
++		t.Errorf("every(0.001) should floor to 10ms")
++	}
++
++	// Reject zero, negatives, and overflow (>= 2^31 ms = ~24.85 days)
++	for _, bad := range []string{"every(0)", "every(-1)", "every(abc)", "every()", "every(2147484)"} {
++		if _, _, err := parseKeyChords(bad, ""); err == nil {
++			t.Errorf("%s should be rejected", bad)
++		}
++	}
++
++}
++
+ func TestColorSpec(t *testing.T) {
+ 	var base *tui.ColorTheme
+ 	theme := tui.Dark256
+diff --git a/src/terminal.go b/src/terminal.go
+index c4b629145020e3f8107e7b15eeefc5c63c9eddb8..7f9a51d963df51957bcdbe504261d70ed6ce0869 100644
+--- a/src/terminal.go
++++ b/src/terminal.go
+@@ -436,6 +436,7 @@ type Terminal struct {
+ 	bgSemaphores         map[action]chan struct{}
+ 	keyChan              chan tui.Event
+ 	eventChan            chan tui.Event
++	timerChan            chan tui.Event
+ 	slab                 *util.Slab
+ 	theme                *tui.ColorTheme
+ 	tui                  tui.Renderer
+@@ -456,6 +457,7 @@ type Terminal struct {
+ 	proxyScript          string
+ 	numLinesCache        map[int32]numLinesCacheValue
+ 	raw                  bool
++	lastActivity         time.Time
+ }
+ 
+ type numLinesCacheValue struct {
+@@ -1151,6 +1153,7 @@ func NewTerminal(opts *Options, eventBox *util.EventBox, executor *util.Executor
+ 		bgSemaphores:       make(map[action]chan struct{}),
+ 		keyChan:            make(chan tui.Event),
+ 		eventChan:          make(chan tui.Event, 6), // start | (load + result + zero|one) | (focus) | (resize)
++		timerChan:          make(chan tui.Event),    // unbuffered: every() ticks coalesce when main loop is busy
+ 		tui:                renderer,
+ 		ttyDefault:         opts.TtyDefault,
+ 		ttyin:              ttyin,
+@@ -1158,6 +1161,7 @@ func NewTerminal(opts *Options, eventBox *util.EventBox, executor *util.Executor
+ 		executing:          util.NewAtomicBool(false),
+ 		lastAction:         actStart,
+ 		lastFocus:          minItem.Index(),
++		lastActivity:       time.Now(),
+ 		numLinesCache:      make(map[int32]numLinesCacheValue)}
+ 	if opts.AcceptNth != nil {
+ 		t.acceptNth = opts.AcceptNth(t.delimiter)
+@@ -1385,6 +1389,9 @@ func (t *Terminal) environImpl(forPreview bool) []string {
+ 	env = append(env, "FZF_QUERY="+string(t.input))
+ 	env = append(env, "FZF_ACTION="+t.lastAction.Name())
+ 	env = append(env, "FZF_KEY="+t.lastKey)
++	idleMs := time.Since(t.lastActivity).Milliseconds()
++	env = append(env, fmt.Sprintf("FZF_IDLE_TIME=%d", idleMs/1000))
++	env = append(env, fmt.Sprintf("FZF_IDLE_TIME_MS=%d", idleMs))
+ 	env = append(env, "FZF_PROMPT="+string(t.promptString))
+ 	env = append(env, "FZF_GHOST="+string(t.ghost))
+ 	env = append(env, "FZF_POINTER="+string(t.pointer))
+@@ -5807,6 +5814,35 @@ func (t *Terminal) addClickFooterWord(env []string) []string {
+ 	return env
+ }
+ 
++// startTimers spawns a goroutine per every() bind event. Forwarding ticks
++// onto the unbuffered timerChan lets the ticker drop overlapping ticks
++// while the main loop is busy.
++func (t *Terminal) startTimers(ctx context.Context) {
++	for evt := range t.keymap {
++		switch evt.Type {
++		case tui.Every:
++			d := time.Duration(evt.Char) * time.Millisecond
++			evt := evt
++			go func() {
++				ticker := time.NewTicker(d)
++				defer ticker.Stop()
++				for {
++					select {
++					case <-ctx.Done():
++						return
++					case <-ticker.C:
++						select {
++						case <-ctx.Done():
++							return
++						case t.timerChan <- evt:
++						}
++					}
++				}
++			}()
++		}
++	}
++}
++
+ // Loop is called to start Terminal I/O
+ func (t *Terminal) Loop() error {
+ 	// prof := profile.Start(profile.ProfilePath("/tmp/"))
+@@ -6314,6 +6350,7 @@ func (t *Terminal) Loop() error {
+ 			}
+ 		}
+ 	}()
++	t.startTimers(ctx)
+ 	previewDraggingPos := -1
+ 	barDragging := false
+ 	pbarDragging := false
+@@ -6373,6 +6410,7 @@ func (t *Terminal) Loop() error {
+ 		select {
+ 		case event = <-t.keyChan:
+ 			needBarrier = true
++		case event = <-t.timerChan:
+ 		case event = <-t.eventChan:
+ 			// Drain channel to process all queued events at once without rendering
+ 			// the intermediate states
+@@ -6437,7 +6475,10 @@ func (t *Terminal) Loop() error {
+ 		previousInput := t.input
+ 		previousCx := t.cx
+ 		previousVersion := t.version
+-		t.lastKey = event.KeyName()
++		if event.Type < tui.Invalid {
++			t.lastKey = event.KeyName()
++			t.lastActivity = time.Now()
++		}
+ 		updatePreviewWindow := func(forcePreview bool) {
+ 			t.resizeWindows(forcePreview, false)
+ 			req(reqPrompt, reqList, reqInfo, reqHeader, reqFooter)
+diff --git a/src/tui/eventtype_string.go b/src/tui/eventtype_string.go
+index 08b5c21f2928344f43fdc2a310d9d1c6e48ff540..67bb43ae422b182ae8ab5cf7c6c4775659dfa9bf 100644
+--- a/src/tui/eventtype_string.go
++++ b/src/tui/eventtype_string.go
+@@ -133,22 +133,22 @@ func _() {
+ 	_ = x[CtrlAltShiftDelete-122]
+ 	_ = x[CtrlAltShiftPageUp-123]
+ 	_ = x[CtrlAltShiftPageDown-124]
+-	_ = x[Invalid-125]
+-	_ = x[Fatal-126]
+-	_ = x[BracketedPasteBegin-127]
+-	_ = x[BracketedPasteEnd-128]
+-	_ = x[Mouse-129]
+-	_ = x[DoubleClick-130]
+-	_ = x[LeftClick-131]
+-	_ = x[RightClick-132]
+-	_ = x[SLeftClick-133]
+-	_ = x[SRightClick-134]
+-	_ = x[ScrollUp-135]
+-	_ = x[ScrollDown-136]
+-	_ = x[SScrollUp-137]
+-	_ = x[SScrollDown-138]
+-	_ = x[PreviewScrollUp-139]
+-	_ = x[PreviewScrollDown-140]
++	_ = x[Mouse-125]
++	_ = x[DoubleClick-126]
++	_ = x[LeftClick-127]
++	_ = x[RightClick-128]
++	_ = x[SLeftClick-129]
++	_ = x[SRightClick-130]
++	_ = x[ScrollUp-131]
++	_ = x[ScrollDown-132]
++	_ = x[SScrollUp-133]
++	_ = x[SScrollDown-134]
++	_ = x[PreviewScrollUp-135]
++	_ = x[PreviewScrollDown-136]
++	_ = x[Invalid-137]
++	_ = x[Fatal-138]
++	_ = x[BracketedPasteBegin-139]
++	_ = x[BracketedPasteEnd-140]
+ 	_ = x[Resize-141]
+ 	_ = x[Change-142]
+ 	_ = x[BackwardEOF-143]
+@@ -163,11 +163,12 @@ func _() {
+ 	_ = x[ClickHeader-152]
+ 	_ = x[ClickFooter-153]
+ 	_ = x[Multi-154]
++	_ = x[Every-155]
+ }
+ 
+-const _EventType_name = "RuneCtrlACtrlBCtrlCCtrlDCtrlECtrlFCtrlGCtrlHTabCtrlJCtrlKCtrlLEnterCtrlNCtrlOCtrlPCtrlQCtrlRCtrlSCtrlTCtrlUCtrlVCtrlWCtrlXCtrlYCtrlZEscCtrlSpaceCtrlBackSlashCtrlRightBracketCtrlCaretCtrlSlashShiftTabBackspaceDeletePageUpPageDownUpDownLeftRightHomeEndInsertShiftUpShiftDownShiftLeftShiftRightShiftDeleteShiftHomeShiftEndShiftPageUpShiftPageDownF1F2F3F4F5F6F7F8F9F10F11F12AltBackspaceAltUpAltDownAltLeftAltRightAltDeleteAltHomeAltEndAltPageUpAltPageDownAltShiftUpAltShiftDownAltShiftLeftAltShiftRightAltShiftDeleteAltShiftHomeAltShiftEndAltShiftPageUpAltShiftPageDownCtrlUpCtrlDownCtrlLeftCtrlRightCtrlHomeCtrlEndCtrlBackspaceCtrlDeleteCtrlPageUpCtrlPageDownAltCtrlAltCtrlAltUpCtrlAltDownCtrlAltLeftCtrlAltRightCtrlAltHomeCtrlAltEndCtrlAltBackspaceCtrlAltDeleteCtrlAltPageUpCtrlAltPageDownCtrlShiftUpCtrlShiftDownCtrlShiftLeftCtrlShiftRightCtrlShiftHomeCtrlShiftEndCtrlShiftDeleteCtrlShiftPageUpCtrlShiftPageDownCtrlAltShiftUpCtrlAltShiftDownCtrlAltShiftLeftCtrlAltShiftRightCtrlAltShiftHomeCtrlAltShiftEndCtrlAltShiftDeleteCtrlAltShiftPageUpCtrlAltShiftPageDownInvalidFatalBracketedPasteBeginBracketedPasteEndMouseDoubleClickLeftClickRightClickSLeftClickSRightClickScrollUpScrollDownSScrollUpSScrollDownPreviewScrollUpPreviewScrollDownResizeChangeBackwardEOFStartLoadFocusOneZeroResultJumpJumpCancelClickHeaderClickFooterMulti"
++const _EventType_name = "RuneCtrlACtrlBCtrlCCtrlDCtrlECtrlFCtrlGCtrlHTabCtrlJCtrlKCtrlLEnterCtrlNCtrlOCtrlPCtrlQCtrlRCtrlSCtrlTCtrlUCtrlVCtrlWCtrlXCtrlYCtrlZEscCtrlSpaceCtrlBackSlashCtrlRightBracketCtrlCaretCtrlSlashShiftTabBackspaceDeletePageUpPageDownUpDownLeftRightHomeEndInsertShiftUpShiftDownShiftLeftShiftRightShiftDeleteShiftHomeShiftEndShiftPageUpShiftPageDownF1F2F3F4F5F6F7F8F9F10F11F12AltBackspaceAltUpAltDownAltLeftAltRightAltDeleteAltHomeAltEndAltPageUpAltPageDownAltShiftUpAltShiftDownAltShiftLeftAltShiftRightAltShiftDeleteAltShiftHomeAltShiftEndAltShiftPageUpAltShiftPageDownCtrlUpCtrlDownCtrlLeftCtrlRightCtrlHomeCtrlEndCtrlBackspaceCtrlDeleteCtrlPageUpCtrlPageDownAltCtrlAltCtrlAltUpCtrlAltDownCtrlAltLeftCtrlAltRightCtrlAltHomeCtrlAltEndCtrlAltBackspaceCtrlAltDeleteCtrlAltPageUpCtrlAltPageDownCtrlShiftUpCtrlShiftDownCtrlShiftLeftCtrlShiftRightCtrlShiftHomeCtrlShiftEndCtrlShiftDeleteCtrlShiftPageUpCtrlShiftPageDownCtrlAltShiftUpCtrlAltShiftDownCtrlAltShiftLeftCtrlAltShiftRightCtrlAltShiftHomeCtrlAltShiftEndCtrlAltShiftDeleteCtrlAltShiftPageUpCtrlAltShiftPageDownMouseDoubleClickLeftClickRightClickSLeftClickSRightClickScrollUpScrollDownSScrollUpSScrollDownPreviewScrollUpPreviewScrollDownInvalidFatalBracketedPasteBeginBracketedPasteEndResizeChangeBackwardEOFStartLoadFocusOneZeroResultJumpJumpCancelClickHeaderClickFooterMultiEvery"
+ 
+-var _EventType_index = [...]uint16{0, 4, 9, 14, 19, 24, 29, 34, 39, 44, 47, 52, 57, 62, 67, 72, 77, 82, 87, 92, 97, 102, 107, 112, 117, 122, 127, 132, 135, 144, 157, 173, 182, 191, 199, 208, 214, 220, 228, 230, 234, 238, 243, 247, 250, 256, 263, 272, 281, 291, 302, 311, 319, 330, 343, 345, 347, 349, 351, 353, 355, 357, 359, 361, 364, 367, 370, 382, 387, 394, 401, 409, 418, 425, 431, 440, 451, 461, 473, 485, 498, 512, 524, 535, 549, 565, 571, 579, 587, 596, 604, 611, 624, 634, 644, 656, 659, 666, 675, 686, 697, 709, 720, 730, 746, 759, 772, 787, 798, 811, 824, 838, 851, 863, 878, 893, 910, 924, 940, 956, 973, 989, 1004, 1022, 1040, 1060, 1067, 1072, 1091, 1108, 1113, 1124, 1133, 1143, 1153, 1164, 1172, 1182, 1191, 1202, 1217, 1234, 1240, 1246, 1257, 1262, 1266, 1271, 1274, 1278, 1284, 1288, 1298, 1309, 1320, 1325}
++var _EventType_index = [...]uint16{0, 4, 9, 14, 19, 24, 29, 34, 39, 44, 47, 52, 57, 62, 67, 72, 77, 82, 87, 92, 97, 102, 107, 112, 117, 122, 127, 132, 135, 144, 157, 173, 182, 191, 199, 208, 214, 220, 228, 230, 234, 238, 243, 247, 250, 256, 263, 272, 281, 291, 302, 311, 319, 330, 343, 345, 347, 349, 351, 353, 355, 357, 359, 361, 364, 367, 370, 382, 387, 394, 401, 409, 418, 425, 431, 440, 451, 461, 473, 485, 498, 512, 524, 535, 549, 565, 571, 579, 587, 596, 604, 611, 624, 634, 644, 656, 659, 666, 675, 686, 697, 709, 720, 730, 746, 759, 772, 787, 798, 811, 824, 838, 851, 863, 878, 893, 910, 924, 940, 956, 973, 989, 1004, 1022, 1040, 1060, 1065, 1076, 1085, 1095, 1105, 1116, 1124, 1134, 1143, 1154, 1169, 1186, 1193, 1198, 1217, 1234, 1240, 1246, 1257, 1262, 1266, 1271, 1274, 1278, 1284, 1288, 1298, 1309, 1320, 1325, 1330}
+ 
+ func (i EventType) String() string {
+ 	if i < 0 || i >= EventType(len(_EventType_index)-1) {
+diff --git a/src/tui/tui.go b/src/tui/tui.go
+index 606aa0c93176a340a01db8f04b9bed9fca1929f6..97ba20653bc4cc43e25abf4d33a2f38ee9626926 100644
+--- a/src/tui/tui.go
++++ b/src/tui/tui.go
+@@ -196,11 +196,6 @@ const (
+ 	CtrlAltShiftPageUp
+ 	CtrlAltShiftPageDown
+ 
+-	Invalid
+-	Fatal
+-	BracketedPasteBegin
+-	BracketedPasteEnd
+-
+ 	Mouse
+ 	DoubleClick
+ 	LeftClick
+@@ -214,7 +209,15 @@ const (
+ 	PreviewScrollUp
+ 	PreviewScrollDown
+ 
+-	// Events
++	// Synthetic / non-user events. Everything from Invalid onward is
++	// either internally generated or a state-change notification, not
++	// direct user input. Use `>= Invalid` to gate activity tracking.
++	// BracketedPasteBegin/End sit here too: they enclose user input
++	// (which arrives as Rune events) and should not appear in FZF_KEY.
++	Invalid
++	Fatal
++	BracketedPasteBegin
++	BracketedPasteEnd
+ 	Resize
+ 	Change
+ 	BackwardEOF
+@@ -229,6 +232,7 @@ const (
+ 	ClickHeader
+ 	ClickFooter
+ 	Multi
++	Every
+ )
+ 
+ func (t EventType) AsEvent() Event {
+diff --git a/test/test_core.rb b/test/test_core.rb
+index 965aa6dc59a251f9d1e27f9174680af1d2de620b..56a3f5550d74fe86857ef6f9249b8e3aff86674e 100644
+--- a/test/test_core.rb
++++ b/test/test_core.rb
+@@ -1387,6 +1387,85 @@ class TestCore < TestInteractive
+     tmux.until { |lines| assert_includes lines, '> 1' }
+   end
+ 
++  def test_every_event
++    tmux.send_keys %(seq 100 | fzf --bind 'every(0.2):transform-prompt(cat #{tempname})'), :Enter
++    tmux.until { |lines| assert_equal 100, lines.match_count }
++    # Trigger external state changes; the every() tick should pick them up.
++    writelines(['AAA>'])
++    tmux.until { |lines| assert_includes lines[-1], 'AAA>' }
++    writelines(['BBB>'])
++    tmux.until { |lines| assert_includes lines[-1], 'BBB>' }
++  end
++
++  def test_every_event_multiple_independent_timers
++    # Two timers with different durations should fire independently.
++    fast = tempname + '.fast'
++    slow = tempname + '.slow'
++    FileUtils.rm_f(fast)
++    FileUtils.rm_f(slow)
++    tmux.send_keys %(seq 100 | fzf \\
++        --bind 'every(0.1):execute-silent(printf . >> #{fast})' \\
++        --bind 'every(0.5):execute-silent(printf . >> #{slow})'), :Enter
++    tmux.until { |lines| assert_equal 100, lines.match_count }
++    sleep 1.2
++    a = File.exist?(fast) ? File.size(fast) : 0
++    b = File.exist?(slow) ? File.size(slow) : 0
++    # Sanity: faster timer fired more times.
++    assert a > b, "fast timer should fire more (#{a} vs #{b})"
++    # Sanity: slow timer fired at least once.
++    assert b >= 1, "slow timer should have fired at least once (#{b})"
++  ensure
++    FileUtils.rm_f(fast)
++    FileUtils.rm_f(slow)
++  end
++
++  def test_every_event_unbind
++    tmux.send_keys %(seq 100 | fzf --bind 'every(0.1):transform-header(date +%S.%N)' --bind 'space:unbind(every(0.1))+change-header(STOPPED)'), :Enter
++    tmux.until { |lines| assert_equal 100, lines.match_count }
++    # Header should be ticking
++    tmux.until { |lines| assert_match(/^  \d{2}\.\d+/, lines[-3]) }
++    tmux.send_keys :Space
++    tmux.until { |lines| assert_includes lines[-3], 'STOPPED' }
++    sleep 0.4
++    # Header must stay STOPPED after the unbind
++    assert_includes tmux.capture[-3], 'STOPPED'
++  end
++
++  def test_fzf_idle_time_env
++    # FZF_IDLE_TIME + FZF_IDLE_TIME_MS combined with every() implement idle-based behavior.
++    tmux.send_keys %(seq 100 | fzf --bind 'every(0.2):transform-header(echo "s=$FZF_IDLE_TIME ms_ok=$((FZF_IDLE_TIME_MS / 1000 == FZF_IDLE_TIME))")'), :Enter
++    tmux.until { |lines| assert_equal 100, lines.match_count }
++    # Idle counter advances without any input; ms/1000 stays consistent with seconds.
++    tmux.until { |lines| assert_includes lines[-3], 's=1 ms_ok=1' }
++    tmux.until { |lines| assert_includes lines[-3], 's=2 ms_ok=1' }
++    # Any keystroke resets the counter
++    tmux.send_keys 'x'
++    tmux.until { |lines| assert_includes lines[-3], 's=0 ms_ok=1' }
++    tmux.send_keys :BSpace
++    # And it advances again afterwards
++    tmux.until { |lines| assert_includes lines[-3], 's=1 ms_ok=1' }
++  end
++
++  def test_every_event_rejects_invalid_arg
++    %w[every(0) every(-1) every(abc) every()].each do |spec|
++      tmux.send_keys %(seq 1 | fzf --bind '#{spec}:abort' 2>&1; echo done=$?), :Enter
++      tmux.until { |lines| assert(lines.any? { |l| l.include?('done=2') }) }
++      tmux.send_keys 'clear', :Enter
++    end
++  end
++
++  def test_fzf_key_ignores_synthetic_events
++    tmux.send_keys %(seq 100 | fzf --bind 'every(0.2):transform-prompt(echo "[$FZF_KEY]> ")'), :Enter
++    tmux.until { |lines| assert_equal 100, lines.match_count }
++    # No user input yet: prompt should show empty FZF_KEY
++    tmux.until { |lines| assert_includes lines[-1], '[]>' }
++    tmux.send_keys 'x'
++    tmux.until { |lines| assert_includes lines[-1], '[x]>' }
++    # every() ticks shouldn't overwrite FZF_KEY
++    sleep 1
++    assert_includes tmux.capture[-1], '[x]>'
++  end
++
+   def test_labels_center
+     tmux.send_keys 'echo x | fzf --border --border-label foobar --preview : --preview-label barfoo --bind "space:change-border-label(foobarfoo)+change-preview-label(barfoobar),enter:transform-border-label(echo foo{}foo)+transform-preview-label(echo bar{}bar)"', :Enter
+     tmux.until do

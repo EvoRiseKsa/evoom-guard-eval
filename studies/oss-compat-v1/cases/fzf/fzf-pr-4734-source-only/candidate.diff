@@ -1,0 +1,13 @@
+diff --git a/src/options.go b/src/options.go
+index 36fd0d18f363c28139e9ad0358aa4edd3b93b9fb..479d341687813de1bd4df396f58d5f35dc158bc4 100644
+--- a/src/options.go
++++ b/src/options.go
+@@ -869,7 +869,7 @@ func nthTransformer(str string) (func(Delimiter) func([]Token, int32) string, er
+ 		nth   []Range
+ 	}
+ 
+-	parts := make([]NthParts, len(indexes))
++	parts := make([]NthParts, 0, len(indexes))
+ 	idx := 0
+ 	for _, index := range indexes {
+ 		if idx < index[0] {

@@ -1,0 +1,11 @@
+{
+  "mem_limit": 0,
+  "policy_id": "oss-compat/cjson-ubuntu2404",
+  "policy_version": "1",
+  "require_candidate_isolation": "subprocess",
+  "require_report_integrity": "same_process_candidate_writable",
+  "setup_command": ["/usr/local/sbin/evoom-oss-untrusted-exec", "--phase", "setup", "--", "cmake", "-S", ".", "-B", "build", "-DENABLE_CJSON_UTILS=ON", "-DENABLE_VALGRIND=OFF", "-DENABLE_SANITIZERS=OFF", "-DCMAKE_BUILD_TYPE=Release"],
+  "setup_output_globs": ["build/**"],
+  "test_command": ["/usr/local/sbin/evoom-oss-untrusted-exec", "--phase", "test", "--", "cmake", "--build", "build", "--parallel", "2", "--target", "all", "test"],
+  "timeout": 600
+}

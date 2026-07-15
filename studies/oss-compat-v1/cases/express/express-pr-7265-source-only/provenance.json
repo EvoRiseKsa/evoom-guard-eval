@@ -1,0 +1,49 @@
+{
+  "base_commit": "90ec6206d3275fdf2787f2028c6f48a2d92e8042",
+  "base_tree": "598e297d2045b96e3d3eecd16d6b1faa509fe37c",
+  "candidate_canonical_sha256": "5ff612a96f77b8880041fdcd1f2169f353aa744b3e655cf5b43ac773afe24e74",
+  "candidate_sha256": "6574bd9c7bd1ec477194240c95159f1ee19cfc97bb0e7031756341c046989545",
+  "canonical_url": "https://github.com/expressjs/express.git",
+  "changed_paths": [
+    {
+      "path": "lib/request.js",
+      "status": "M"
+    }
+  ],
+  "commit": {
+    "author_date": "2026-06-16T08:04:06+05:30",
+    "author_email": "tejmgokani@gmail.com",
+    "author_name": "TEJ",
+    "committer_date": "2026-06-15T21:34:06-05:00",
+    "committer_email": "noreply@github.com",
+    "committer_name": "GitHub",
+    "has_embedded_signature": true
+  },
+  "diff_command": "git -c core.safecrlf=false -c diff.algorithm=myers -c diff.indentHeuristic=true -c diff.compactionHeuristic=false -c diff.interHunkContext=0 diff --no-ext-diff --no-textconv --no-renames --unified=3 --binary --full-index 90ec6206d3275fdf2787f2028c6f48a2d92e8042 9d8223d92ee81137a50a28eb6ad55a096791091d --",
+  "head_commit": "9d8223d92ee81137a50a28eb6ad55a096791091d",
+  "head_tree": "d177b090f23b3402a8e2c94bed71d3a3cf73bba6",
+  "license": {
+    "files": [
+      {
+        "git_blob": "aa927e44e31d486f807634887662efa39256bf84",
+        "path": "LICENSE",
+        "redistributed_path": "licenses/express/9d8223d92ee81137a50a28eb6ad55a096791091d/LICENSE",
+        "sha256": "95a5762890e5c1c9808921cef095661fc482c5e1f0bba31446ac85595df6237c"
+      }
+    ],
+    "redistribution_review": "permitted_by_named_upstream_license",
+    "spdx": "MIT"
+  },
+  "provenance_schema": "evoom.oss-case-provenance/1",
+  "pull_request": {
+    "merge_commit": "9d8223d92ee81137a50a28eb6ad55a096791091d",
+    "merged_at_utc": "2026-06-16T02:34:07Z",
+    "number": 7265,
+    "original_head_commit": "bf6754c69c2676fe4acbab0ffd59c3c27c06bea3",
+    "title": "fix: replace deprecated trimRight() with trimEnd()",
+    "url": "https://github.com/expressjs/express/pull/7265"
+  },
+  "relationship": "first-parent-to-merged-commit",
+  "repository": "expressjs/express",
+  "selection_and_metadata_frozen_at_utc": "2026-07-15T00:44:48Z"
+}

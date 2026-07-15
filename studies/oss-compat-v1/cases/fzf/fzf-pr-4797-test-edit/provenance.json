@@ -1,0 +1,77 @@
+{
+  "base_commit": "e0d081906fd7a31b656b1d022042abcd1dcc0927",
+  "base_tree": "a65399f688f9ea7231342d81a511814d780d7a14",
+  "candidate_canonical_sha256": "890b7158f8ee25b8706ceb960f8d9da7b4436c9cabb984d2147b3443af700094",
+  "candidate_sha256": "71cead3536c088e0ac2afc09499968ecbe77c302c208a72eac1d4c6d7e613349",
+  "canonical_url": "https://github.com/junegunn/fzf.git",
+  "changed_paths": [
+    {
+      "path": "CHANGELOG.md",
+      "status": "M"
+    },
+    {
+      "path": "man/man1/fzf.1",
+      "status": "M"
+    },
+    {
+      "path": "src/options.go",
+      "status": "M"
+    },
+    {
+      "path": "src/options_test.go",
+      "status": "M"
+    },
+    {
+      "path": "src/terminal.go",
+      "status": "M"
+    },
+    {
+      "path": "src/tui/eventtype_string.go",
+      "status": "M"
+    },
+    {
+      "path": "src/tui/tui.go",
+      "status": "M"
+    },
+    {
+      "path": "test/test_core.rb",
+      "status": "M"
+    }
+  ],
+  "commit": {
+    "author_date": "2026-05-17T23:54:59+09:00",
+    "author_email": "junegunn.c@gmail.com",
+    "author_name": "Junegunn Choi",
+    "committer_date": "2026-05-17T23:54:59+09:00",
+    "committer_email": "noreply@github.com",
+    "committer_name": "GitHub",
+    "has_embedded_signature": true
+  },
+  "diff_command": "git -c core.safecrlf=false -c diff.algorithm=myers -c diff.indentHeuristic=true -c diff.compactionHeuristic=false -c diff.interHunkContext=0 diff --no-ext-diff --no-textconv --no-renames --unified=3 --binary --full-index e0d081906fd7a31b656b1d022042abcd1dcc0927 fcc3c6acce5cf4851b44c6299fe255519990bce6 --",
+  "head_commit": "fcc3c6acce5cf4851b44c6299fe255519990bce6",
+  "head_tree": "afeda6f18c5abacd3565d2df2355b84c62a50ff6",
+  "license": {
+    "files": [
+      {
+        "git_blob": "f63057ce12075081be3c2b3e31bafff9d9359545",
+        "path": "LICENSE",
+        "redistributed_path": "licenses/fzf/fcc3c6acce5cf4851b44c6299fe255519990bce6/LICENSE",
+        "sha256": "a296f423c0d30ce3581435e78e7e36c5fe73984a882d8720c72e713b4593588b"
+      }
+    ],
+    "redistribution_review": "permitted_by_named_upstream_license",
+    "spdx": "MIT"
+  },
+  "provenance_schema": "evoom.oss-case-provenance/1",
+  "pull_request": {
+    "merge_commit": "fcc3c6acce5cf4851b44c6299fe255519990bce6",
+    "merged_at_utc": "2026-05-17T14:54:59Z",
+    "number": 4797,
+    "original_head_commit": "7e52235f22520d8e4506a9db6ec7eb9124384313",
+    "title": "Add every(N) bind event and FZF_IDLE_TIME env var",
+    "url": "https://github.com/junegunn/fzf/pull/4797"
+  },
+  "relationship": "first-parent-to-merged-commit",
+  "repository": "junegunn/fzf",
+  "selection_and_metadata_frozen_at_utc": "2026-07-15T00:44:48Z"
+}

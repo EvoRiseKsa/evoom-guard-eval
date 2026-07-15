@@ -1,0 +1,165 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+index 209528042191677311606c3b469a0e7659b53d55..631580b94acc2962006b93abb5f663381bf54772 100644
+--- a/.github/workflows/ci.yml
++++ b/.github/workflows/ci.yml
+@@ -11,7 +11,7 @@ on:
+ # `schedule` event. By specifying any permission explicitly all others are set
+ # to none. By using the principle of least privilege the damage a compromised
+ # workflow can do (because of an injection or compromised third party tool or
+-# action) is restricted. Currently the worklow doesn't need any additional
++# action) is restricted. Currently the workflow doesn't need any additional
+ # permission except for pulling the code. Adding labels to issues, commenting
+ # on pull-requests, etc. may need additional permissions:
+ #
+diff --git a/crates/core/flags/hiargs.rs b/crates/core/flags/hiargs.rs
+index 526c91e6d7a9b459885cdaa05d53551fe6b6d344..3498b10f43d5b5c868bf171dec358fb58f8b27fa 100644
+--- a/crates/core/flags/hiargs.rs
++++ b/crates/core/flags/hiargs.rs
+@@ -222,7 +222,7 @@ impl HiArgs {
+         let mmap_choice = {
+             // SAFETY: Memory maps are difficult to impossible to encapsulate
+             // safely in a portable way that doesn't simultaneously negate some
+-            // of the benfits of using memory maps. For ripgrep's use, we never
++            // of the benefits of using memory maps. For ripgrep's use, we never
+             // mutate a memory map and generally never store the contents of
+             // memory map in a data structure that depends on immutability.
+             // Generally speaking, the worst thing that can happen is a SIGBUS
+@@ -1144,7 +1144,7 @@ impl Paths {
+ /// ripgrep actually uses two different binary detection heuristics depending
+ /// on whether a file is explicitly being searched (e.g., via a CLI argument)
+ /// or implicitly searched (e.g., via directory traversal). In general, the
+-/// former can never use a heuristic that lets it "quit" seaching before
++/// former can never use a heuristic that lets it "quit" searching before
+ /// either getting EOF or finding a match. (Because doing otherwise would be
+ /// considered a filter, and ripgrep follows the rule that an explicitly given
+ /// file is always searched.)
+diff --git a/crates/core/flags/lowargs.rs b/crates/core/flags/lowargs.rs
+index 1941cae45d8f53731f858e324add96a869411399..a4d4b884aa054b3e3e15c8321f2819cfe3448487 100644
+--- a/crates/core/flags/lowargs.rs
++++ b/crates/core/flags/lowargs.rs
+@@ -109,7 +109,7 @@ pub(crate) struct LowArgs {
+     pub(crate) with_filename: Option<bool>,
+ }
+ 
+-/// A "special" mode that supercedes everything else.
++/// A "special" mode that supersedes everything else.
+ ///
+ /// When one of these modes is present, it overrides everything else and causes
+ /// ripgrep to short-circuit. In particular, we avoid converting low-level
+@@ -255,9 +255,9 @@ pub(crate) enum BinaryMode {
+ /// Indicates what kind of boundary mode to use (line or word).
+ #[derive(Debug, Eq, PartialEq)]
+ pub(crate) enum BoundaryMode {
+-    /// Only allow matches when surrounded by line bounaries.
++    /// Only allow matches when surrounded by line boundaries.
+     Line,
+-    /// Only allow matches when surrounded by word bounaries.
++    /// Only allow matches when surrounded by word boundaries.
+     Word,
+ }
+ 
+@@ -490,7 +490,7 @@ impl ContextSeparator {
+         Ok(ContextSeparator(Some(Vec::unescape_bytes(string).into())))
+     }
+ 
+-    /// Creates a new separator that intructs the printer to disable contextual
++    /// Creates a new separator that instructs the printer to disable contextual
+     /// separators entirely.
+     pub(crate) fn disabled() -> ContextSeparator {
+         ContextSeparator(None)
+diff --git a/crates/core/flags/mod.rs b/crates/core/flags/mod.rs
+index b1cc4b265306f86ca85966c7c7edbc2f490fda8c..7bf46db9a6fb6bb712d91d63f81cea64e40bb7cb 100644
+--- a/crates/core/flags/mod.rs
++++ b/crates/core/flags/mod.rs
+@@ -67,7 +67,7 @@ mod parse;
+ /// by a single implementation of this trait.
+ ///
+ /// ripgrep only supports flags that are switches or flags that accept a single
+-/// value. Flags that accept multiple values are an unsupported abberation.
++/// value. Flags that accept multiple values are an unsupported aberration.
+ trait Flag: Debug + Send + Sync + UnwindSafe + RefUnwindSafe + 'static {
+     /// Returns true if this flag is a switch. When a flag is a switch, the
+     /// CLI parser will not look for a value after the flag is seen.
+diff --git a/crates/core/main.rs b/crates/core/main.rs
+index 46aac2624f0fb511b49769a260ab580ade742108..c74e645f7c83484b4435e79b7d508d320e224878 100644
+--- a/crates/core/main.rs
++++ b/crates/core/main.rs
+@@ -427,7 +427,7 @@ fn eprint_nothing_searched() {
+ /// The `started` time should be the time at which ripgrep started working.
+ ///
+ /// If an error occurs while writing, then writing stops and the error is
+-/// returned. Note that callers should probably ignore this errror, since
++/// returned. Note that callers should probably ignore this error, since
+ /// whether stats fail to print or not generally shouldn't cause ripgrep to
+ /// enter into an "error" state. And usually the only way for this to fail is
+ /// if writing to stdout itself fails.
+diff --git a/crates/globset/src/lib.rs b/crates/globset/src/lib.rs
+index 27076ea96c5e2f092cbdfb25f3b623b2b686926e..d274495dc17092a6e98b432ae922db8444bdb30f 100644
+--- a/crates/globset/src/lib.rs
++++ b/crates/globset/src/lib.rs
+@@ -380,7 +380,7 @@ impl GlobSet {
+         self.matches_all_candidate(&Candidate::new(path.as_ref()))
+     }
+ 
+-    /// Returns ture if all globs in this set match the path given.
++    /// Returns true if all globs in this set match the path given.
+     ///
+     /// This takes a Candidate as input, which can be used to amortize the cost
+     /// of peparing a path for matching.
+diff --git a/crates/printer/src/util.rs b/crates/printer/src/util.rs
+index 491a0b7e3364ecdd89a9f75138d0719414b0ca2a..557d18d0a35398311680e2525b6d2fe2f371a926 100644
+--- a/crates/printer/src/util.rs
++++ b/crates/printer/src/util.rs
+@@ -483,7 +483,7 @@ where
+ {
+     // This strange dance is to account for the possibility of look-ahead in
+     // the regex. The problem here is that mat.bytes() doesn't include the
+-    // lines beyond the match boundaries in mulit-line mode, which means that
++    // lines beyond the match boundaries in multi-line mode, which means that
+     // when we try to rediscover the full set of matches here, the regex may no
+     // longer match if it required some look-ahead beyond the matching lines.
+     //
+@@ -514,7 +514,7 @@ where
+         // Otherwise, it's possible for the regex (via look-around) to observe
+         // the line terminator and not match because of it.
+         let mut m = Match::new(0, range.end);
+-        // No need to rember the line terminator as we aren't doing a replace
++        // No need to remember the line terminator as we aren't doing a replace
+         // here.
+         trim_line_terminator(searcher, bytes, &mut m);
+         bytes = &bytes[..m.end()];
+diff --git a/crates/searcher/src/searcher/mod.rs b/crates/searcher/src/searcher/mod.rs
+index 30fbd83ec114e69519275c6c7f930c729c9938e6..784e0ea6a84451338e9c7814e65743be285b5063 100644
+--- a/crates/searcher/src/searcher/mod.rs
++++ b/crates/searcher/src/searcher/mod.rs
+@@ -450,7 +450,7 @@ impl SearcherBuilder {
+     ///
+     /// If a heap limit is set to `0`, then no heap space is used. If there are
+     /// no alternative strategies available for searching without heap space
+-    /// (e.g., memory maps are disabled), then the searcher wil return an error
++    /// (e.g., memory maps are disabled), then the searcher will return an error
+     /// immediately.
+     ///
+     /// By default, no limit is set.
+@@ -695,7 +695,7 @@ impl Searcher {
+         // which isn't possible when searching an arbitrary std::io::Read.
+         if self.multi_line_with_matcher(&matcher) {
+             log::trace!(
+-                "{:?}: reading entire file on to heap for mulitline",
++                "{:?}: reading entire file on to heap for multiline",
+                 path
+             );
+             self.fill_multi_line_buffer_from_file::<S>(file)?;
+diff --git a/tests/regression.rs b/tests/regression.rs
+index a196b401c1a11f6d0f35abc56e5cae2640f099a8..bf0b27b9aeb48811455fe6e66ad81fb1c013d564 100644
+--- a/tests/regression.rs
++++ b/tests/regression.rs
+@@ -1679,7 +1679,7 @@ rgtest!(r3179_global_gitignore_cwd, |dir: Dir, mut cmd: TestCommand| {
+     // canonicalization. But it's not actually quite clear
+     // to me how to do it. I *believe* the solution here is
+     // that gitignore matching should be relative to the directory
+-    // path given to `WalkBuider::{add,new}`, and *not* to the
++    // path given to `WalkBuilder::{add,new}`, and *not* to the
+     // CWD. But this is a very big change to how `ignore` works
+     // I think. At least conceptually. So that will need to be
+     // something we do when we rewrite `ignore`. Sigh.

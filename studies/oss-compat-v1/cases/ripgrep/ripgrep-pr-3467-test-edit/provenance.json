@@ -1,0 +1,93 @@
+{
+  "base_commit": "e5f627fc16766194ced7bf498b03b78823f97716",
+  "base_tree": "4e9fa83c857273d4ae04141304dce72bab761ae3",
+  "candidate_canonical_sha256": "2925862843ae7963de4d883cb4305a561425fe4aea8e1d6cf60f86687a961a35",
+  "candidate_sha256": "13974d66d4ccdeee3088cd4d5654126dd95d3e87231f95484b0851d0bdaee825",
+  "canonical_url": "https://github.com/BurntSushi/ripgrep.git",
+  "changed_paths": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "status": "M"
+    },
+    {
+      "path": "crates/core/flags/hiargs.rs",
+      "status": "M"
+    },
+    {
+      "path": "crates/core/flags/lowargs.rs",
+      "status": "M"
+    },
+    {
+      "path": "crates/core/flags/mod.rs",
+      "status": "M"
+    },
+    {
+      "path": "crates/core/main.rs",
+      "status": "M"
+    },
+    {
+      "path": "crates/globset/src/lib.rs",
+      "status": "M"
+    },
+    {
+      "path": "crates/printer/src/util.rs",
+      "status": "M"
+    },
+    {
+      "path": "crates/searcher/src/searcher/mod.rs",
+      "status": "M"
+    },
+    {
+      "path": "tests/regression.rs",
+      "status": "M"
+    }
+  ],
+  "commit": {
+    "author_date": "2026-07-08T14:26:01+02:00",
+    "author_email": "p.stoeckle@gmx.net",
+    "author_name": "Patrick Stöckle",
+    "committer_date": "2026-07-08T08:26:01-04:00",
+    "committer_email": "noreply@github.com",
+    "committer_name": "GitHub",
+    "has_embedded_signature": true
+  },
+  "diff_command": "git -c core.safecrlf=false -c diff.algorithm=myers -c diff.indentHeuristic=true -c diff.compactionHeuristic=false -c diff.interHunkContext=0 diff --no-ext-diff --no-textconv --no-renames --unified=3 --binary --full-index e5f627fc16766194ced7bf498b03b78823f97716 b009b5b84b5bc92f18462f5c9fe1bad94551ceb0 --",
+  "head_commit": "b009b5b84b5bc92f18462f5c9fe1bad94551ceb0",
+  "head_tree": "3a47b3f08c36a42d479e7fc24488396ba7493db8",
+  "license": {
+    "files": [
+      {
+        "git_blob": "bb9c20a094e41b7632d63bcff20c0b4b95e80777",
+        "path": "COPYING",
+        "redistributed_path": "licenses/ripgrep/b009b5b84b5bc92f18462f5c9fe1bad94551ceb0/COPYING",
+        "sha256": "01c266bced4a434da0051174d6bee16a4c82cf634e2679b6155d40d75012390f"
+      },
+      {
+        "git_blob": "3b0a5dc09c1e16357459ddc9182a50f360f3cdba",
+        "path": "LICENSE-MIT",
+        "redistributed_path": "licenses/ripgrep/b009b5b84b5bc92f18462f5c9fe1bad94551ceb0/LICENSE-MIT",
+        "sha256": "0f96a83840e146e43c0ec96a22ec1f392e0680e6c1226e6f3ba87e0740af850f"
+      },
+      {
+        "git_blob": "68a49daad8ff7e35068f2b7a97d643aab440eaec",
+        "path": "UNLICENSE",
+        "redistributed_path": "licenses/ripgrep/b009b5b84b5bc92f18462f5c9fe1bad94551ceb0/UNLICENSE",
+        "sha256": "7e12e5df4bae12cb21581ba157ced20e1986a0508dd10d0e8a4ab9a4cf94e85c"
+      }
+    ],
+    "redistribution_review": "permitted_by_named_upstream_license",
+    "spdx": "MIT OR Unlicense"
+  },
+  "provenance_schema": "evoom.oss-case-provenance/1",
+  "pull_request": {
+    "merge_commit": "b009b5b84b5bc92f18462f5c9fe1bad94551ceb0",
+    "merged_at_utc": "2026-07-08T12:26:02Z",
+    "number": 3467,
+    "original_head_commit": "56ca9eed1e9a6cb5788a707e3067ed85e29fd491",
+    "title": "chore: fix typos in comments",
+    "url": "https://github.com/BurntSushi/ripgrep/pull/3467"
+  },
+  "relationship": "first-parent-to-merged-commit",
+  "repository": "BurntSushi/ripgrep",
+  "selection_and_metadata_frozen_at_utc": "2026-07-15T00:44:48Z"
+}

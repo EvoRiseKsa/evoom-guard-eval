@@ -1,0 +1,13 @@
+diff --git a/cJSON_Utils.c b/cJSON_Utils.c
+index 8fa24f8e9bf452cf1ba49d1325c85423ce742c74..8b38eb25388c848e772f89779b25159ee922a3dc 100644
+--- a/cJSON_Utils.c
++++ b/cJSON_Utils.c
+@@ -906,7 +906,7 @@ static int apply_patch(cJSON *object, const cJSON *patch, const cJSON_bool case_
+     if ((opcode == MOVE) || (opcode == COPY))
+     {
+         cJSON *from = get_object_item(patch, "from", case_sensitive);
+-        if (from == NULL)
++        if (!cJSON_IsString(from))
+         {
+             /* missing "from" for copy/move. */
+             status = 4;

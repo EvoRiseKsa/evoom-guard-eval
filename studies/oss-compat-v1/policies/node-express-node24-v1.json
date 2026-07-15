@@ -1,0 +1,11 @@
+{
+  "mem_limit": 0,
+  "policy_id": "oss-compat/express-node24",
+  "policy_version": "1",
+  "require_candidate_isolation": "subprocess",
+  "require_report_integrity": "same_process_candidate_writable",
+  "setup_command": ["/usr/local/sbin/evoom-oss-untrusted-exec", "--phase", "setup", "--", "npm", "install", "--ignore-scripts", "--no-audit", "--no-fund", "--package-lock=false"],
+  "setup_output_globs": ["node_modules/**"],
+  "test_command": ["/usr/local/sbin/evoom-oss-untrusted-exec", "--phase", "test", "--", "npm", "test"],
+  "timeout": 600
+}

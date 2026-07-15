@@ -1,0 +1,9 @@
+{
+  "id": "go-fzf-go123-v1",
+  "runner": "ubuntu-24.04",
+  "runtime": {"go": "1.23.12"},
+  "dependency_resolution": "go.mod_and_go.sum",
+  "network": "required_during_guard_setup",
+  "secrets": false,
+  "notes": "go mod download is the protected setup command; the upstream module sums bind downloaded modules."
+}

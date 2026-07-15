@@ -1,0 +1,9 @@
+{
+  "id": "python-requests-py312-v1",
+  "runner": "ubuntu-24.04",
+  "runtime": {"python": "3.12.10"},
+  "dependency_resolution": "live_ranges_not_hash_locked_or_fully_captured",
+  "network": "required_during_guard_setup",
+  "secrets": false,
+  "notes": "Upstream requirements-dev.txt contains ranges and an editable project install. The harness captures tool versions but not a complete pip resolution; this profile is time-bound compatibility evidence, not a hermetic rebuild."
+}

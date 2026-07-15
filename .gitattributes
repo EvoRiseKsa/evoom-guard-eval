@@ -1,6 +1,13 @@
+.gitattributes text eol=lf
 *.md text eol=lf
 *.py text eol=lf
+*.sh text eol=lf
 *.yml text eol=lf
+*.json text eol=lf
 cases/** -text
 manifests/** -text
 results/**/*.json -text
+studies/oss-compat-v1/cases/** -text
+studies/oss-compat-v1/licenses/** -text
+studies/oss-compat-v1/manifests/** -text
+studies/oss-compat-v1/results/** -text

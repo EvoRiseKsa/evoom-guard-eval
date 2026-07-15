@@ -1,0 +1,53 @@
+{
+  "base_commit": "a3f3d6c7843f3021b648623d13bc4fbca0084838",
+  "base_tree": "06504595b0b534dd57a258b996f5f3353698957e",
+  "candidate_canonical_sha256": "525c295d5349b15f16a7742f2e3c5c0c322a8e8049b80cf664de5deca04264c9",
+  "candidate_sha256": "331bb79eb19a0e3876e6e92ad8124be2b85da55a5a7dc9928985309295f429ad",
+  "canonical_url": "https://github.com/DaveGamble/cJSON.git",
+  "changed_paths": [
+    {
+      "path": "cJSON.c",
+      "status": "M"
+    },
+    {
+      "path": "tests/misc_tests.c",
+      "status": "M"
+    }
+  ],
+  "commit": {
+    "author_date": "2026-03-12T19:18:36+08:00",
+    "author_email": "peteralfredlee@gmail.com",
+    "author_name": "Lee",
+    "committer_date": "2026-03-12T19:18:36+08:00",
+    "committer_email": "noreply@github.com",
+    "committer_name": "GitHub",
+    "has_embedded_signature": true
+  },
+  "diff_command": "git -c core.safecrlf=false -c diff.algorithm=myers -c diff.indentHeuristic=true -c diff.compactionHeuristic=false -c diff.interHunkContext=0 diff --no-ext-diff --no-textconv --no-renames --unified=3 --binary --full-index a3f3d6c7843f3021b648623d13bc4fbca0084838 b2890c8d76bbb64e710585ebc0a917196b9c67e7 --",
+  "head_commit": "b2890c8d76bbb64e710585ebc0a917196b9c67e7",
+  "head_tree": "ab2a8925131e889e06c7925f3fcd613ce094c1dd",
+  "license": {
+    "files": [
+      {
+        "git_blob": "78deb0406d713ab9730e3c2447be1abdbd70b9a2",
+        "path": "LICENSE",
+        "redistributed_path": "licenses/cjson/b2890c8d76bbb64e710585ebc0a917196b9c67e7/LICENSE",
+        "sha256": "a36dda207c36db5818729c54e7ad4e8b0c6fba847491ba64f372c1a2037b6d5c"
+      }
+    ],
+    "redistribution_review": "permitted_by_named_upstream_license",
+    "spdx": "MIT"
+  },
+  "provenance_schema": "evoom.oss-case-provenance/1",
+  "pull_request": {
+    "merge_commit": "b2890c8d76bbb64e710585ebc0a917196b9c67e7",
+    "merged_at_utc": "2026-03-12T11:18:36Z",
+    "number": 991,
+    "original_head_commit": "79e2ad0817261a01323572a46806fde6ee8441b7",
+    "title": "fix: prevent NULL pointer dereference in cJSON_SetNumberHelper",
+    "url": "https://github.com/DaveGamble/cJSON/pull/991"
+  },
+  "relationship": "first-parent-to-merged-commit",
+  "repository": "DaveGamble/cJSON",
+  "selection_and_metadata_frozen_at_utc": "2026-07-15T00:44:48Z"
+}

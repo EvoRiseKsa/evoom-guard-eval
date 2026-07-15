@@ -1,0 +1,13 @@
+diff --git a/lib/request.js b/lib/request.js
+index e7a451df6d9ed7798c4242b3bb1ede44719ee2cf..68243f52b6d29ae3adbd820d2cc01367fa923b09 100644
+--- a/lib/request.js
++++ b/lib/request.js
+@@ -424,7 +424,7 @@ defineGetter(req, 'host', function host(){
+   } else if (val.indexOf(',') !== -1) {
+     // Note: X-Forwarded-Host is normally only ever a
+     //       single value, but this is to be safe.
+-    val = val.substring(0, val.indexOf(',')).trimRight()
++    val = val.substring(0, val.indexOf(',')).trimEnd()
+   }
+ 
+   return val || undefined;

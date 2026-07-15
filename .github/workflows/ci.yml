@@ -7,6 +7,7 @@ on:
     branches: [main]
 
 permissions:
+  actions: read
   contents: read
 
 jobs:
@@ -21,6 +22,9 @@ jobs:
         python-version: ["3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          fetch-tags: true
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: ${{ matrix.python-version }}
@@ -30,3 +34,21 @@ jobs:
         run: python harness/make_manifest.py round-pilot --check
       - name: Verify and rescore every pilot record
         run: python harness/evaluate.py --round round-pilot
+      - name: Verify frozen OSS compatibility inputs
+        run: python harness/freeze_oss_cases.py --check
+      - name: Reproduce frozen OSS compatibility manifest
+        run: python harness/make_oss_manifest.py oss-pilot-01 --check
+      - name: Verify published OSS compatibility results when present
+        run: >-
+          python harness/evaluate_oss.py
+          --study oss-pilot-01
+          --results studies/oss-compat-v1/results
+          --check --if-present
+      - name: Verify published artifacts against the live Actions API
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
+        env:
+          OSS_ACTIONS_TOKEN: ${{ github.token }}
+        run: >-
+          python harness/materialize_oss_artifacts.py
+          --results studies/oss-compat-v1/results
+          --verify-only --if-present

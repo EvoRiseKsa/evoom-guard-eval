@@ -1,0 +1,49 @@
+{
+  "base_commit": "77b6ff700be3417e0a3ad9674ca306e40c451b6b",
+  "base_tree": "a7c8b61ee7c49bd54980bc887ddb2dbab7b09573",
+  "candidate_canonical_sha256": "fb492e4aaf35a7625cd379786d24c75ec1397ee5478b3bd6106d281339b1f2d7",
+  "candidate_sha256": "4484f65dc81832dae0c7275b10c4375d4e46e65b8976b9c135b46a88be3e2f20",
+  "canonical_url": "https://github.com/fmtlib/fmt.git",
+  "changed_paths": [
+    {
+      "path": "include/fmt/base.h",
+      "status": "M"
+    }
+  ],
+  "commit": {
+    "author_date": "2026-07-03T19:39:09+02:00",
+    "author_email": "59708557+torsten48@users.noreply.github.com",
+    "author_name": "torsten48",
+    "committer_date": "2026-07-03T10:39:09-07:00",
+    "committer_email": "noreply@github.com",
+    "committer_name": "GitHub",
+    "has_embedded_signature": true
+  },
+  "diff_command": "git -c core.safecrlf=false -c diff.algorithm=myers -c diff.indentHeuristic=true -c diff.compactionHeuristic=false -c diff.interHunkContext=0 diff --no-ext-diff --no-textconv --no-renames --unified=3 --binary --full-index 77b6ff700be3417e0a3ad9674ca306e40c451b6b b54093c658ae5656799756ec5d4467f49064929f --",
+  "head_commit": "b54093c658ae5656799756ec5d4467f49064929f",
+  "head_tree": "99bb1b341adec450288fa9b2999d09c55fcc98d9",
+  "license": {
+    "files": [
+      {
+        "git_blob": "795fdaec8f2ce6fcc97bbb15d1a6ac073af7bd17",
+        "path": "LICENSE",
+        "redistributed_path": "licenses/fmt/b54093c658ae5656799756ec5d4467f49064929f/LICENSE",
+        "sha256": "a65fcc5a1095fc33cc37e4fff69366e49d7e92f613558a2b95ed1b70e33758b4"
+      }
+    ],
+    "redistribution_review": "permitted_by_named_upstream_license",
+    "spdx": "MIT"
+  },
+  "provenance_schema": "evoom.oss-case-provenance/1",
+  "pull_request": {
+    "merge_commit": "b54093c658ae5656799756ec5d4467f49064929f",
+    "merged_at_utc": "2026-07-03T17:39:09Z",
+    "number": 4822,
+    "original_head_commit": "1162474aca832459bdebea752604f25dacb3b04d",
+    "title": "avoid MSC warning C4702: unreachable code",
+    "url": "https://github.com/fmtlib/fmt/pull/4822"
+  },
+  "relationship": "first-parent-to-merged-commit",
+  "repository": "fmtlib/fmt",
+  "selection_and_metadata_frozen_at_utc": "2026-07-15T00:44:48Z"
+}
