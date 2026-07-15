@@ -1,0 +1,24 @@
+{
+  "message": "Freeze OSS compatibility protocol v0.1 (oss-pilot-01)\n",
+  "node_id": "TA_kwDOTYnmeNoAKDQyMjY4YjRjMDk5MDI4NTM5MWVkMmNmZjI4ZjE0MDg4ZjI2MTE3Zjk",
+  "object": {
+    "sha": "9b7bd9e1fe6a01fe75ddf1676f59e9eddebd5822",
+    "type": "commit",
+    "url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/git/commits/9b7bd9e1fe6a01fe75ddf1676f59e9eddebd5822"
+  },
+  "sha": "42268b4c0990285391ed2cff28f14088f26117f9",
+  "tag": "oss-protocol-v0.1",
+  "tagger": {
+    "date": "2026-07-15T03:35:45Z",
+    "email": "evoriseksa@gmail.com",
+    "name": "MainDev"
+  },
+  "url": "https://api.github.com/repos/EvoRiseKsa/evoom-guard-eval/git/tags/42268b4c0990285391ed2cff28f14088f26117f9",
+  "verification": {
+    "payload": null,
+    "reason": "unsigned",
+    "signature": null,
+    "verified": false,
+    "verified_at": null
+  }
+}

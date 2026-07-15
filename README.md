@@ -135,18 +135,31 @@ unrelated projects across Python, Node, Go, Rust, C++, and C. Each project
 contributes one source-only replay and one real change that touches an existing
 test or CI workflow.
 
-The study has its own manifest, harness, workflow, and tag
-`oss-protocol-v0.1`; its files never enter the Round 1 corpus. It runs only from
-the exact protected tag. An Actions-API preflight enforces the first API-visible
+The study has its own manifest, harness, workflow, and protected tag. Protocol
+v0.1 produced no product measurement: its only canonical run failed closed
+during boundary installation before any case or Guard invocation, and its API
+snapshots and original logs are preserved under
+`studies/oss-compat-v1/attempts/oss-pilot-01/29386936311/`. It is explicitly
+classified `invalid_before_measurement`, not 0/12. The successor study
+`oss-pilot-02` runs only from `oss-protocol-v0.2` and reuses the unchanged frozen
+cases because v0.1 exposed no product outcome from which to tune them. These
+files never enter the separate Round 1 corpus. An Actions-API preflight enforces the first API-visible
 dispatch among retained runs; it cannot detect an earlier run deleted by the
 repository owner. Before any upstream code runs, the harness switches to a
 root-owned `env -i` execution with no Actions/artifact token. Setup and tests run
-as a dedicated capability-free uid under a trusted PID-namespace supervisor;
-the protocol, engine, source cache, judge parent, and artifact output remain
+as a dedicated capability-free uid under a trusted PID/mount-namespace
+supervisor. The host view is recursively read-only except for the exact case
+execution root; real tool targets are canonicalized behind a root-owned alias
+set. The protocol, engine, source cache, judge parent, and artifact output remain
 root-owned. An unconditional cleanup must prove that no process of that uid
 survives before the output is released to the official upload step. The live
 self-test and `tests/oss_boundary_integration.sh` exercise detached-daemon,
 forbidden-write, environment, real-pytest/JUnit, and forced-wrapper-death paths.
+GitHub-hosted CI also configures and builds a real CMake program through the
+same installed boundary. A root-owned marker created before installation makes
+early infrastructure output distinct from product output; the two artifact
+uploads are mutually exclusive, and the product materializer rejects every
+`oss-infra-*` artifact.
 This narrows host and artifact risk but is not a VM/network/kernel sandbox, and
 the test process still writes the explicitly declared
 `same_process_candidate_writable` JUnit channel. Evidence integrity failures
@@ -157,6 +170,15 @@ sizes and SHA-256 digests match the live GitHub Actions API. The materializer
 also binds the exact attempt-1 Jobs API inventory and every required official
 step before safe extraction is checked byte-for-byte against the published case
 directories.
+The evaluator reports the fixed 12-case intention-to-test denominator separately
+from Guard invocation coverage and the verified-record product-outcome
+denominator. A pre-Guard failure therefore cannot be presented as a Guard
+verdict or as a 0/12 product score.
+If the one canonical v0.2 run does not yield the exact 12 product artifacts,
+`python harness/capture_oss_attempt.py current --run-id <RUN_ID>` preserves the
+API records, original logs, frozen manifest, and every artifact ZIP without
+extracting or evaluating them. A capture alone always forbids product inference;
+only the separate product materializer and evaluator may publish a result.
 See [`studies/oss-compat-v1/PROTOCOL.md`](studies/oss-compat-v1/PROTOCOL.md)
 for the selection limits and non-hermetic dependency caveats.
 
@@ -178,8 +200,10 @@ python harness/make_manifest.py round-pilot --check
 python harness/evaluate.py --round round-pilot
 python harness/freeze_oss_cases.py --check
 python harness/make_oss_manifest.py oss-pilot-01 --check
+python harness/make_oss_manifest.py oss-pilot-02 --check
 python harness/materialize_oss_artifacts.py --help
-python harness/evaluate_oss.py --study oss-pilot-01 \
+python harness/capture_oss_attempt.py current --run-id <RUN_ID>
+python harness/evaluate_oss.py --study oss-pilot-02 \
   --results studies/oss-compat-v1/results --check --if-present
 ```
 

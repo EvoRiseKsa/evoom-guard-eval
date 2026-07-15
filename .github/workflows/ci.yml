@@ -30,18 +30,23 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Unit tests
         run: python -m unittest discover -s tests -v
+      - name: Shell boundary lint
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.12'
+        run: shellcheck harness/install_oss_boundary.sh tests/oss_boundary_integration.sh
       - name: Reproduce frozen pilot manifest
         run: python harness/make_manifest.py round-pilot --check
       - name: Verify and rescore every pilot record
         run: python harness/evaluate.py --round round-pilot
       - name: Verify frozen OSS compatibility inputs
         run: python harness/freeze_oss_cases.py --check
-      - name: Reproduce frozen OSS compatibility manifest
+      - name: Verify historical OSS manifest identity
         run: python harness/make_oss_manifest.py oss-pilot-01 --check
+      - name: Reproduce current OSS manifest when frozen
+        run: python harness/make_oss_manifest.py oss-pilot-02 --check --if-present
       - name: Verify published OSS compatibility results when present
         run: >-
           python harness/evaluate_oss.py
-          --study oss-pilot-01
+          --study oss-pilot-02
           --results studies/oss-compat-v1/results
           --check --if-present
       - name: Verify published artifacts against the live Actions API
@@ -52,3 +57,86 @@ jobs:
           python harness/materialize_oss_artifacts.py
           --results studies/oss-compat-v1/results
           --verify-only --if-present
+
+  oss-boundary-qualification:
+    name: OSS boundary qualification / Ubuntu 24.04
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Python 3.12.10
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.12.10"
+
+      - name: Set up Node 24.14.1
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24.14.1"
+
+      - name: Set up Go 1.23.12
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version: "1.23.12"
+          cache: false
+
+      - name: Pin Rust 1.85.0
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.85.0 --profile minimal
+          rustup default 1.85.0
+          test "$(rustc --version)" = "rustc 1.85.0 (4d91de4e4 2025-02-17)"
+
+      - name: Install and self-test trusted execution boundary
+        shell: bash
+        run: bash harness/install_oss_boundary.sh
+
+      - name: Configure and build a real CMake project through the boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          readonly CASE_ROOT=/var/lib/evoom-oss/work/evo_repo_cmake_qualification
+          readonly REPO="$CASE_ROOT/repo"
+          sudo install -d -o root -g root -m 0700 "$CASE_ROOT" "$REPO"
+          printf '%s\n' \
+            'cmake_minimum_required(VERSION 3.16)' \
+            'project(evoom_boundary_smoke LANGUAGES C)' \
+            'add_executable(evoom_boundary_smoke main.c)' \
+            'add_custom_target(run_boundary_smoke COMMAND $<TARGET_FILE:evoom_boundary_smoke> DEPENDS evoom_boundary_smoke)' \
+            | sudo tee "$REPO/CMakeLists.txt" >/dev/null
+          printf '%s\n' \
+            '#include <stdio.h>' \
+            'int main(void) { puts("EVOOM_BOUNDARY_CMAKE_OK"); return 0; }' \
+            | sudo tee "$REPO/main.c" >/dev/null
+          sudo chmod 0600 "$REPO/CMakeLists.txt" "$REPO/main.c"
+          cd "$REPO"
+          sudo /usr/local/sbin/evoom-oss-untrusted-exec \
+            --phase setup -- cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          sudo /usr/local/sbin/evoom-oss-untrusted-exec \
+            --phase test -- cmake --build build --parallel 2 --target run_boundary_smoke
+          sudo test -x build/evoom_boundary_smoke
+          sudo /usr/local/sbin/evoom-oss-untrusted-exec --cleanup --purge-homes
+
+  oss-boundary-privileged-integration:
+    name: OSS boundary privileged Docker integration
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Run privileged boundary integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker run --rm --privileged \
+            --env EVOOM_BOUNDARY_CONTAINER_TEST=1 \
+            --mount "type=bind,src=$PWD,dst=/src,readonly" \
+            --workdir /src \
+            ubuntu:24.04 \
+            bash tests/oss_boundary_integration.sh

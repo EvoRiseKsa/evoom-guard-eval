@@ -55,6 +55,17 @@ class OssStudyDataTests(unittest.TestCase):
         selection = oss_common.load_json(oss_common.STUDY_ROOT / "SELECTION.json")
         repositories = selection["repositories"]
         self.assertEqual(6, len(repositories))
+        self.assertEqual(
+            {
+                "psf/requests",
+                "expressjs/express",
+                "junegunn/fzf",
+                "BurntSushi/ripgrep",
+                "fmtlib/fmt",
+                "DaveGamble/cJSON",
+            },
+            {repository["repository"] for repository in repositories},
+        )
         self.assertEqual(6, len({repository["ecosystem"] for repository in repositories}))
         all_ids: set[str] = set()
         for repository in repositories:
@@ -80,7 +91,33 @@ class OssStudyDataTests(unittest.TestCase):
         self.assertIn(".gitattributes", paths)
         self.assertIn("README.md", paths)
         self.assertIn("tests/test_oss_harness.py", paths)
+        self.assertFalse(
+            any(path.startswith("studies/oss-compat-v1/attempts/") for path in paths)
+        )
         self.assertTrue(any(path.startswith("studies/oss-compat-v1/licenses/") for path in paths))
+
+    def test_invalid_v01_manifest_remains_byte_identical_historical_evidence(self) -> None:
+        manifest, problems = oss_common.verify_manifest("oss-pilot-01")
+        self.assertEqual([], problems)
+        self.assertEqual("oss-pilot-01", manifest["study_id"])
+        self.assertEqual(
+            oss_common.LEGACY_STUDIES["oss-pilot-01"]["manifest_sha256"],
+            oss_common.sha256_file(oss_common.manifest_path("oss-pilot-01")),
+        )
+
+    def test_recovery_lineage_forbids_product_inference_from_v01(self) -> None:
+        recovery = oss_common.load_json(oss_common.STUDY_ROOT / "RECOVERY.json")
+        predecessor = recovery["predecessor"]
+        successor = recovery["successor"]
+        self.assertEqual("invalid_before_measurement", predecessor["disposition"])
+        self.assertIs(predecessor["product_inference_allowed"], False)
+        self.assertEqual(0, predecessor["observations"]["case_steps_started"])
+        self.assertEqual(0, predecessor["observations"]["guard_records"])
+        self.assertEqual("oss-pilot-02", successor["study_id"])
+        self.assertEqual(
+            "new_preregistered_successor_not_a_rerun_or_replacement",
+            successor["relationship"],
+        )
 
     def test_manifest_and_study_references_reject_traversal(self) -> None:
         with self.assertRaises(ValueError):
@@ -404,6 +441,17 @@ class OssEvaluatorTests(unittest.TestCase):
         self.assertTrue(summary["study_integrity_valid"])
         self.assertFalse(summary["all_cases_conformant"])
         self.assertEqual(1, summary["infrastructure_errors"])
+        self.assertEqual(
+            {
+                "fixed_case_denominator": 1,
+                "case_runner_evidence_count": 1,
+                "guard_invocation_count": 0,
+                "verified_guard_record_count": 0,
+                "pre_guard_infrastructure_error_count": 1,
+                "product_outcome_denominator": 0,
+            },
+            summary["execution_coverage"],
+        )
         self.assertEqual(0, summary["green_reconstructed_baselines"]["count"])
         self.assertIsNone(summary["cases"][0]["observed"])
         self.assertEqual([f"{case_id}: {finding}"], summary["outcome_findings"])
@@ -420,6 +468,9 @@ class OssEvaluatorTests(unittest.TestCase):
             summary["protected_policy_trip_detection"],
         )
         self.assertEqual(12, sum(summary["by_ecosystem"].values()))
+        self.assertEqual(12, summary["execution_coverage"]["fixed_case_denominator"])
+        self.assertEqual(0, summary["execution_coverage"]["guard_invocation_count"])
+        self.assertEqual(0, summary["execution_coverage"]["product_outcome_denominator"])
 
     def test_nested_output_entry_is_not_ignored(self) -> None:
         case_id, (case_dir, case) = next(iter(oss_common.case_map().items()))

@@ -22,6 +22,7 @@ from oss_common import (
     manifest_case_entries,
     manifest_path,
     study_input_paths,
+    verify_manifest,
     working_study_problems,
     write_new,
 )
@@ -29,7 +30,7 @@ from oss_common import (
 
 def build_manifest(study_id: str = STUDY_ID) -> dict[str, Any]:
     if study_id != STUDY_ID:
-        raise ValueError(f"protocol v0.1 defines only {STUDY_ID!r}")
+        raise ValueError(f"current protocol defines only {STUDY_ID!r}")
     selection = load_json(STUDY_ROOT / "SELECTION.json")
     problems = working_study_problems()
     if problems:
@@ -86,10 +87,31 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("study_id", nargs="?", default=STUDY_ID)
     parser.add_argument("--check", action="store_true")
+    parser.add_argument(
+        "--if-present",
+        action="store_true",
+        help="with --check, allow a not-yet-frozen current manifest to be absent",
+    )
     args = parser.parse_args()
 
-    expected = canonical_json_bytes(build_manifest(args.study_id))
+    if args.if_present and not args.check:
+        parser.error("--if-present requires --check")
+
     destination = manifest_path(args.study_id)
+    if args.check and not destination.is_file() and args.if_present:
+        print(f"SKIP manifest is not frozen yet: {destination.relative_to(ROOT)}")
+        return 0
+
+    if args.study_id != STUDY_ID:
+        if not args.check:
+            raise SystemExit("refusing to recreate or overwrite a historical manifest")
+        _, problems = verify_manifest(args.study_id)
+        if problems:
+            raise SystemExit("invalid historical OSS manifest: " + "; ".join(problems))
+        print(f"OK  {args.study_id} historical manifest identity is preserved")
+        return 0
+
+    expected = canonical_json_bytes(build_manifest(args.study_id))
     if args.check:
         if not destination.is_file():
             raise SystemExit(f"missing manifest: {destination.relative_to(ROOT)}")

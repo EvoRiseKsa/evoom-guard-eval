@@ -54,10 +54,13 @@ SETUP_NODE_STEP = "Set up Node"
 SETUP_GO_STEP = "Set up Go"
 SETUP_RUST_STEP = "Pin Rust 1.85.0"
 IDENTITY_STEP = "Verify frozen study identity"
+PREPARE_BOOTSTRAP_STEP = "Prepare trusted infrastructure fallback"
 INSTALL_BOUNDARY_STEP = "Install trusted execution boundary"
 RUN_CASE_STEP = "Run frozen case"
 KILL_PROCESSES_STEP = "Kill residual untrusted processes"
+CLASSIFY_OUTPUT_STEP = "Classify trusted case output"
 UPLOAD_STEP = "Upload immutable raw case output"
+INFRA_UPLOAD_STEP = "Upload immutable infrastructure output"
 CANONICAL_SELECTION = "earliest_api_visible_workflow_dispatch_for_protocol_commit"
 MAX_WORKFLOW_RUN_PAGES = 100
 
@@ -218,6 +221,28 @@ def expected_artifact_names() -> dict[str, str]:
     return {f"oss-{case_id}": case_id for case_id in sorted(case_map())}
 
 
+def _require_product_artifact_inventory(artifacts: list[Any]) -> None:
+    """Refuse to reinterpret an infrastructure attempt as product evidence."""
+    if not artifacts:
+        raise RuntimeError(
+            "canonical run has zero artifacts; this is invalid before measurement. "
+            "Do not score it; preserve its API and log evidence under attempts/"
+        )
+    infrastructure = sorted(
+        artifact.get("name")
+        for artifact in artifacts
+        if isinstance(artifact, dict)
+        and isinstance(artifact.get("name"), str)
+        and artifact["name"].startswith("oss-infra-")
+    )
+    if infrastructure:
+        raise RuntimeError(
+            "canonical run contains infrastructure-failure artifacts "
+            f"{infrastructure}; no product measurement may be materialized. "
+            "Preserve the API, logs, and infra artifacts under attempts/"
+        )
+
+
 def _workflow_dispatch_runs(token: str | None) -> list[dict[str, Any]]:
     workflow = urllib.parse.quote(WORKFLOW_FILE, safe="")
     collected: list[dict[str, Any]] = []
@@ -304,10 +329,13 @@ def _required_step_names(case_id: str) -> tuple[str, ...]:
     names.extend(
         (
             IDENTITY_STEP,
+            PREPARE_BOOTSTRAP_STEP,
             INSTALL_BOUNDARY_STEP,
             RUN_CASE_STEP,
             KILL_PROCESSES_STEP,
+            CLASSIFY_OUTPUT_STEP,
             UPLOAD_STEP,
+            INFRA_UPLOAD_STEP,
         )
     )
     return tuple(names)
@@ -355,7 +383,12 @@ def _selected_job(
         previous_number = number
         if step.get("status") != "completed":
             raise RuntimeError(f"{case_id}: required job step is not completed: {name}")
-        allowed = {"success", "failure"} if name == RUN_CASE_STEP else {"success"}
+        if name == RUN_CASE_STEP:
+            allowed = {"success", "failure"}
+        elif name == INFRA_UPLOAD_STEP:
+            allowed = {"skipped"}
+        else:
+            allowed = {"success"}
         if step.get("conclusion") not in allowed:
             raise RuntimeError(f"{case_id}: required job step failed or was skipped: {name}")
         selected_steps.append(
@@ -562,6 +595,7 @@ def fetch_run_index(
         raise RuntimeError("Actions API returned no artifact list")
     if artifacts_payload.get("total_count") != len(artifacts):
         raise RuntimeError("Actions artifact response was truncated")
+    _require_product_artifact_inventory(artifacts)
     expected = expected_artifact_names()
     by_name: dict[str, dict[str, Any]] = {}
     for artifact in artifacts:
@@ -804,7 +838,12 @@ def run_index_problems(
                 previous_number = number
             if step.get("status") != "completed":
                 problems.append(f"{case_id}: required job step is not completed")
-            allowed = {"success", "failure"} if expected_name == RUN_CASE_STEP else {"success"}
+            if expected_name == RUN_CASE_STEP:
+                allowed = {"success", "failure"}
+            elif expected_name == INFRA_UPLOAD_STEP:
+                allowed = {"skipped"}
+            else:
+                allowed = {"success"}
             if step.get("conclusion") not in allowed:
                 problems.append(f"{case_id}: required job step failed or was skipped")
             if expected_name == RUN_CASE_STEP:

@@ -50,13 +50,24 @@ def required_python_steps(run_conclusion: str = "failure") -> list[dict[str, obj
         artifacts.SETUP_PYTHON_STEP,
         artifacts.PREFLIGHT_STEP,
         artifacts.IDENTITY_STEP,
+        artifacts.PREPARE_BOOTSTRAP_STEP,
         artifacts.INSTALL_BOUNDARY_STEP,
         artifacts.RUN_CASE_STEP,
         artifacts.KILL_PROCESSES_STEP,
+        artifacts.CLASSIFY_OUTPUT_STEP,
         artifacts.UPLOAD_STEP,
+        artifacts.INFRA_UPLOAD_STEP,
     )
     return [
-        api_step(name, number, run_conclusion if name == artifacts.RUN_CASE_STEP else "success")
+        api_step(
+            name,
+            number,
+            run_conclusion
+            if name == artifacts.RUN_CASE_STEP
+            else "skipped"
+            if name == artifacts.INFRA_UPLOAD_STEP
+            else "success",
+        )
         for number, name in enumerate(names, start=2)
     ]
 
@@ -110,6 +121,16 @@ class ArtifactZipTests(unittest.TestCase):
 
 
 class ArtifactIndexTests(unittest.TestCase):
+    def test_product_materializer_rejects_infra_and_zero_artifacts(self) -> None:
+        with self.assertRaisesRegex(RuntimeError, "zero artifacts.*under attempts/"):
+            artifacts._require_product_artifact_inventory([])  # noqa: SLF001
+        with self.assertRaisesRegex(
+            RuntimeError, "infrastructure-failure artifacts.*under attempts/"
+        ):
+            artifacts._require_product_artifact_inventory(  # noqa: SLF001
+                [{"name": "oss-infra-case-a"}]
+            )
+
     def _index(self, manifest: Path, archive: bytes) -> dict[str, object]:
         commit = "a" * 40
         run_id = 123
@@ -357,9 +378,12 @@ class ArtifactIndexTests(unittest.TestCase):
             artifacts.SETUP_PYTHON_STEP,
             artifacts.PREFLIGHT_STEP,
             artifacts.IDENTITY_STEP,
+            artifacts.PREPARE_BOOTSTRAP_STEP,
             artifacts.INSTALL_BOUNDARY_STEP,
             artifacts.KILL_PROCESSES_STEP,
+            artifacts.CLASSIFY_OUTPUT_STEP,
             artifacts.UPLOAD_STEP,
+            artifacts.INFRA_UPLOAD_STEP,
         )
         with mock.patch.object(artifacts, "case_map", return_value=case):
             for name in required_success:
