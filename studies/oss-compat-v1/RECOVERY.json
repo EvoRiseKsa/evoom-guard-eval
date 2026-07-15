@@ -123,7 +123,69 @@
     "successor_held_out": false,
     "unique_case_inventory": 12
   },
-  "recovery_schema": "evoom.oss-study-recovery/3",
+  "qualification_history": [
+    {
+      "canonical_execution_performed": false,
+      "failed_qualification_replicas": [
+        {
+          "job_id": 87289024755,
+          "replica": 2,
+          "scan_elapsed_seconds": 133.613
+        },
+        {
+          "job_id": 87289024758,
+          "replica": 4,
+          "scan_elapsed_seconds": 102.416
+        },
+        {
+          "job_id": 87289024759,
+          "replica": 5,
+          "scan_elapsed_seconds": 210.892
+        },
+        {
+          "job_id": 87289024792,
+          "replica": 6,
+          "scan_elapsed_seconds": 34.714
+        },
+        {
+          "job_id": 87289024771,
+          "replica": 9,
+          "scan_elapsed_seconds": 50.032
+        },
+        {
+          "job_id": 87289024816,
+          "replica": 12,
+          "scan_elapsed_seconds": 48.169
+        }
+      ],
+      "failure": {
+        "all_failed_replicas_shared_cause": true,
+        "cause": "two transient systemd-timedated private partition roots under /tmp and /var/tmp disappeared while their ownership scans were running",
+        "final_partition_inventory_entries": 727,
+        "initial_partition_inventory_entries": 729,
+        "phase": "trusted_bootstrap_identity_preflight"
+      },
+      "frozen_case_execution_performed": false,
+      "guard_invocations": 0,
+      "job_outcomes": {
+        "failed": 6,
+        "privileged_docker_successes": 1,
+        "qualification_failures": 6,
+        "qualification_successes": 6,
+        "standard_ci_successes": 6,
+        "successful": 13,
+        "total": 19
+      },
+      "manifest_frozen": false,
+      "product_outcome_denominator_contribution": 0,
+      "protocol_commit": "0459f07150fc39b3330e175468d8eab006ee71ee",
+      "run_attempt": 1,
+      "run_id": 29395836809,
+      "run_url": "https://github.com/EvoRiseKsa/evoom-guard-eval/actions/runs/29395836809",
+      "scientific_disposition": "failed_pre_manifest_infrastructure_qualification"
+    }
+  ],
+  "recovery_schema": "evoom.oss-study-recovery/4",
   "successor": {
     "allowed_claims": [
       "whether the revised infrastructure completed all 12 repeated cells",
@@ -131,10 +193,11 @@
     ],
     "amendments": [
       "partition the same root-device uid/gid ownership coverage across a bounded queue and bounded workers",
-      "retain fail-closed handling for every collision, scan or inventory error, OS-enforced live inventory stream limit or partition bound violation, global deadline, and depth-3 partition-boundary path/device/inode drift on the declared trusted responsive runner",
+      "retain fail-closed handling for every collision, unverified scan or inventory error, OS-enforced live inventory stream limit or partition bound violation, global deadline, and unverified depth-3 partition-boundary path/device/inode drift on the declared trusted responsive runner",
       "emit per-partition scan timing and status telemetry",
       "fail closed unless GitHub's runner.environment context attests github-hosted in qualification, privileged integration, and canonical jobs",
-      "qualify the exact bootstrap path across multiple independent GitHub-hosted Ubuntu 24.04 runners"
+      "qualify the exact bootstrap path across multiple independent GitHub-hosted Ubuntu 24.04 runners",
+      "permit at most three complete ownership-scan attempts under one shared 900-second deadline only when a clean final inventory proves deletion-only churn exactly matching every failed-and-then-absent partition root; additions, replacements, collisions, timeouts, and every other error remain terminal"
     ],
     "design": "repeated_non_blind_not_held_out",
     "forbidden_claims": [
@@ -151,7 +214,7 @@
     "relationship": "post_exposure_same_corpus_engineering_recovery",
     "reuse_rationale": "V0.3 exposed product-phase workflow outcomes for part of the corpus. The same cases are repeated only to recover infrastructure completion, never to increase unique n or claim held-out performance. Product artifacts were not extracted or evaluated when designing the infrastructure amendment.",
     "runtime_recovery_informed_by_prior_logs": true,
-    "scanner_threat_model": "preexisting numeric uid/gid collision detection on a trusted quiescent GitHub-hosted runner before any third-party code executes; not a TOCTOU defense against a concurrent privileged filesystem mutator or an unresponsive kernel/filesystem syscall",
+    "scanner_threat_model": "preexisting numeric uid/gid collision detection on a trusted GitHub-hosted runner before any third-party code executes; narrowly verified trusted-service partition deletions may restart the whole pass, but additions, replacements, collisions, timeouts, and other errors fail closed; not a TOCTOU defense against a concurrent privileged filesystem mutator or an unresponsive kernel/filesystem syscall",
     "study_id": "oss-pilot-04",
     "tuning_scope": "infrastructure_recovery_only",
     "unchanged_inputs": [

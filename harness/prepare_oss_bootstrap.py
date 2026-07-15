@@ -50,6 +50,7 @@ UNTRUSTED_GROUP = "evoom-oss-untrusted"
 UNTRUSTED_UID = 60001
 UNTRUSTED_GID = 60001
 IDENTITY_SCAN_TIMEOUT_SECONDS = 900
+IDENTITY_SCAN_STABILITY_ATTEMPTS = 3
 IDENTITY_SCAN_PARTITION_DEPTH = 3
 IDENTITY_SCAN_WORKERS = 4
 IDENTITY_SCAN_MAX_PARTITIONS = 65_536
@@ -90,6 +91,10 @@ IDENTITY_ENV = (
 
 class BootstrapError(RuntimeError):
     """The trusted bootstrap contract was not satisfied."""
+
+
+class RetryableIdentityScan(BootstrapError):
+    """A complete scan pass observed narrowly defined filesystem churn."""
 
 
 def _identity() -> dict[str, str | None]:
@@ -137,10 +142,13 @@ def _empty_directory(path: Path) -> None:
         raise BootstrapError(f"cannot inventory trusted directory: {path}") from exc
 
 
-def _emit_identity_scan(record: dict[str, Any]) -> None:
+def _emit_identity_scan(record: dict[str, Any], *, attempt: int | None = None) -> None:
+    payload = dict(record)
+    if attempt is not None:
+        payload["attempt"] = attempt
     print(
         IDENTITY_SCAN_PREFIX
-        + json.dumps(record, sort_keys=True, separators=(",", ":")),
+        + json.dumps(payload, sort_keys=True, separators=(",", ":")),
         flush=True,
     )
 
@@ -342,6 +350,13 @@ def _set_inventory_file_size_limit(output_limit: int) -> None:
     )
 
 
+def _identity_scan_failure_is_transient(record: dict[str, Any]) -> bool:
+    return (
+        record.get("status") == "error"
+        and record.get("transient_reason") == "verified_partition_deletion_pass"
+    )
+
+
 def _raise_identity_scan_failure(record: dict[str, Any]) -> None:
     status = record["status"]
     if status == "clean":
@@ -354,21 +369,50 @@ def _raise_identity_scan_failure(record: dict[str, Any]) -> None:
         )
     if status == "timeout":
         raise BootstrapError(f"identity ownership scan timed out: {partition}")
+    if _identity_scan_failure_is_transient(record):
+        raise RetryableIdentityScan(
+            f"identity ownership scan observed transient filesystem churn: "
+            f"{partition}: {record.get('detail', '')}"
+        )
     raise BootstrapError(
         f"identity ownership scan failed: {partition}: {record.get('detail', '')}"
     )
 
 
-def _scan_identity_partition(path: Path, deadline: float) -> dict[str, Any]:
+def _scan_identity_partition(
+    path: Path, expected_device: int, expected_inode: int, deadline: float
+) -> dict[str, Any]:
     completed, record = _run_identity_command(
         _identity_find_command(path),
         deadline=deadline,
         phase="partition",
         partition=path,
     )
-    if completed is not None and record["status"] == "clean" and completed.stdout:
+    if completed is not None and completed.stdout:
         record["finding"] = os.fsdecode(completed.stdout.split(b"\0", 1)[0])
         record["status"] = "collision"
+    elif completed is not None and record["status"] == "error":
+        # The command targeted this exact expected partition.  Its error is
+        # merely candidate churn evidence until the final inventory proves a
+        # deletion-only boundary transition with no other failure.
+        try:
+            metadata = os.lstat(path)
+        except FileNotFoundError:
+            record.update(
+                {
+                    "boundary_observation": "partition_disappeared",
+                    "expected_device": expected_device,
+                    "expected_inode": expected_inode,
+                }
+            )
+        except OSError:
+            pass
+        else:
+            if (metadata.st_dev, metadata.st_ino) != (
+                expected_device,
+                expected_inode,
+            ):
+                record["boundary_observation"] = "partition_fingerprint_changed"
     return record
 
 
@@ -483,12 +527,13 @@ def _identity_partitions(
     )
 
 
-def _assert_no_preexisting_identity_files(
+def _assert_no_preexisting_identity_files_once(
     root: Path = Path("/"),
     *,
+    deadline: float,
+    attempt: int,
     partition_depth: int = IDENTITY_SCAN_PARTITION_DEPTH,
     workers: int = IDENTITY_SCAN_WORKERS,
-    timeout_seconds: float = IDENTITY_SCAN_TIMEOUT_SECONDS,
     max_partitions: int = IDENTITY_SCAN_MAX_PARTITIONS,
     inventory_output_limit: int = IDENTITY_SCAN_MAX_INVENTORY_BYTES,
 ) -> None:
@@ -504,7 +549,6 @@ def _assert_no_preexisting_identity_files(
         partition_depth < 1
         or workers < 1
         or workers > IDENTITY_SCAN_WORKERS
-        or timeout_seconds <= 0
         or max_partitions < 1
         or inventory_output_limit < 1
     ):
@@ -522,17 +566,16 @@ def _assert_no_preexisting_identity_files(
         raise BootstrapError("identity scan root is not a real absolute directory")
 
     started = time.monotonic()
-    deadline = started + timeout_seconds
     shallow, shallow_record = _run_identity_command(
         _identity_find_command(root, max_depth=partition_depth),
         deadline=deadline,
         phase="shallow",
         partition=root,
     )
-    if shallow is not None and shallow_record["status"] == "clean" and shallow.stdout:
+    if shallow is not None and shallow.stdout:
         shallow_record["finding"] = os.fsdecode(shallow.stdout.split(b"\0", 1)[0])
         shallow_record["status"] = "collision"
-    _emit_identity_scan(shallow_record)
+    _emit_identity_scan(shallow_record, attempt=attempt)
     _raise_identity_scan_failure(shallow_record)
 
     partitions, boundary_fingerprints, inventory_record = _identity_partitions(
@@ -544,7 +587,7 @@ def _assert_no_preexisting_identity_files(
         max_partitions=max_partitions,
         output_limit=inventory_output_limit,
     )
-    _emit_identity_scan(inventory_record)
+    _emit_identity_scan(inventory_record, attempt=attempt)
     _raise_identity_scan_failure(inventory_record)
 
     partition_paths = [partition[0] for partition in partitions]
@@ -558,8 +601,11 @@ def _assert_no_preexisting_identity_files(
             if time.monotonic() >= deadline:
                 deadline_exhausted = True
                 break
-            path = partition_paths[next_partition]
-            futures[executor.submit(_scan_identity_partition, path, deadline)] = path
+            partition = partitions[next_partition]
+            path = partition[0]
+            futures[executor.submit(_scan_identity_partition, *partition, deadline)] = (
+                path
+            )
             next_partition += 1
         while futures and not deadline_exhausted:
             remaining = deadline - time.monotonic()
@@ -578,7 +624,8 @@ def _assert_no_preexisting_identity_files(
                 path = futures.pop(future)
                 try:
                     record = future.result()
-                except Exception as exc:  # pragma: no cover - defensive fail-closed guard
+                except Exception as exc:  # pragma: no cover
+                    # Defensive fail-closed guard for an unexpected worker failure.
                     record = {
                         "detail": f"{type(exc).__name__}: {exc}",
                         "elapsed_ms": 0,
@@ -587,13 +634,16 @@ def _assert_no_preexisting_identity_files(
                         "status": "error",
                     }
                 records.append(record)
-                _emit_identity_scan(record)
+                _emit_identity_scan(record, attempt=attempt)
             while next_partition < len(partition_paths) and len(futures) < workers:
                 if time.monotonic() >= deadline:
                     deadline_exhausted = True
                     break
-                path = partition_paths[next_partition]
-                futures[executor.submit(_scan_identity_partition, path, deadline)] = path
+                partition = partitions[next_partition]
+                path = partition[0]
+                futures[
+                    executor.submit(_scan_identity_partition, *partition, deadline)
+                ] = path
                 next_partition += 1
         if next_partition < len(partition_paths):
             deadline_exhausted = True
@@ -611,32 +661,73 @@ def _assert_no_preexisting_identity_files(
             "status": "timeout",
         }
         records.append(record)
-        _emit_identity_scan(record)
+        _emit_identity_scan(record, attempt=attempt)
 
     final_partitions, final_boundary_fingerprints, final_inventory_record = (
         _identity_partitions(
-        root,
-        root_device=root_status.st_dev,
-        depth=partition_depth,
-        deadline=deadline,
-        phase="inventory-after",
-        max_partitions=max_partitions,
-        output_limit=inventory_output_limit,
+            root,
+            root_device=root_status.st_dev,
+            depth=partition_depth,
+            deadline=deadline,
+            phase="inventory-after",
+            max_partitions=max_partitions,
+            output_limit=inventory_output_limit,
         )
     )
-    if final_inventory_record["status"] == "clean" and (
-        final_partitions != partitions
-        or final_boundary_fingerprints != boundary_fingerprints
-        or final_inventory_record["skipped_mounts"]
-        != inventory_record["skipped_mounts"]
-    ):
-        final_inventory_record.update(
-            {"detail": "partition inventory changed during scan", "status": "error"}
+    if final_inventory_record["status"] == "clean":
+        initial_boundary = set(boundary_fingerprints)
+        final_boundary = set(final_boundary_fingerprints)
+        removed_boundary = initial_boundary - final_boundary
+        added_boundary = final_boundary - initial_boundary
+        boundary_changed = (
+            bool(removed_boundary)
+            or bool(added_boundary)
+            or final_inventory_record["skipped_mounts"]
+            != inventory_record["skipped_mounts"]
         )
-    _emit_identity_scan(final_inventory_record)
+        if boundary_changed:
+            failed_records = [
+                record for record in records if record["status"] != "clean"
+            ]
+            observed_deletions = {
+                (
+                    Path(record["partition"]),
+                    record.get("expected_device"),
+                    record.get("expected_inode"),
+                )
+                for record in failed_records
+                if record.get("boundary_observation") == "partition_disappeared"
+            }
+            deletion_only_pass = (
+                bool(removed_boundary)
+                and not added_boundary
+                and final_inventory_record["skipped_mounts"]
+                == inventory_record["skipped_mounts"]
+                and len(observed_deletions) == len(failed_records)
+                and observed_deletions == removed_boundary
+            )
+            final_inventory_record.update(
+                {
+                    "detail": "partition inventory changed during scan",
+                    "status": "error",
+                }
+            )
+            if deletion_only_pass:
+                for record in failed_records:
+                    record["transient_reason"] = "verified_partition_deletion_pass"
+                final_inventory_record.update(
+                    {
+                        "removed_partitions": sorted(
+                            os.fspath(value[0]) for value in removed_boundary
+                        ),
+                        "transient_reason": "verified_partition_deletion_pass",
+                    }
+                )
+    _emit_identity_scan(final_inventory_record, attempt=attempt)
 
     summary = {
         "elapsed_ms": round((time.monotonic() - started) * 1000),
+        "attempt": attempt,
         "partition": os.fspath(root),
         "partitions": len(partitions),
         "phase": "summary",
@@ -650,9 +741,100 @@ def _assert_no_preexisting_identity_files(
         summary["status"] = "error"
     _emit_identity_scan(summary)
     if failures:
-        _raise_identity_scan_failure(
-            sorted(failures, key=lambda value: os.fspath(value["partition"]))[0]
+        failure_priority = {"collision": 0, "timeout": 1, "error": 2}
+        ordered_failures = sorted(
+            failures,
+            key=lambda value: (
+                failure_priority.get(str(value["status"]), 3),
+                os.fspath(value["partition"]),
+            ),
         )
+        nontransient_failures = [
+            record
+            for record in ordered_failures
+            if not _identity_scan_failure_is_transient(record)
+        ]
+        _raise_identity_scan_failure((nontransient_failures or ordered_failures)[0])
+
+
+def _assert_no_preexisting_identity_files(
+    root: Path = Path("/"),
+    *,
+    partition_depth: int = IDENTITY_SCAN_PARTITION_DEPTH,
+    workers: int = IDENTITY_SCAN_WORKERS,
+    timeout_seconds: float = IDENTITY_SCAN_TIMEOUT_SECONDS,
+    stability_attempts: int = IDENTITY_SCAN_STABILITY_ATTEMPTS,
+    max_partitions: int = IDENTITY_SCAN_MAX_PARTITIONS,
+    inventory_output_limit: int = IDENTITY_SCAN_MAX_INVENTORY_BYTES,
+) -> None:
+    """Require one stable complete ownership-scan pass within one deadline.
+
+    Trusted runner services may delete transient partition roots during a
+    pass.  A retry is allowed only when the final clean inventory proves a
+    deletion-only transition that exactly matches every failed-and-then-absent
+    partition.  Every attempt shares the same absolute deadline; additions,
+    replacements, collisions, and all other failures remain immediate
+    fail-closed results.
+    """
+    if (
+        timeout_seconds <= 0
+        or stability_attempts < 1
+        or stability_attempts > IDENTITY_SCAN_STABILITY_ATTEMPTS
+    ):
+        raise BootstrapError("invalid identity ownership scan configuration")
+
+    root = Path(root)
+    started = time.monotonic()
+    deadline = started + timeout_seconds
+    for attempt in range(1, stability_attempts + 1):
+        try:
+            _assert_no_preexisting_identity_files_once(
+                root,
+                deadline=deadline,
+                attempt=attempt,
+                partition_depth=partition_depth,
+                workers=workers,
+                max_partitions=max_partitions,
+                inventory_output_limit=inventory_output_limit,
+            )
+        except RetryableIdentityScan as exc:
+            can_retry = attempt < stability_attempts and time.monotonic() < deadline
+            _emit_identity_scan(
+                {
+                    "attempts_allowed": stability_attempts,
+                    "detail": str(exc),
+                    "elapsed_ms": round((time.monotonic() - started) * 1000),
+                    "partition": os.fspath(root),
+                    "phase": "stability",
+                    "status": "retry" if can_retry else "error",
+                },
+                attempt=attempt,
+            )
+            if not can_retry:
+                if time.monotonic() >= deadline:
+                    raise BootstrapError(
+                        f"identity ownership scan timed out: {root}"
+                    ) from exc
+                raise BootstrapError(
+                    "identity ownership scan did not reach a stable snapshot "
+                    f"after {attempt} attempts: {exc}"
+                ) from exc
+            continue
+
+        _emit_identity_scan(
+            {
+                "attempts_allowed": stability_attempts,
+                "attempts_used": attempt,
+                "elapsed_ms": round((time.monotonic() - started) * 1000),
+                "partition": os.fspath(root),
+                "phase": "stability",
+                "status": "clean",
+            },
+            attempt=attempt,
+        )
+        return
+
+    raise AssertionError("identity scan stability loop did not terminate")
 
 
 def _ensure_fixed_identity() -> None:

@@ -209,7 +209,7 @@ class OssBootstrapLifecycleTests(unittest.TestCase):
             )
             output = io.StringIO()
             with (
-                mock.patch.object(subprocess, "run", return_value=failed),
+                mock.patch.object(subprocess, "run", return_value=failed) as run,
                 contextlib.redirect_stdout(output),
                 self.assertRaisesRegex(bootstrap.BootstrapError, "scan failed"),
             ):
@@ -222,6 +222,7 @@ class OssBootstrapLifecycleTests(unittest.TestCase):
             self.assertEqual("shallow", telemetry["phase"])
             self.assertEqual("error", telemetry["status"])
             self.assertEqual("permission denied", telemetry["detail"])
+            self.assertEqual(1, run.call_count)
 
     def test_partitioning_preserves_xdev_mount_boundary(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -313,6 +314,198 @@ class OssBootstrapLifecycleTests(unittest.TestCase):
             self.assertEqual(
                 "partition inventory changed during scan", final_inventory["detail"]
             )
+            self.assertEqual(2, inventory_calls)
+            self.assertFalse(any(r["phase"] == "stability" for r in telemetry))
+
+    def test_verified_partition_disappearance_restarts_without_parsing_locale(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            partition = root / "one" / "two" / "transient"
+            partition.mkdir(parents=True)
+            native_lstat = os.lstat
+            inventory_calls = 0
+            partition_failed = False
+
+            def fake_lstat(
+                path: str | bytes | os.PathLike[str] | os.PathLike[bytes],
+            ) -> os.stat_result:
+                if Path(path) == partition and partition_failed:
+                    raise FileNotFoundError(os.fspath(partition))
+                return native_lstat(path)
+
+            def fake_find(
+                command: list[str], **kwargs: object
+            ) -> subprocess.CompletedProcess[bytes]:
+                nonlocal inventory_calls, partition_failed
+                del kwargs
+                if "-mindepth" in command:
+                    inventory_calls += 1
+                    output = (
+                        os.fsencode(partition) + b"\0"
+                        if inventory_calls == 1
+                        else b""
+                    )
+                    return subprocess.CompletedProcess(command, 0, output, b"")
+                if command[1] == os.fspath(partition):
+                    partition_failed = True
+                    detail = os.fsencode(partition) + b": chemin disparu"
+                    return subprocess.CompletedProcess(command, 1, b"", detail)
+                return subprocess.CompletedProcess(command, 0, b"", b"")
+
+            output = io.StringIO()
+            with (
+                mock.patch.object(bootstrap.os, "lstat", side_effect=fake_lstat),
+                mock.patch.object(subprocess, "run", side_effect=fake_find),
+                contextlib.redirect_stdout(output),
+            ):
+                bootstrap._assert_no_preexisting_identity_files(  # noqa: SLF001
+                    root, partition_depth=3, workers=1, timeout_seconds=10
+                )
+
+            telemetry = [
+                json.loads(line.removeprefix(bootstrap.IDENTITY_SCAN_PREFIX))
+                for line in output.getvalue().splitlines()
+            ]
+            failed_partition = next(
+                record
+                for record in telemetry
+                if record["phase"] == "partition" and record["status"] == "error"
+            )
+            self.assertEqual(
+                "partition_disappeared", failed_partition["boundary_observation"]
+            )
+            verified_deletion = next(
+                record
+                for record in telemetry
+                if record["phase"] == "inventory-after" and record["attempt"] == 1
+            )
+            self.assertEqual(
+                "verified_partition_deletion_pass",
+                verified_deletion["transient_reason"],
+            )
+            self.assertEqual(
+                [os.fspath(partition)], verified_deletion["removed_partitions"]
+            )
+            stability = [
+                record for record in telemetry if record["phase"] == "stability"
+            ]
+            self.assertEqual(["retry", "clean"], [r["status"] for r in stability])
+            self.assertEqual([1, 2], [r["attempt"] for r in stability])
+            self.assertEqual(2, stability[-1]["attempts_used"])
+
+    def test_stability_retries_share_one_absolute_deadline(self) -> None:
+        deadlines: list[float] = []
+        attempts: list[int] = []
+
+        def fake_pass(*args: object, **kwargs: object) -> None:
+            del args
+            deadlines.append(float(kwargs["deadline"]))
+            attempts.append(int(kwargs["attempt"]))
+            if len(attempts) == 1:
+                raise bootstrap.RetryableIdentityScan("verified deletion-only pass")
+
+        with (
+            mock.patch.object(
+                bootstrap,
+                "_assert_no_preexisting_identity_files_once",
+                side_effect=fake_pass,
+            ),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            bootstrap._assert_no_preexisting_identity_files(  # noqa: SLF001
+                Path("/"), timeout_seconds=10
+            )
+
+        self.assertEqual([1, 2], attempts)
+        self.assertEqual(1, len(set(deadlines)))
+
+    def test_persistent_verified_churn_exhausts_three_attempts(self) -> None:
+        output = io.StringIO()
+        with (
+            mock.patch.object(
+                bootstrap,
+                "_assert_no_preexisting_identity_files_once",
+                side_effect=bootstrap.RetryableIdentityScan(
+                    "verified deletion-only pass"
+                ),
+            ) as scan_pass,
+            contextlib.redirect_stdout(output),
+            self.assertRaisesRegex(bootstrap.BootstrapError, "after 3 attempts"),
+        ):
+            bootstrap._assert_no_preexisting_identity_files(  # noqa: SLF001
+                Path("/"), timeout_seconds=10
+            )
+
+        self.assertEqual(3, scan_pass.call_count)
+        telemetry = [
+            json.loads(line.removeprefix(bootstrap.IDENTITY_SCAN_PREFIX))
+            for line in output.getvalue().splitlines()
+        ]
+        self.assertEqual(
+            ["retry", "retry", "error"], [r["status"] for r in telemetry]
+        )
+
+    def test_collision_dominates_simultaneous_verified_deletion(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            vanished = root / "one" / "two" / "vanished"
+            occupied = root / "one" / "two" / "occupied"
+            vanished.mkdir(parents=True)
+            occupied.mkdir()
+            native_lstat = os.lstat
+            vanished_failed = False
+            inventory_calls = 0
+
+            def fake_lstat(
+                path: str | bytes | os.PathLike[str] | os.PathLike[bytes],
+            ) -> os.stat_result:
+                if Path(path) == vanished and vanished_failed:
+                    raise FileNotFoundError(os.fspath(vanished))
+                return native_lstat(path)
+
+            def fake_find(
+                command: list[str], **kwargs: object
+            ) -> subprocess.CompletedProcess[bytes]:
+                nonlocal inventory_calls, vanished_failed
+                del kwargs
+                if "-mindepth" in command:
+                    inventory_calls += 1
+                    paths = (
+                        [vanished, occupied]
+                        if inventory_calls == 1
+                        else [occupied]
+                    )
+                    payload = b"".join(os.fsencode(path) + b"\0" for path in paths)
+                    return subprocess.CompletedProcess(command, 0, payload, b"")
+                if command[1] == os.fspath(vanished):
+                    vanished_failed = True
+                    return subprocess.CompletedProcess(command, 1, b"", b"disparu")
+                if command[1] == os.fspath(occupied):
+                    finding = os.fsencode(occupied / "owned") + b"\0"
+                    return subprocess.CompletedProcess(
+                        command, 1, finding, b"simultaneous traversal warning"
+                    )
+                return subprocess.CompletedProcess(command, 0, b"", b"")
+
+            output = io.StringIO()
+            with (
+                mock.patch.object(bootstrap.os, "lstat", side_effect=fake_lstat),
+                mock.patch.object(subprocess, "run", side_effect=fake_find),
+                contextlib.redirect_stdout(output),
+                self.assertRaisesRegex(bootstrap.BootstrapError, "already owns"),
+            ):
+                bootstrap._assert_no_preexisting_identity_files(  # noqa: SLF001
+                    root, partition_depth=3, workers=2, timeout_seconds=10
+                )
+
+            telemetry = [
+                json.loads(line.removeprefix(bootstrap.IDENTITY_SCAN_PREFIX))
+                for line in output.getvalue().splitlines()
+            ]
+            self.assertTrue(any(r["status"] == "collision" for r in telemetry))
+            self.assertFalse(any(r["phase"] == "stability" for r in telemetry))
 
     def test_partition_fingerprint_drift_fails_closed(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

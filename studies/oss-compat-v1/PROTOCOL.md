@@ -164,12 +164,19 @@ qualification and privileged boundary job enforce the same assertion.
 
 Before the fixed uid/gid is created, a bounded, partitioned ownership scan
 checks for preexisting numeric collisions on the root device. Its declared
-threat model is the trusted, quiescent GitHub-hosted runner before any
-third-party code executes, with responsive local filesystem syscalls. The
-queue, workers, accepted partition count, and wall-clock deadline are bounded;
-each live inventory stdout/stderr stream is cut off by a child-process file-size
-rlimit, and path/device/inode changes at the depth-3 partition boundary fail
-closed. This preflight is not a TOCTOU defense against a concurrent privileged
+threat model is the trusted GitHub-hosted runner before any third-party code
+executes, with responsive local filesystem syscalls; trusted system services
+may still delete their own transient directories. The queue, workers, accepted
+partition count, and one 900-second wall-clock deadline are bounded; each live
+inventory stdout/stderr stream is cut off by a child-process file-size rlimit.
+At most three complete passes may share that one deadline. A pass is retryable
+only when a clean final inventory proves a deletion-only transition whose
+removed path/device/inode tuples exactly equal every errored partition that a
+post-error `lstat` proved absent. Additions, inode/device replacements,
+skipped-mount changes, collisions, timeouts, inventory or resource errors,
+and every uncorrelated traversal error fail closed immediately. A retry
+discards the whole pass and is not an Actions rerun or a product execution.
+This preflight is not a TOCTOU defense against a concurrent privileged
 filesystem mutator and is not a guarantee about a hung kernel/filesystem call.
 
 The source repositories are executable third-party code. Every setup/test
