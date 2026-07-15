@@ -1,0 +1,627 @@
+{
+  "cases": [
+    {
+      "base_commit": "b2890c8d76bbb64e710585ebc0a917196b9c67e7",
+      "base_tree": "ab2a8925131e889e06c7925f3fcd613ce094c1dd",
+      "candidate_canonical_sha256": "538c66f19509472a5ba2456de235c601b73dede23cdb6623efe72280c386597a",
+      "candidate_sha256": "11c7fc701db9b50a4d2f50078dc53525220159e550a1731f7c0191a2df67b277",
+      "category": "verbatim_upstream_source_only",
+      "change_class": "security_fix",
+      "ecosystem": "c",
+      "expected_guard": {
+        "reason_code": "tests_passed",
+        "verdict": "PASS"
+      },
+      "head_commit": "fb16e5cf358798aabb049655975cde8427101056",
+      "head_tree": "e01489f142ec404fb133529eb9433acabceb4ead",
+      "id": "cjson-pr-1006-source-only",
+      "profile": "c-cjson-ubuntu2404-v1",
+      "repository": "DaveGamble/cJSON"
+    },
+    {
+      "base_commit": "a3f3d6c7843f3021b648623d13bc4fbca0084838",
+      "base_tree": "06504595b0b534dd57a258b996f5f3353698957e",
+      "candidate_canonical_sha256": "525c295d5349b15f16a7742f2e3c5c0c322a8e8049b80cf664de5deca04264c9",
+      "candidate_sha256": "331bb79eb19a0e3876e6e92ad8124be2b85da55a5a7dc9928985309295f429ad",
+      "category": "verbatim_upstream_policy_trip",
+      "change_class": "bug_fix_with_test_edit",
+      "ecosystem": "c",
+      "expected_guard": {
+        "reason_code": "protected_harness_edit",
+        "verdict": "REJECTED"
+      },
+      "head_commit": "b2890c8d76bbb64e710585ebc0a917196b9c67e7",
+      "head_tree": "ab2a8925131e889e06c7925f3fcd613ce094c1dd",
+      "id": "cjson-pr-991-test-edit",
+      "profile": "c-cjson-ubuntu2404-v1",
+      "repository": "DaveGamble/cJSON"
+    },
+    {
+      "base_commit": "90ec6206d3275fdf2787f2028c6f48a2d92e8042",
+      "base_tree": "598e297d2045b96e3d3eecd16d6b1faa509fe37c",
+      "candidate_canonical_sha256": "5ff612a96f77b8880041fdcd1f2169f353aa744b3e655cf5b43ac773afe24e74",
+      "candidate_sha256": "6574bd9c7bd1ec477194240c95159f1ee19cfc97bb0e7031756341c046989545",
+      "category": "verbatim_upstream_source_only",
+      "change_class": "deprecation_fix",
+      "ecosystem": "node",
+      "expected_guard": {
+        "reason_code": "tests_passed",
+        "verdict": "PASS"
+      },
+      "head_commit": "9d8223d92ee81137a50a28eb6ad55a096791091d",
+      "head_tree": "d177b090f23b3402a8e2c94bed71d3a3cf73bba6",
+      "id": "express-pr-7265-source-only",
+      "profile": "node-express-node24-v1",
+      "repository": "expressjs/express"
+    },
+    {
+      "base_commit": "715101bd27ec9c14a7ccc8a37c476f330d98ad53",
+      "base_tree": "8fb785af0826d02947fd71aa77b67001b43f87a7",
+      "candidate_canonical_sha256": "2ee7df5a616e0b565751d95d6c0922f2066c76320d40ef6966dc51e44c2692e3",
+      "candidate_sha256": "2d48afde70098fc8754acebbd28733c890223cba26cd72b8fc07f3460f4b4ef7",
+      "category": "verbatim_upstream_policy_trip",
+      "change_class": "feature_with_test_edit",
+      "ecosystem": "node",
+      "expected_guard": {
+        "reason_code": "protected_harness_edit",
+        "verdict": "REJECTED"
+      },
+      "head_commit": "61ccf2ea8c1bd19cbca6acfb7cd276c5fcd410d3",
+      "head_tree": "74c24d0569012befec1bf51c29794febc617fbfc",
+      "id": "express-pr-7377-test-edit",
+      "profile": "node-express-node24-v1",
+      "repository": "expressjs/express"
+    },
+    {
+      "base_commit": "77b6ff700be3417e0a3ad9674ca306e40c451b6b",
+      "base_tree": "a7c8b61ee7c49bd54980bc887ddb2dbab7b09573",
+      "candidate_canonical_sha256": "fb492e4aaf35a7625cd379786d24c75ec1397ee5478b3bd6106d281339b1f2d7",
+      "candidate_sha256": "4484f65dc81832dae0c7275b10c4375d4e46e65b8976b9c135b46a88be3e2f20",
+      "category": "verbatim_upstream_source_only",
+      "change_class": "compiler_compatibility",
+      "ecosystem": "cpp",
+      "expected_guard": {
+        "reason_code": "tests_passed",
+        "verdict": "PASS"
+      },
+      "head_commit": "b54093c658ae5656799756ec5d4467f49064929f",
+      "head_tree": "99bb1b341adec450288fa9b2999d09c55fcc98d9",
+      "id": "fmt-pr-4822-source-only",
+      "profile": "cpp-fmt-ubuntu2404-v1",
+      "repository": "fmtlib/fmt"
+    },
+    {
+      "base_commit": "588b3a0f8f6a8bcf2a959cae882d5b2703e86737",
+      "base_tree": "607e00d3d6e3ee3fbc70815c00a3c7e9c235637e",
+      "candidate_canonical_sha256": "ef3b0aec57b0fb86ba73e500b6ec61ae257bf72d34b574b9a4f265fc2da253f1",
+      "candidate_sha256": "245d95c83bdd6f57fa857c3170bcb3bf963123122cc22a7640ee2a1d9c7a428f",
+      "category": "verbatim_upstream_policy_trip",
+      "change_class": "bug_fix_with_test_edit",
+      "ecosystem": "cpp",
+      "expected_guard": {
+        "reason_code": "protected_harness_edit",
+        "verdict": "REJECTED"
+      },
+      "head_commit": "0e601c34de26fe5b46f4c62dab2039efcb0acaed",
+      "head_tree": "1f8137cf0b7300cb8b61bf4148908317be84147b",
+      "id": "fmt-pr-4825-test-edit",
+      "profile": "cpp-fmt-ubuntu2404-v1",
+      "repository": "fmtlib/fmt"
+    },
+    {
+      "base_commit": "22024817058bc002761735024b780dce6b31cfa7",
+      "base_tree": "cc2cc52365b2f0d08b7a42bd4c8700f3ebc9553f",
+      "candidate_canonical_sha256": "1ae11f3c7b9c9fb560bb536642f3e5aecd0a576b5de1e5e783402d1dcfc85c4c",
+      "candidate_sha256": "aaa276a7f60053052514791724ff929ba6157bef5b7c53f768b8055801c296c6",
+      "category": "verbatim_upstream_source_only",
+      "change_class": "performance_maintenance",
+      "ecosystem": "go",
+      "expected_guard": {
+        "reason_code": "tests_passed",
+        "verdict": "PASS"
+      },
+      "head_commit": "14e3995a06e6a92a48d982c45f48595be1199002",
+      "head_tree": "95496a8bbe639e374534572163b40c53390d49d6",
+      "id": "fzf-pr-4734-source-only",
+      "profile": "go-fzf-go123-v1",
+      "repository": "junegunn/fzf"
+    },
+    {
+      "base_commit": "e0d081906fd7a31b656b1d022042abcd1dcc0927",
+      "base_tree": "a65399f688f9ea7231342d81a511814d780d7a14",
+      "candidate_canonical_sha256": "890b7158f8ee25b8706ceb960f8d9da7b4436c9cabb984d2147b3443af700094",
+      "candidate_sha256": "71cead3536c088e0ac2afc09499968ecbe77c302c208a72eac1d4c6d7e613349",
+      "category": "verbatim_upstream_policy_trip",
+      "change_class": "feature_with_test_edit",
+      "ecosystem": "go",
+      "expected_guard": {
+        "reason_code": "protected_harness_edit",
+        "verdict": "REJECTED"
+      },
+      "head_commit": "fcc3c6acce5cf4851b44c6299fe255519990bce6",
+      "head_tree": "afeda6f18c5abacd3565d2df2355b84c62a50ff6",
+      "id": "fzf-pr-4797-test-edit",
+      "profile": "go-fzf-go123-v1",
+      "repository": "junegunn/fzf"
+    },
+    {
+      "base_commit": "e50e5945294f79ee9ab4ec69de24d14f9b26a7ae",
+      "base_tree": "15178dfdd64b69f76b97f50398ebdb5dc5f12b80",
+      "candidate_canonical_sha256": "95304892723030d17672d02d650aa08019feb487722ed68131227091f162f27a",
+      "candidate_sha256": "39d132949b887748800754eed85bcc3b9ec93ed754d371ace11bea8f962ff087",
+      "category": "verbatim_upstream_source_only",
+      "change_class": "typing_maintenance",
+      "ecosystem": "python",
+      "expected_guard": {
+        "reason_code": "tests_passed",
+        "verdict": "PASS"
+      },
+      "head_commit": "1190afd14fca74292946d62c4c8169880a47ff67",
+      "head_tree": "035f0ad7df8ceeee902309cd8e1a644943872fd6",
+      "id": "requests-pr-7498-source-only",
+      "profile": "python-requests-py312-v1",
+      "repository": "psf/requests"
+    },
+    {
+      "base_commit": "661970d171d9c3e12e4c789c4768db647d8c4da0",
+      "base_tree": "ea72ddd13e602fe8f9d9a5546d1be5f64b46046c",
+      "candidate_canonical_sha256": "a16cee95433dccb6b4a031ed82ada2056bee43ce53dabb974fcd4016ba49c083",
+      "candidate_sha256": "c35910a926d713be6a78ce856b518766db44e6de95a5b4134745cbe6a6da9bc8",
+      "category": "verbatim_upstream_policy_trip",
+      "change_class": "bug_fix_with_test_edit",
+      "ecosystem": "python",
+      "expected_guard": {
+        "reason_code": "protected_harness_edit",
+        "verdict": "REJECTED"
+      },
+      "head_commit": "6f205ff422bccd5e4c4fc0b64c5f3e7df5181db6",
+      "head_tree": "1283c61d32482454e6a9cd287fb3a61d44614f69",
+      "id": "requests-pr-7502-test-edit",
+      "profile": "python-requests-py312-v1",
+      "repository": "psf/requests"
+    },
+    {
+      "base_commit": "48b0c795f4feb37343b2832d991c5c6a3900c08a",
+      "base_tree": "48169683e0c7eaf9a02c7cda5fbb5103b88f186c",
+      "candidate_canonical_sha256": "101983bb3d24ecedf544d06946ab5061e21e1e9eccf7feac6f889aa6ef09f229",
+      "candidate_sha256": "b95875b9529011ee6860dbaea73a1d7f510284242dbf86ddba2770d2a33928dd",
+      "category": "verbatim_upstream_source_only",
+      "change_class": "diagnostic_improvement",
+      "ecosystem": "rust",
+      "expected_guard": {
+        "reason_code": "tests_passed",
+        "verdict": "PASS"
+      },
+      "head_commit": "f127579b006d9fb388050281d7d7146799a9cd4c",
+      "head_tree": "1ac45325b7634f5c3333349febf9f4ae8c43b2e3",
+      "id": "ripgrep-pr-3464-source-only",
+      "profile": "rust-ripgrep-185-v1",
+      "repository": "BurntSushi/ripgrep"
+    },
+    {
+      "base_commit": "e5f627fc16766194ced7bf498b03b78823f97716",
+      "base_tree": "4e9fa83c857273d4ae04141304dce72bab761ae3",
+      "candidate_canonical_sha256": "2925862843ae7963de4d883cb4305a561425fe4aea8e1d6cf60f86687a961a35",
+      "candidate_sha256": "13974d66d4ccdeee3088cd4d5654126dd95d3e87231f95484b0851d0bdaee825",
+      "category": "verbatim_upstream_policy_trip",
+      "change_class": "maintenance_with_ci_and_test_edit",
+      "ecosystem": "rust",
+      "expected_guard": {
+        "reason_code": "protected_harness_edit",
+        "verdict": "REJECTED"
+      },
+      "head_commit": "b009b5b84b5bc92f18462f5c9fe1bad94551ceb0",
+      "head_tree": "3a47b3f08c36a42d479e7fc24488396ba7493db8",
+      "id": "ripgrep-pr-3467-test-edit",
+      "profile": "rust-ripgrep-185-v1",
+      "repository": "BurntSushi/ripgrep"
+    }
+  ],
+  "claim_scope": {
+    "accuracy_claims_allowed": false,
+    "blind": false,
+    "exact_case_conformance_allowed": true,
+    "generalization_claims_allowed": false,
+    "held_out": false,
+    "independent": false,
+    "kind": "same_owner_repeated_engineering_recovery"
+  },
+  "corpus_sha256": "d8af03919b3e63b849b40118d19e27ff1aa940148abfd118a2164b57de49606b",
+  "engine": {
+    "evo_guard_pyz_sha256": "a370fac23233ea6f317d5d7e5347389197fc936bd9b5903c685b1d3755e0046f",
+    "record_schema": "1.11",
+    "release": "v3.5.2"
+  },
+  "input_files": [
+    {
+      "path": ".gitattributes",
+      "sha256": "c8e198baa4cd99b8817f9a4d8ec40ef4b7e5302dceb92c44c582a50e5e88de77"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "181ea8467f53888bc287c0dc65ac04eed01d3531ef8a194313406abb0946a826"
+    },
+    {
+      "path": ".github/workflows/oss-compat-run.yml",
+      "sha256": "87b8d7b79839d2677bbb10aaf9659adc122f0af361619787c0c34563a602cb33"
+    },
+    {
+      "path": "README.md",
+      "sha256": "7693ee43e5b5034dfd618eb8b2d912b8ad6faea021f67b598e40bcf1ab7aaac1"
+    },
+    {
+      "path": "harness/capture_oss_attempt.py",
+      "sha256": "327c7a80564ed368f5baf5d4d052e6beade53faa32becdc9ed75343ba2d13c0d"
+    },
+    {
+      "path": "harness/check_canonical_dispatch.py",
+      "sha256": "6b7e148ccfdc6101d21b90b01f12829b885db450c9b80ef5f5466f5979712427"
+    },
+    {
+      "path": "harness/evaluate_oss.py",
+      "sha256": "673c9b9147cb97fc7635f5f9fc85ec075cc777186ba04ced3d5f0b8c288f23d3"
+    },
+    {
+      "path": "harness/freeze_oss_cases.py",
+      "sha256": "c79ee87aa8a210ccc4e23c3479c901db92714edd63e2adb9ea25d6f85c7f6cf4"
+    },
+    {
+      "path": "harness/install_oss_boundary.sh",
+      "sha256": "98bae854ff7ce9526551d6e4ae480d006078ae2c841fbcb92f0566bc72b954ec"
+    },
+    {
+      "path": "harness/make_oss_manifest.py",
+      "sha256": "797ca6961c18b20294951493b024a3440f31dc97eec2f377765cb75250112839"
+    },
+    {
+      "path": "harness/materialize_oss_artifacts.py",
+      "sha256": "7796a9fb4d11729db5126b9c58461e61b7647c3897a3b8a2014c6075da118750"
+    },
+    {
+      "path": "harness/oss_common.py",
+      "sha256": "2f8aa42b3f57a14b151e730283c2244916383e8ce01abff6a981ddfbca6c41df"
+    },
+    {
+      "path": "harness/oss_untrusted_exec.py",
+      "sha256": "407845558abb8570048c373b419bfdebc52a842ff1c6885301c0425a9b716b5e"
+    },
+    {
+      "path": "harness/prepare_oss_bootstrap.py",
+      "sha256": "bdd77a6a63c03a9ed80fca8750f748258de59b06c94d1cf67cffde05d55cc101"
+    },
+    {
+      "path": "harness/run_oss_case.py",
+      "sha256": "f1ca04614bdb0008661df9c76d03981da668814dadb8e56f38bf38e393b552fd"
+    },
+    {
+      "path": "studies/oss-compat-v1/PROTOCOL.md",
+      "sha256": "e184e87919a6538684af09a3e042b17f4db9b3c23149701b8e938b73076bd446"
+    },
+    {
+      "path": "studies/oss-compat-v1/RECOVERY.json",
+      "sha256": "78404c793e26f72ab00d6d0db034214d0c12215bed23aee0c9ce65a2e64bdf05"
+    },
+    {
+      "path": "studies/oss-compat-v1/SELECTION.json",
+      "sha256": "4614f75983f82fb51633c47dd24d06c4b6f5c704eb506e84445186640ee4bb49"
+    },
+    {
+      "path": "studies/oss-compat-v1/THIRD_PARTY.md",
+      "sha256": "f5515a132d2f7f77952f8bedda027419e6fbc04dc3c670ecdfd2467ed51e5a84"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/cjson/cjson-pr-1006-source-only/candidate.diff",
+      "sha256": "11c7fc701db9b50a4d2f50078dc53525220159e550a1731f7c0191a2df67b277"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/cjson/cjson-pr-1006-source-only/case.json",
+      "sha256": "7dc8e87ef487aee28c22ca29064236109d6dacc826432b3aae5b8ef699ce4ade"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/cjson/cjson-pr-1006-source-only/provenance.json",
+      "sha256": "ba3a8091ab879ab081451fbea032860f7c65303968b1dff49ba161880cebe8ab"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/cjson/cjson-pr-991-test-edit/candidate.diff",
+      "sha256": "331bb79eb19a0e3876e6e92ad8124be2b85da55a5a7dc9928985309295f429ad"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/cjson/cjson-pr-991-test-edit/case.json",
+      "sha256": "58a6982b896768e8ebee2ca336bd96261072c9faaf827544cf64ea843f84c898"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/cjson/cjson-pr-991-test-edit/provenance.json",
+      "sha256": "c58c6946e68ecbab49584207dd33cca7f66bb3d7430f541afca520882fd5322a"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/express/express-pr-7265-source-only/candidate.diff",
+      "sha256": "6574bd9c7bd1ec477194240c95159f1ee19cfc97bb0e7031756341c046989545"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/express/express-pr-7265-source-only/case.json",
+      "sha256": "780b3a639156eecf1413f0715fe6d5f260b97a16c842511fb9869d3d2c06d414"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/express/express-pr-7265-source-only/provenance.json",
+      "sha256": "3b1e77eec4756ff1ea7fbf68ac119f22bfe44747f37d9bc59aaaf0a945ce0fb0"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/express/express-pr-7377-test-edit/candidate.diff",
+      "sha256": "2d48afde70098fc8754acebbd28733c890223cba26cd72b8fc07f3460f4b4ef7"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/express/express-pr-7377-test-edit/case.json",
+      "sha256": "06bc780d396930c911439efee8a5a855e88bd6c8322f52cf5a5507fb6c3dc229"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/express/express-pr-7377-test-edit/provenance.json",
+      "sha256": "7c34072645a802f2154005dd1328345dcfe829a84ca751e708784e42cf7bba82"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/fmt/fmt-pr-4822-source-only/candidate.diff",
+      "sha256": "4484f65dc81832dae0c7275b10c4375d4e46e65b8976b9c135b46a88be3e2f20"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/fmt/fmt-pr-4822-source-only/case.json",
+      "sha256": "5ae84d273f55abe969110e2c8946fd74026a1c4718e0af313198b10fc1b5308e"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/fmt/fmt-pr-4822-source-only/provenance.json",
+      "sha256": "d667540e3be8cfda29a6e50b86592bf4a6a4fe918f2ced9108f92f918c7e4e13"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/fmt/fmt-pr-4825-test-edit/candidate.diff",
+      "sha256": "245d95c83bdd6f57fa857c3170bcb3bf963123122cc22a7640ee2a1d9c7a428f"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/fmt/fmt-pr-4825-test-edit/case.json",
+      "sha256": "fd06d93d65b91e9724c2277ec167285ad1dd1e1a91ab6eebfc47e5b666253b19"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/fmt/fmt-pr-4825-test-edit/provenance.json",
+      "sha256": "401af895c1ee79b3c26510f97c52fdcd14509a2b24f266efca23964224a09c9a"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/fzf/fzf-pr-4734-source-only/candidate.diff",
+      "sha256": "aaa276a7f60053052514791724ff929ba6157bef5b7c53f768b8055801c296c6"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/fzf/fzf-pr-4734-source-only/case.json",
+      "sha256": "fa8d985488d8f7b360b1aa1f01084945af8066ca5c9d7ae4302f0fe56342e4e1"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/fzf/fzf-pr-4734-source-only/provenance.json",
+      "sha256": "a2c78642980e6823a63e48442fe37746ecf7f5ede18afff6279e2f1f6d13d064"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/fzf/fzf-pr-4797-test-edit/candidate.diff",
+      "sha256": "71cead3536c088e0ac2afc09499968ecbe77c302c208a72eac1d4c6d7e613349"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/fzf/fzf-pr-4797-test-edit/case.json",
+      "sha256": "183be935954830572e2350944d2aa4202d39099b33d3c8fcc164943d7b562182"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/fzf/fzf-pr-4797-test-edit/provenance.json",
+      "sha256": "8990d9565223722c74a6fadf25cbc386537fff0c9fad0cf8c6e443c89c6210e1"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/requests/requests-pr-7498-source-only/candidate.diff",
+      "sha256": "39d132949b887748800754eed85bcc3b9ec93ed754d371ace11bea8f962ff087"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/requests/requests-pr-7498-source-only/case.json",
+      "sha256": "25daa5abcdf5d99c251a55ed13b74b59de3b99d98ed2b64374140456073cd807"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/requests/requests-pr-7498-source-only/provenance.json",
+      "sha256": "c1c953f6498cb1462fe8862fbd293aed6f5af01f4c5fe35e3613fb519adceae5"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/requests/requests-pr-7502-test-edit/candidate.diff",
+      "sha256": "c35910a926d713be6a78ce856b518766db44e6de95a5b4134745cbe6a6da9bc8"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/requests/requests-pr-7502-test-edit/case.json",
+      "sha256": "0321fe73dad59ecdc2288b3f3ce54df59a9e9a0529cc46d8058e0e01495d08be"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/requests/requests-pr-7502-test-edit/provenance.json",
+      "sha256": "65a792752b3b837a4322edc1f696d2887d8e046ace5ac1b5eeba055ba36ba833"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/ripgrep/ripgrep-pr-3464-source-only/candidate.diff",
+      "sha256": "b95875b9529011ee6860dbaea73a1d7f510284242dbf86ddba2770d2a33928dd"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/ripgrep/ripgrep-pr-3464-source-only/case.json",
+      "sha256": "1f1061d9fa67192a6fdf7a68c919f703d00e8ee5b098551d7f4e8e80fc8f7744"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/ripgrep/ripgrep-pr-3464-source-only/provenance.json",
+      "sha256": "e7c582ef80e774bea89fbcbbec28dba09873f06e64a70f0a89f174b4987e4478"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/ripgrep/ripgrep-pr-3467-test-edit/candidate.diff",
+      "sha256": "13974d66d4ccdeee3088cd4d5654126dd95d3e87231f95484b0851d0bdaee825"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/ripgrep/ripgrep-pr-3467-test-edit/case.json",
+      "sha256": "beda4c94df177a8123ca2202497c7bc3565851e36e5af2b80c56052a8b3e3927"
+    },
+    {
+      "path": "studies/oss-compat-v1/cases/ripgrep/ripgrep-pr-3467-test-edit/provenance.json",
+      "sha256": "5c929da52362fb2c927f93752439f2672dbc448adba0da62def82e2ba9822544"
+    },
+    {
+      "path": "studies/oss-compat-v1/environments/c-cjson-ubuntu2404-v1.json",
+      "sha256": "694901692d5514b27023a06e8e5cc2b9bd4a6bf395cb8d9ae4065ff7311aaecb"
+    },
+    {
+      "path": "studies/oss-compat-v1/environments/cpp-fmt-ubuntu2404-v1.json",
+      "sha256": "8816ea084eb342ac5778af202295d2e1675689429d4b0488ab8dadb758d80ce6"
+    },
+    {
+      "path": "studies/oss-compat-v1/environments/go-fzf-go123-v1.json",
+      "sha256": "4f784705ee6fa594a7720e952732d568ea409197404e6f7b0f1cbc8c8e8c18f6"
+    },
+    {
+      "path": "studies/oss-compat-v1/environments/node-express-node24-v1.json",
+      "sha256": "4d5328bb9ed863dd04c553ade114e640f2c96a158ecec22ee4665a7c5c919bae"
+    },
+    {
+      "path": "studies/oss-compat-v1/environments/python-requests-py312-v1.json",
+      "sha256": "e1c47fdc2a809bab1ff87d30487988c42398113981413f9dd79c4712a6ab09f8"
+    },
+    {
+      "path": "studies/oss-compat-v1/environments/rust-ripgrep-185-v1.json",
+      "sha256": "d4259d5d36fde76a8630cc8a0aa14c3952b3fb058dc5914ceceacd938eb95cd3"
+    },
+    {
+      "path": "studies/oss-compat-v1/licenses/cjson/b2890c8d76bbb64e710585ebc0a917196b9c67e7/LICENSE",
+      "sha256": "a36dda207c36db5818729c54e7ad4e8b0c6fba847491ba64f372c1a2037b6d5c"
+    },
+    {
+      "path": "studies/oss-compat-v1/licenses/cjson/fb16e5cf358798aabb049655975cde8427101056/LICENSE",
+      "sha256": "a36dda207c36db5818729c54e7ad4e8b0c6fba847491ba64f372c1a2037b6d5c"
+    },
+    {
+      "path": "studies/oss-compat-v1/licenses/express/61ccf2ea8c1bd19cbca6acfb7cd276c5fcd410d3/LICENSE",
+      "sha256": "95a5762890e5c1c9808921cef095661fc482c5e1f0bba31446ac85595df6237c"
+    },
+    {
+      "path": "studies/oss-compat-v1/licenses/express/9d8223d92ee81137a50a28eb6ad55a096791091d/LICENSE",
+      "sha256": "95a5762890e5c1c9808921cef095661fc482c5e1f0bba31446ac85595df6237c"
+    },
+    {
+      "path": "studies/oss-compat-v1/licenses/fmt/0e601c34de26fe5b46f4c62dab2039efcb0acaed/LICENSE",
+      "sha256": "a65fcc5a1095fc33cc37e4fff69366e49d7e92f613558a2b95ed1b70e33758b4"
+    },
+    {
+      "path": "studies/oss-compat-v1/licenses/fmt/b54093c658ae5656799756ec5d4467f49064929f/LICENSE",
+      "sha256": "a65fcc5a1095fc33cc37e4fff69366e49d7e92f613558a2b95ed1b70e33758b4"
+    },
+    {
+      "path": "studies/oss-compat-v1/licenses/fzf/14e3995a06e6a92a48d982c45f48595be1199002/LICENSE",
+      "sha256": "a296f423c0d30ce3581435e78e7e36c5fe73984a882d8720c72e713b4593588b"
+    },
+    {
+      "path": "studies/oss-compat-v1/licenses/fzf/fcc3c6acce5cf4851b44c6299fe255519990bce6/LICENSE",
+      "sha256": "a296f423c0d30ce3581435e78e7e36c5fe73984a882d8720c72e713b4593588b"
+    },
+    {
+      "path": "studies/oss-compat-v1/licenses/requests/1190afd14fca74292946d62c4c8169880a47ff67/LICENSE",
+      "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b"
+    },
+    {
+      "path": "studies/oss-compat-v1/licenses/requests/1190afd14fca74292946d62c4c8169880a47ff67/NOTICE",
+      "sha256": "f5110972dedad2b4e9d314518daf3b7d72d6e02e499acd802181de6f74571dcc"
+    },
+    {
+      "path": "studies/oss-compat-v1/licenses/requests/6f205ff422bccd5e4c4fc0b64c5f3e7df5181db6/LICENSE",
+      "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b"
+    },
+    {
+      "path": "studies/oss-compat-v1/licenses/requests/6f205ff422bccd5e4c4fc0b64c5f3e7df5181db6/NOTICE",
+      "sha256": "f5110972dedad2b4e9d314518daf3b7d72d6e02e499acd802181de6f74571dcc"
+    },
+    {
+      "path": "studies/oss-compat-v1/licenses/ripgrep/b009b5b84b5bc92f18462f5c9fe1bad94551ceb0/COPYING",
+      "sha256": "01c266bced4a434da0051174d6bee16a4c82cf634e2679b6155d40d75012390f"
+    },
+    {
+      "path": "studies/oss-compat-v1/licenses/ripgrep/b009b5b84b5bc92f18462f5c9fe1bad94551ceb0/LICENSE-MIT",
+      "sha256": "0f96a83840e146e43c0ec96a22ec1f392e0680e6c1226e6f3ba87e0740af850f"
+    },
+    {
+      "path": "studies/oss-compat-v1/licenses/ripgrep/b009b5b84b5bc92f18462f5c9fe1bad94551ceb0/UNLICENSE",
+      "sha256": "7e12e5df4bae12cb21581ba157ced20e1986a0508dd10d0e8a4ab9a4cf94e85c"
+    },
+    {
+      "path": "studies/oss-compat-v1/licenses/ripgrep/f127579b006d9fb388050281d7d7146799a9cd4c/COPYING",
+      "sha256": "01c266bced4a434da0051174d6bee16a4c82cf634e2679b6155d40d75012390f"
+    },
+    {
+      "path": "studies/oss-compat-v1/licenses/ripgrep/f127579b006d9fb388050281d7d7146799a9cd4c/LICENSE-MIT",
+      "sha256": "0f96a83840e146e43c0ec96a22ec1f392e0680e6c1226e6f3ba87e0740af850f"
+    },
+    {
+      "path": "studies/oss-compat-v1/licenses/ripgrep/f127579b006d9fb388050281d7d7146799a9cd4c/UNLICENSE",
+      "sha256": "7e12e5df4bae12cb21581ba157ced20e1986a0508dd10d0e8a4ab9a4cf94e85c"
+    },
+    {
+      "path": "studies/oss-compat-v1/policies/c-cjson-ubuntu2404-v1.json",
+      "sha256": "1405c7cfb252ba70fb4a28e6c58a11a1e39766312f4a271fc6645474b65f7d1f"
+    },
+    {
+      "path": "studies/oss-compat-v1/policies/cpp-fmt-ubuntu2404-v1.json",
+      "sha256": "1da5b475c9d7815ae36bb69d17806e422649c580d2ea580e5bea3bf552ed97f3"
+    },
+    {
+      "path": "studies/oss-compat-v1/policies/go-fzf-go123-v1.json",
+      "sha256": "812ea7bceb6b5d5eb0114f595d0426fd36be19de5a35f9dd02502e207474fe6b"
+    },
+    {
+      "path": "studies/oss-compat-v1/policies/node-express-node24-v1.json",
+      "sha256": "55d73d9281042e0ee2561bb2d06465b94531fb817eaec57cd6b201bf81a8bf63"
+    },
+    {
+      "path": "studies/oss-compat-v1/policies/python-requests-py312-v1.json",
+      "sha256": "fa30b16b7c94d8d4dad1660781b1b4990898a3bf06c2ecca4602fc5b9ff2e7bf"
+    },
+    {
+      "path": "studies/oss-compat-v1/policies/rust-ripgrep-185-v1.json",
+      "sha256": "76c33d97ac5d153658da00b82927cbe009c4c1ba3fdeee978bda31ebe353f887"
+    },
+    {
+      "path": "tests/oss_boundary_integration.sh",
+      "sha256": "1c1675f0708a39497b9f8604ad980d70e84af2fca3f0d3927b26b61400387f9c"
+    },
+    {
+      "path": "tests/test_capture_oss_attempt.py",
+      "sha256": "5491473dec59361fcec78993efbae31a1841e58953ff0fc801a2fc51322791d8"
+    },
+    {
+      "path": "tests/test_oss_artifacts.py",
+      "sha256": "3f5f2a3360c19bd3224d6d50520c485b693b70225bd066904f75e0ef58670b21"
+    },
+    {
+      "path": "tests/test_oss_bootstrap.py",
+      "sha256": "2e86404218d84b8b108b0f5b1b5474208c50443542ad8de5ed0135d0617de972"
+    },
+    {
+      "path": "tests/test_oss_harness.py",
+      "sha256": "a15c53071480b1e7e7b3b70f1e96aa909ac958c0906f1fff9ab302ceba76053c"
+    },
+    {
+      "path": "tests/test_oss_untrusted_exec.py",
+      "sha256": "1f2bd98e1c9cfa99570170a2c21343f97455dd63824d0b00c0ccf73fcae91c7e"
+    }
+  ],
+  "manifest_schema": "evoom.oss-study-manifest/2",
+  "protocol": {
+    "id": "oss-compat",
+    "tag": "oss-protocol-v0.4",
+    "version": "0.4"
+  },
+  "roles": {
+    "curator": "EvoRiseKsa",
+    "runner": "EvoRiseKsa",
+    "same_owner_declared": true,
+    "separated": false
+  },
+  "selection": {
+    "case_inputs_frozen": true,
+    "held_out": false,
+    "infrastructure_tuning_permitted": true,
+    "method": "post_exposure_same_corpus_engineering_recovery",
+    "prior_product_exposure": true,
+    "product_tuning_permitted": false,
+    "representative_sample": false,
+    "reused_from_study": "oss-pilot-03",
+    "seed": null,
+    "snapshot_utc": "2026-07-15T00:44:48Z",
+    "tuning_scope": "infrastructure_recovery_only"
+  },
+  "study_id": "oss-pilot-04"
+}
