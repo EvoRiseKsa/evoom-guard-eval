@@ -6,7 +6,7 @@ on:
       study_id:
         description: "Must be the frozen study id"
         required: true
-        default: "oss-pilot-03"
+        default: "oss-pilot-04"
       manifest_sha256:
         description: "Exact SHA-256 of the already-published manifest"
         required: true
@@ -16,7 +16,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: oss-compat-oss-pilot-03
+  group: oss-compat-oss-pilot-04
   cancel-in-progress: false
 
 jobs:
@@ -86,11 +86,11 @@ jobs:
           INPUT_MANIFEST_SHA: ${{ inputs.manifest_sha256 }}
         run: |
           set -euo pipefail
-          test "$INPUT_STUDY" = "oss-pilot-03"
-          ACTUAL="$(sha256sum studies/oss-compat-v1/manifests/oss-pilot-03.json | cut -d' ' -f1)"
+          test "$INPUT_STUDY" = "oss-pilot-04"
+          ACTUAL="$(sha256sum studies/oss-compat-v1/manifests/oss-pilot-04.json | cut -d' ' -f1)"
           test "$ACTUAL" = "$INPUT_MANIFEST_SHA"
           python harness/freeze_oss_cases.py --check
-          python harness/make_oss_manifest.py oss-pilot-03 --check
+          python harness/make_oss_manifest.py oss-pilot-04 --check
 
       - name: Prepare trusted infrastructure fallback
         shell: bash
@@ -112,7 +112,7 @@ jobs:
             GITHUB_WORKFLOW_REF="$GITHUB_WORKFLOW_REF" \
             OSS_CANONICAL_DISPATCH_ID="$OSS_CANONICAL_DISPATCH_ID" \
             "$PYTHON_BIN" harness/prepare_oss_bootstrap.py prepare \
-              --study oss-pilot-03 \
+              --study oss-pilot-04 \
               --case "${{ matrix.case }}" \
               --output-root /var/lib/evoom-oss/output \
               --publisher-uid "$(id -u)" \
@@ -148,7 +148,7 @@ jobs:
             RUNNER_OS="$RUNNER_OS" RUNNER_ARCH="$RUNNER_ARCH" \
             ImageOS="${ImageOS:-}" ImageVersion="${ImageVersion:-}" \
             "$PYTHON_BIN" harness/run_oss_case.py "${{ matrix.case }}" \
-              --study oss-pilot-03 \
+              --study oss-pilot-04 \
               --work-root /var/lib/evoom-oss/source \
               --output-root /var/lib/evoom-oss/output
 
@@ -182,7 +182,7 @@ jobs:
             GITHUB_WORKFLOW_REF="$GITHUB_WORKFLOW_REF" \
             OSS_CANONICAL_DISPATCH_ID="$OSS_CANONICAL_DISPATCH_ID" \
             "$PYTHON_BIN" harness/prepare_oss_bootstrap.py release-infra \
-              --study oss-pilot-03 \
+              --study oss-pilot-04 \
               --case "${{ matrix.case }}" \
               --output-root /var/lib/evoom-oss/output \
               --publisher-uid "$(id -u)" \
@@ -194,7 +194,7 @@ jobs:
         shell: bash
         run: >-
           python harness/prepare_oss_bootstrap.py classify
-          --study oss-pilot-03
+          --study oss-pilot-04
           --case "${{ matrix.case }}"
           --output-root /var/lib/evoom-oss/output
           --github-output "$GITHUB_OUTPUT"
@@ -204,7 +204,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: oss-${{ matrix.case }}
-          path: /var/lib/evoom-oss/output/oss-pilot-03/${{ matrix.case }}
+          path: /var/lib/evoom-oss/output/oss-pilot-04/${{ matrix.case }}
           if-no-files-found: error
           retention-days: 90
 
@@ -213,6 +213,6 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: oss-infra-${{ matrix.case }}
-          path: /var/lib/evoom-oss/output/oss-pilot-03/${{ matrix.case }}
+          path: /var/lib/evoom-oss/output/oss-pilot-04/${{ matrix.case }}
           if-no-files-found: error
           retention-days: 90

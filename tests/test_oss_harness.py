@@ -102,7 +102,7 @@ class OssStudyDataTests(unittest.TestCase):
         )
 
     def test_invalid_historical_manifests_remain_byte_identical(self) -> None:
-        for study_id in ("oss-pilot-01", "oss-pilot-02"):
+        for study_id in ("oss-pilot-01", "oss-pilot-02", "oss-pilot-03"):
             with self.subTest(study_id=study_id):
                 manifest, problems = oss_common.verify_manifest(study_id)
                 self.assertEqual([], problems)
@@ -112,22 +112,53 @@ class OssStudyDataTests(unittest.TestCase):
                     oss_common.sha256_file(oss_common.manifest_path(study_id)),
                 )
 
-    def test_v03_keeps_v02_cases_labels_profiles_and_engine_unchanged(self) -> None:
-        predecessor = oss_common.load_json(oss_common.manifest_path("oss-pilot-02"))
+    def test_v04_keeps_v03_product_inputs_and_engine_unchanged(self) -> None:
+        predecessor = oss_common.load_json(oss_common.manifest_path("oss-pilot-03"))
         successor = make_oss_manifest.build_manifest()
-        for field in ("claim_scope", "roles", "selection", "engine", "cases"):
+        for field in ("roles", "engine", "cases"):
             with self.subTest(field=field):
                 self.assertEqual(predecessor[field], successor[field])
 
-    def test_recovery_lineage_excludes_both_attempts_from_product_results(self) -> None:
+        frozen_prefixes = (
+            "studies/oss-compat-v1/cases/",
+            "studies/oss-compat-v1/environments/",
+            "studies/oss-compat-v1/licenses/",
+            "studies/oss-compat-v1/policies/",
+        )
+        old_hashes = {
+            entry["path"]: entry["sha256"]
+            for entry in predecessor["input_files"]
+            if entry["path"].startswith(frozen_prefixes)
+        }
+        new_hashes = {
+            entry["path"]: entry["sha256"]
+            for entry in successor["input_files"]
+            if entry["path"].startswith(frozen_prefixes)
+        }
+        self.assertEqual(old_hashes, new_hashes)
+        self.assertFalse(successor["claim_scope"]["held_out"])
+        self.assertFalse(successor["claim_scope"]["accuracy_claims_allowed"])
+        self.assertTrue(successor["selection"]["prior_product_exposure"])
+        self.assertTrue(
+            successor["selection"]["infrastructure_tuning_permitted"]
+        )
+        self.assertFalse(successor["selection"]["product_tuning_permitted"])
+        self.assertEqual(
+            "infrastructure_recovery_only", successor["selection"]["tuning_scope"]
+        )
+
+    def test_recovery_lineage_excludes_all_closed_attempts_from_product_results(
+        self,
+    ) -> None:
         recovery = oss_common.load_json(oss_common.STUDY_ROOT / "RECOVERY.json")
-        self.assertEqual("evoom.oss-study-recovery/2", recovery["recovery_schema"])
+        self.assertEqual("evoom.oss-study-recovery/3", recovery["recovery_schema"])
         attempts = recovery["historical_attempts"]
         successor = recovery["successor"]
         self.assertEqual(
-            ["oss-pilot-01", "oss-pilot-02"], [a["study_id"] for a in attempts]
+            ["oss-pilot-01", "oss-pilot-02", "oss-pilot-03"],
+            [a["study_id"] for a in attempts],
         )
-        for attempt in attempts:
+        for attempt in attempts[:2]:
             with self.subTest(study_id=attempt["study_id"]):
                 self.assertEqual(
                     "invalid_before_measurement", attempt["scientific_disposition"]
@@ -140,12 +171,29 @@ class OssStudyDataTests(unittest.TestCase):
                 self.assertEqual(
                     0, observations["product_outcome_denominator_contribution"]
                 )
-        self.assertEqual(0, recovery["pooling_rules"]["historical_product_denominator"])
-        self.assertEqual("oss-pilot-03", successor["study_id"])
+        mixed = attempts[2]
         self.assertEqual(
-            "new_preregistered_successor_not_a_rerun_or_replacement",
+            "invalid_or_incomplete_before_product_materialization",
+            mixed["scientific_disposition"],
+        )
+        self.assertIs(mixed["product_inference_allowed"], False)
+        self.assertEqual(9, mixed["observations"]["case_runner_steps_started"])
+        self.assertEqual(9, mixed["observations"]["product_artifacts"])
+        self.assertEqual(3, mixed["observations"]["infrastructure_artifacts"])
+        self.assertIsNone(mixed["observations"]["guard_invocations"])
+        self.assertEqual(
+            0, mixed["observations"]["product_outcome_denominator_contribution"]
+        )
+        self.assertEqual(0, recovery["pooling_rules"]["historical_product_denominator"])
+        self.assertEqual(12, recovery["pooling_rules"]["unique_case_inventory"])
+        self.assertIs(recovery["pooling_rules"]["successor_held_out"], False)
+        self.assertEqual("oss-pilot-04", successor["study_id"])
+        self.assertEqual(
+            "post_exposure_same_corpus_engineering_recovery",
             successor["relationship"],
         )
+        self.assertTrue(successor["prior_product_exposure"])
+        self.assertEqual("repeated_non_blind_not_held_out", successor["design"])
 
     def test_recovery_checksum_indexes_bind_every_captured_evidence_file(self) -> None:
         recovery = oss_common.load_json(oss_common.STUDY_ROOT / "RECOVERY.json")
@@ -157,11 +205,21 @@ class OssStudyDataTests(unittest.TestCase):
                     attempt["checksum_index_sha256"],
                     oss_common.sha256_file(checksum_index),
                 )
-                for line in checksum_index.read_text(encoding="utf-8").splitlines():
+                lines = checksum_index.read_text(encoding="utf-8").splitlines()
+                indexed: set[str] = set()
+                for line in lines:
                     expected, relative = line.split("  ", 1)
+                    self.assertNotIn(relative, indexed)
+                    indexed.add(relative)
                     target = capture / relative
                     self.assertTrue(target.is_file(), relative)
                     self.assertEqual(expected, oss_common.sha256_file(target), relative)
+                actual = {
+                    path.relative_to(capture).as_posix()
+                    for path in capture.rglob("*")
+                    if path.is_file() and path != checksum_index
+                }
+                self.assertEqual(actual, indexed)
 
     def test_manifest_and_study_references_reject_traversal(self) -> None:
         with self.assertRaises(ValueError):
@@ -352,11 +410,7 @@ class OssEvaluatorTests(unittest.TestCase):
 
     def test_integrity_valid_late_failure_preserves_partial_outputs(self) -> None:
         case_id, (case_dir, case) = next(iter(oss_common.case_map().items()))
-        claim_scope = {
-            "accuracy_claims_allowed": False,
-            "independent": False,
-            "kind": "same_owner_compatibility",
-        }
+        claim_scope = oss_common.manifest_claim_scope()
         fake_manifest = {
             "claim_scope": claim_scope,
             "engine": {},
@@ -500,7 +554,7 @@ class OssEvaluatorTests(unittest.TestCase):
 
     def test_missing_outputs_remain_in_fixed_denominators(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            summary, _, problems = evaluate_oss.evaluate(
+            summary, markdown, problems = evaluate_oss.evaluate(
                 Path(temporary), Path("unused-engine"), github_run_id="123"
             )
         self.assertTrue(problems)
@@ -517,15 +571,26 @@ class OssEvaluatorTests(unittest.TestCase):
         self.assertEqual(
             0, summary["execution_coverage"]["product_outcome_denominator"]
         )
+        self.assertEqual("evoom.oss-study-summary/4", summary["summary_schema"])
+        self.assertEqual(
+            "fixed_repeated_engineering_case_inventory",
+            summary["conformance_denominator_kind"],
+        )
+        self.assertEqual(
+            {
+                "evidence_kind": "repeated_engineering_case_conformance",
+                "held_out": False,
+                "prior_product_exposure": True,
+                "unique_case_inventory": 12,
+            },
+            summary["study_design"],
+        )
+        self.assertIn("not held-out validation", markdown)
 
     def test_nested_output_entry_is_not_ignored(self) -> None:
         case_id, (case_dir, case) = next(iter(oss_common.case_map().items()))
         fake_manifest = {
-            "claim_scope": {
-                "accuracy_claims_allowed": False,
-                "independent": False,
-                "kind": "same_owner_compatibility",
-            },
+            "claim_scope": oss_common.manifest_claim_scope(),
             "engine": {},
             "corpus_sha256": "0" * 64,
         }

@@ -1,10 +1,9 @@
-# OSS compatibility protocol v0.3
+# OSS compatibility protocol v0.4
 
-This directory is a **same-owner real-world compatibility and conformance
-study**. It is not Round 1, not third-party validation, and not an estimate of
-accuracy across open-source software. It uses a publicly frozen canonical-run
-protocol, but it is not blind or model-independent: static-policy and harness
-validation occurred during study construction.
+This directory is a **same-owner repeated engineering compatibility study**.
+It is not Round 1, third-party validation, held-out validation, or an estimate
+of accuracy across open-source software. V0.4 repeats a previously exposed
+12-case corpus only to test infrastructure recovery and exact-case conformance.
 
 ## Amendment lineage
 
@@ -26,35 +25,44 @@ invocations, and zero product artifacts. It is also
 `invalid_before_measurement`, not 0/12, and its exact capture is preserved under
 `attempts/oss-pilot-02/29390627493/`.
 
-Protocol v0.3 is a new preregistered successor, not a rerun. It reuses the exact
-same 12 cases, labels, expected outcomes, policies, profiles, and Guard v3.5.2
-digest because neither historical attempt observed a product result from which
-those inputs could be tuned. The amendment combines the UID/GID ownership check
-into one bounded fail-closed scan, persists the infrastructure marker before
-identity preflight, and permits pre-installer marker release only after proving
-that an absent numeric UID has no processes. `RECOVERY.json` freezes the full
-lineage and forbids pooling the historical intended cells as product outcomes.
+Protocol v0.3 remains immutable at protected tag `oss-protocol-v0.3`. Its first
+and only canonical run, Actions run `29392747520` (attempt 1), produced 12
+archives: nine product archives and three infrastructure archives. Three cells
+timed out during the root ownership preflight before their case runner, while
+nine case steps started. The mixed inventory is
+`invalid_or_incomplete_before_product_materialization`; it was captured without
+product extraction or evaluation and is not a 9/12 score. Its exact evidence is
+preserved under `attempts/oss-pilot-03/29392747520/`.
+
+Protocol v0.4 is a post-exposure same-corpus engineering recovery. It retains
+the exact 12 candidate diffs, labels, expectations, policies, profiles,
+environments, licenses, and Guard v3.5.2 digest. Only the trusted ownership-scan
+infrastructure may change. Because v0.3 exposed product-phase workflow outcomes,
+v0.4 is non-blind and non-held-out even though its product archives were not
+evaluated. `RECOVERY.json` freezes this lineage and forbids pooling v0.1 through
+v0.4 or increasing the unique sample size beyond 12.
 
 ## Question under test
 
-Can the frozen EvoOM Guard v3.5.2 artifact replay ordinary changes from six
-unrelated, well-known repositories while:
+Can the amended trusted infrastructure complete a repeated replay of all 12
+frozen cells and, only if all product evidence verifies, describe exact-case
+conformance for EvoOM Guard v3.5.2 while:
 
 1. accepting source-only changes whose frozen, study-declared repo-native suite
    profiles stay green; and
 2. refusing to run changes that edit an existing test or CI workflow under the
    default protected-harness policy?
 
-The answer applies only to the named cases, revisions, policies, and captured
-environments.
+The answer applies only to the named repeated cases, revisions, policies, and
+captured environments. It is not evidence of accuracy or generalization.
 
 ## Frozen scope
 
 - Engine: `v3.5.2`, `evo-guard.pyz` SHA-256
   `a370fac23233ea6f317d5d7e5347389197fc936bd9b5903c685b1d3755e0046f`.
 - Record schema: `1.11`.
-- Study: `oss-pilot-03`.
-- Protocol tag: `oss-protocol-v0.3`.
+- Study: `oss-pilot-04`.
+- Protocol tag: `oss-protocol-v0.4`.
 - Roles: curator and runner are both EvoRiseKsa; `independent=false`.
 - Corpus: 12 verbatim historical upstream diffs, two from each repository.
 - Positive cases use `baseline_evidence` so the same suite and setup run on the
@@ -65,12 +73,19 @@ environments.
 
 1. Commit the protocol, selection, exact diffs, provenance, policies, and
    environment declarations.
-2. Generate `manifests/oss-pilot-03.json`; it refuses overwrite.
-3. Merge that manifest and make CI green before the first canonical study
+2. Before freezing or publishing a manifest, CI computes an ephemeral candidate
+   manifest inside each disposable checkout so the marker can bind its digest,
+   then qualifies the exact amended bootstrap on 12 separate fresh GitHub-hosted
+   Ubuntu 24.04 runners and runs the privileged Docker boundary integration.
+   These gates use synthetic infrastructure only and do not execute any frozen
+   case or EvoOM Guard; the ephemeral manifest is never committed or published.
+3. After every qualification gate succeeds, generate the permanent
+   `manifests/oss-pilot-04.json`; it refuses overwrite.
+4. Merge that manifest and make CI green before the first canonical study
    workflow execution.
-4. Tag the frozen protocol/manifest commit and protect `oss-protocol-v*` tags.
-5. Manually dispatch the read-only Actions matrix from the exact
-   `oss-protocol-v0.3` tag. A preflight query to the Actions API requires the
+5. Tag the frozen protocol/manifest commit and protect `oss-protocol-v*` tags.
+6. Manually dispatch the read-only Actions matrix from the exact
+   `oss-protocol-v0.4` tag. A preflight query to the Actions API requires the
    current run to be the chronologically first API-visible `workflow_dispatch`
    for the frozen workflow commit; the exact protected tag ref, workflow ref,
    run ID, and attempt 1 are then bound into every envelope. Later API-visible
@@ -79,7 +94,7 @@ environments.
    not an append-only timestamp or external notarization. Failed jobs are
    retained, not rerun into a preferred result. No user secrets and no
    `pull_request_target` are permitted.
-6. Before boundary installation, create one root-owned bootstrap envelope per
+7. Before boundary installation, create one root-owned bootstrap envelope per
    matrix case. A started product run consumes that marker before writing any
    product evidence. After unconditional cleanup, output is classified as
    exactly one of `product` or `infra`; mutually exclusive official upload steps
@@ -88,7 +103,7 @@ environments.
    case runner consumes the marker, source/network/engine/Guard failures remain
    case artifacts and are reported explicitly as infrastructure errors inside
    the fixed 12-case denominator; they are never converted to a pass or omitted.
-7. Publish every raw record, stdout/stderr, timing, and run envelope. A failed
+8. Publish every raw record, stdout/stderr, timing, and run envelope. A failed
    or infrastructure case is retained; it is never silently replaced. If the
    harness fails before Guard emits a record, it still writes a failure
    envelope and logs rather than fabricating a verdict.
@@ -115,11 +130,11 @@ environments.
 Selection is purposive and stratified, not random. Popularity makes the
 integration environments recognizable; it does not make six repositories
 representative of all projects. Upstream merge status is provenance, not a
-proof that a change is universally correct. Static-policy and harness checks
-were used while constructing the study, before its public freeze and first
-canonical workflow execution. The design is therefore not blind or
-model-independent. The curator assigned these same-owner dispositions as part
-of that construction:
+proof that a change is universally correct. V0.4 repeats the v0.3 corpus after
+product-phase workflow outcomes were exposed. It is therefore post-exposure,
+non-blind, non-held-out, same-owner engineering recovery. Infrastructure tuning
+is declared; product-specific tuning is forbidden. The curator assigned these
+same-owner dispositions during the original study construction:
 
 Eligibility also required a named redistribution-compatible license, no
 credentials or privileged services, a text-only first-parent merge supported
@@ -143,6 +158,16 @@ is exposed only to the preflight Actions-API query. The whole harness then runs
 as root under `env -i` with only the frozen GitHub identity fields and trusted
 tool paths; no `GITHUB_TOKEN`, `ACTIONS_RUNTIME_TOKEN`, artifact service token,
 or runner credential is passed to repository code.
+
+Before the fixed uid/gid is created, a bounded, partitioned ownership scan
+checks for preexisting numeric collisions on the root device. Its declared
+threat model is the trusted, quiescent GitHub-hosted runner before any
+third-party code executes, with responsive local filesystem syscalls. The
+queue, workers, accepted partition count, and wall-clock deadline are bounded;
+each live inventory stdout/stderr stream is cut off by a child-process file-size
+rlimit, and path/device/inode changes at the depth-3 partition boundary fail
+closed. This preflight is not a TOCTOU defense against a concurrent privileged
+filesystem mutator and is not a guarantee about a hung kernel/filesystem call.
 
 The source repositories are executable third-party code. Every setup/test
 command is routed through the root-installed frozen boundary. Only the
@@ -225,7 +250,7 @@ test/CI edit receiving `PASS`, or any expected source-only case silently
 receiving `PASS` without a verified record, is reported individually.
 
 The summary exposes two denominators and never substitutes one for the other:
-fixed conformance uses all 12 preregistered cases (intention-to-test), while the
+fixed conformance uses all 12 repeated engineering cases, while the
 product-outcome denominator contains only cryptographically and structurally
 verified Guard records. It separately reports case-runner evidence count, Guard
 invocation count, verified-record count, and pre-Guard infrastructure errors.
@@ -256,7 +281,8 @@ Before execution:
 python harness/freeze_oss_cases.py --check
 python harness/make_oss_manifest.py oss-pilot-01 --check
 python harness/make_oss_manifest.py oss-pilot-02 --check
-python harness/make_oss_manifest.py oss-pilot-03 --check --if-present
+python harness/make_oss_manifest.py oss-pilot-03 --check
+python harness/make_oss_manifest.py oss-pilot-04 --check --if-present
 python -m unittest discover -s tests -v
 ```
 
@@ -283,11 +309,11 @@ python harness/materialize_oss_artifacts.py \
   --results studies/oss-compat-v1/results \
   --verify-only
 python harness/evaluate_oss.py \
-  --study oss-pilot-03 \
+  --study oss-pilot-04 \
   --results <artifact-root> \
   --github-run-id <canonical-first-api-visible-dispatch-id> \
   --write
 ```
 
-The evaluator reports per-axis conformance and timing; it deliberately does
-not emit a single marketing accuracy number.
+The evaluator reports repeated exact-case conformance and timing; it deliberately
+does not emit a marketing accuracy number or describe the corpus as held out.

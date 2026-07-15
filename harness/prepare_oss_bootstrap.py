@@ -10,10 +10,14 @@ any result files, so the two artifact classes cannot be confused.
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
+import functools
 import json
 import os
 import stat
 import subprocess
+import tempfile
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -21,9 +25,11 @@ from typing import Any
 try:  # Linux-only identity provisioning; pure classification is unit-testable elsewhere.
     import grp
     import pwd
+    import resource
 except ImportError:  # pragma: no cover - exercised by Windows unit-test imports
     grp = None  # type: ignore[assignment]
     pwd = None  # type: ignore[assignment]
+    resource = None  # type: ignore[assignment]
 
 from oss_common import (
     PROTOCOL_TAG,
@@ -43,7 +49,12 @@ UNTRUSTED_USER = "evoom-oss-untrusted"
 UNTRUSTED_GROUP = "evoom-oss-untrusted"
 UNTRUSTED_UID = 60001
 UNTRUSTED_GID = 60001
-IDENTITY_SCAN_TIMEOUT_SECONDS = 300
+IDENTITY_SCAN_TIMEOUT_SECONDS = 900
+IDENTITY_SCAN_PARTITION_DEPTH = 3
+IDENTITY_SCAN_WORKERS = 4
+IDENTITY_SCAN_MAX_PARTITIONS = 65_536
+IDENTITY_SCAN_MAX_INVENTORY_BYTES = 32 * 1024 * 1024
+IDENTITY_SCAN_PREFIX = "OSS IDENTITY SCAN "
 BOOTSTRAP_NAME = "bootstrap-envelope.json"
 BOOTSTRAP_SCHEMA = "evoom.oss-infrastructure-bootstrap/1"
 INFRA_CLASSIFICATION = "invalid_before_measurement"
@@ -126,13 +137,20 @@ def _empty_directory(path: Path) -> None:
         raise BootstrapError(f"cannot inventory trusted directory: {path}") from exc
 
 
-def _assert_no_preexisting_identity_files() -> None:
-    """Reject root-filesystem objects that a newly provisioned identity would own."""
-    completed = subprocess.run(
+def _emit_identity_scan(record: dict[str, Any]) -> None:
+    print(
+        IDENTITY_SCAN_PREFIX
+        + json.dumps(record, sort_keys=True, separators=(",", ":")),
+        flush=True,
+    )
+
+
+def _identity_find_command(path: Path, *, max_depth: int | None = None) -> list[str]:
+    command = ["/usr/bin/find", os.fspath(path), "-xdev"]
+    if max_depth is not None:
+        command.extend(["-maxdepth", str(max_depth)])
+    command.extend(
         [
-            "/usr/bin/find",
-            "/",
-            "-xdev",
             "(",
             "-uid",
             str(UNTRUSTED_UID),
@@ -140,18 +158,483 @@ def _assert_no_preexisting_identity_files() -> None:
             "-gid",
             str(UNTRUSTED_GID),
             ")",
-            "-print",
+            "-print0",
             "-quit",
-        ],
-        check=True,
-        capture_output=True,
-        encoding="utf-8",
-        errors="replace",
-        timeout=IDENTITY_SCAN_TIMEOUT_SECONDS,
+        ]
     )
-    if completed.stdout.strip():
+    return command
+
+
+def _run_identity_command(
+    command: list[str],
+    *,
+    deadline: float,
+    phase: str,
+    partition: Path,
+) -> tuple[subprocess.CompletedProcess[bytes] | None, dict[str, Any]]:
+    started = time.monotonic()
+    try:
+        remaining = deadline - started
+        if remaining <= 0:
+            raise subprocess.TimeoutExpired(command, 0)
+        completed = subprocess.run(
+            command,
+            check=False,
+            capture_output=True,
+            timeout=remaining,
+        )
+    except subprocess.TimeoutExpired:
+        return None, {
+            "elapsed_ms": round((time.monotonic() - started) * 1000),
+            "partition": os.fspath(partition),
+            "phase": phase,
+            "status": "timeout",
+        }
+    except OSError as exc:
+        return None, {
+            "detail": f"{type(exc).__name__}: {exc}",
+            "elapsed_ms": round((time.monotonic() - started) * 1000),
+            "partition": os.fspath(partition),
+            "phase": phase,
+            "status": "error",
+        }
+    elapsed_ms = round((time.monotonic() - started) * 1000)
+    if completed.returncode != 0 or completed.stderr:
+        detail = os.fsdecode(completed.stderr).strip()
+        return completed, {
+            "detail": detail or f"find exited {completed.returncode}",
+            "elapsed_ms": elapsed_ms,
+            "partition": os.fspath(partition),
+            "phase": phase,
+            "status": "error",
+        }
+    return completed, {
+        "elapsed_ms": elapsed_ms,
+        "partition": os.fspath(partition),
+        "phase": phase,
+        "status": "clean",
+    }
+
+
+def _run_identity_inventory_command(
+    command: list[str],
+    *,
+    deadline: float,
+    phase: str,
+    partition: Path,
+    output_limit: int,
+) -> tuple[bytes | None, dict[str, Any]]:
+    """Run a potentially multi-path inventory without buffering it in memory.
+
+    Real subprocess output is spooled to anonymous temporary files.  Unit-test
+    doubles may instead return ``CompletedProcess.stdout``/``stderr`` directly;
+    both paths are subject to the same explicit byte limit.  On POSIX the child
+    also receives an OS-enforced file-size rlimit, so neither live output stream
+    can grow beyond that limit before the parent inspects it.
+    """
+    started = time.monotonic()
+    try:
+        remaining = deadline - started
+        if remaining <= 0:
+            raise subprocess.TimeoutExpired(command, 0)
+        preexec_fn = (
+            functools.partial(_set_inventory_file_size_limit, output_limit)
+            if os.name == "posix"
+            else None
+        )
+        with tempfile.TemporaryFile() as stdout_stream, tempfile.TemporaryFile() as stderr_stream:
+            completed = subprocess.run(
+                command,
+                check=False,
+                stdout=stdout_stream,
+                stderr=stderr_stream,
+                timeout=remaining,
+                preexec_fn=preexec_fn,
+            )
+            if isinstance(completed.stdout, bytes):
+                stdout = completed.stdout
+            else:
+                stdout_size = stdout_stream.tell()
+                if stdout_size > output_limit:
+                    return None, {
+                        "detail": f"inventory output exceeded {output_limit} bytes",
+                        "elapsed_ms": round((time.monotonic() - started) * 1000),
+                        "partition": os.fspath(partition),
+                        "phase": phase,
+                        "status": "error",
+                    }
+                stdout_stream.seek(0)
+                stdout = stdout_stream.read(output_limit + 1)
+            if isinstance(completed.stderr, bytes):
+                stderr = completed.stderr
+            else:
+                stderr_size = stderr_stream.tell()
+                if stderr_size > output_limit:
+                    return None, {
+                        "detail": f"inventory stderr exceeded {output_limit} bytes",
+                        "elapsed_ms": round((time.monotonic() - started) * 1000),
+                        "partition": os.fspath(partition),
+                        "phase": phase,
+                        "status": "error",
+                    }
+                stderr_stream.seek(0)
+                stderr = stderr_stream.read(output_limit + 1)
+    except subprocess.TimeoutExpired:
+        return None, {
+            "elapsed_ms": round((time.monotonic() - started) * 1000),
+            "partition": os.fspath(partition),
+            "phase": phase,
+            "status": "timeout",
+        }
+    except (OSError, subprocess.SubprocessError) as exc:
+        return None, {
+            "detail": f"{type(exc).__name__}: {exc}",
+            "elapsed_ms": round((time.monotonic() - started) * 1000),
+            "partition": os.fspath(partition),
+            "phase": phase,
+            "status": "error",
+        }
+
+    elapsed_ms = round((time.monotonic() - started) * 1000)
+    if len(stdout) > output_limit or len(stderr) > output_limit:
+        return None, {
+            "detail": f"inventory output exceeded {output_limit} bytes",
+            "elapsed_ms": elapsed_ms,
+            "partition": os.fspath(partition),
+            "phase": phase,
+            "status": "error",
+        }
+    if time.monotonic() >= deadline:
+        return None, {
+            "elapsed_ms": elapsed_ms,
+            "partition": os.fspath(partition),
+            "phase": phase,
+            "status": "timeout",
+        }
+    if completed.returncode != 0 or stderr:
+        detail = os.fsdecode(stderr).strip()
+        return None, {
+            "detail": detail or f"find exited {completed.returncode}",
+            "elapsed_ms": elapsed_ms,
+            "partition": os.fspath(partition),
+            "phase": phase,
+            "status": "error",
+        }
+    return stdout, {
+        "elapsed_ms": elapsed_ms,
+        "partition": os.fspath(partition),
+        "phase": phase,
+        "status": "clean",
+    }
+
+
+def _set_inventory_file_size_limit(output_limit: int) -> None:
+    """Apply an irreversible per-stream child limit before ``find`` executes."""
+    if resource is None:  # pragma: no cover - preexec_fn is POSIX-only
+        raise BootstrapError("inventory file-size limit requires POSIX resource limits")
+
+    _, hard_limit = resource.getrlimit(resource.RLIMIT_FSIZE)
+    effective_limit = output_limit
+    if hard_limit != resource.RLIM_INFINITY:
+        effective_limit = min(effective_limit, hard_limit)
+    resource.setrlimit(
+        resource.RLIMIT_FSIZE, (effective_limit, effective_limit)
+    )
+
+
+def _raise_identity_scan_failure(record: dict[str, Any]) -> None:
+    status = record["status"]
+    if status == "clean":
+        return
+    partition = record["partition"]
+    if status == "collision":
         raise BootstrapError(
-            "fixed untrusted uid/gid already owns a root-filesystem object"
+            "fixed untrusted uid/gid already owns a root-filesystem object: "
+            f"{record['finding']}"
+        )
+    if status == "timeout":
+        raise BootstrapError(f"identity ownership scan timed out: {partition}")
+    raise BootstrapError(
+        f"identity ownership scan failed: {partition}: {record.get('detail', '')}"
+    )
+
+
+def _scan_identity_partition(path: Path, deadline: float) -> dict[str, Any]:
+    completed, record = _run_identity_command(
+        _identity_find_command(path),
+        deadline=deadline,
+        phase="partition",
+        partition=path,
+    )
+    if completed is not None and record["status"] == "clean" and completed.stdout:
+        record["finding"] = os.fsdecode(completed.stdout.split(b"\0", 1)[0])
+        record["status"] = "collision"
+    return record
+
+
+def _identity_partitions(
+    root: Path,
+    *,
+    root_device: int,
+    depth: int,
+    deadline: float,
+    phase: str = "inventory",
+    max_partitions: int = IDENTITY_SCAN_MAX_PARTITIONS,
+    output_limit: int = IDENTITY_SCAN_MAX_INVENTORY_BYTES,
+) -> tuple[list[tuple[Path, int, int]], dict[str, Any]]:
+    command = [
+        "/usr/bin/find",
+        os.fspath(root),
+        "-xdev",
+        "-mindepth",
+        str(depth),
+        "-maxdepth",
+        str(depth),
+        "-type",
+        "d",
+        "-print0",
+    ]
+    output, record = _run_identity_inventory_command(
+        command,
+        deadline=deadline,
+        phase=phase,
+        partition=root,
+        output_limit=output_limit,
+    )
+    if output is None or record["status"] != "clean":
+        return [], record
+    partitions: list[tuple[Path, int, int]] = []
+    skipped_mounts = 0
+    seen: set[Path] = set()
+    inventory_entries = 0
+    offset = 0
+    while offset < len(output):
+        if time.monotonic() >= deadline:
+            record["status"] = "timeout"
+            return [], record
+        end = output.find(b"\0", offset)
+        if end < 0:
+            record.update(
+                {"detail": "unterminated inventory path", "status": "error"}
+            )
+            return [], record
+        encoded = output[offset:end]
+        offset = end + 1
+        if not encoded:
+            continue
+        inventory_entries += 1
+        if inventory_entries > max_partitions:
+            record.update(
+                {
+                    "detail": f"partition inventory exceeded {max_partitions} entries",
+                    "status": "error",
+                }
+            )
+            return [], record
+        candidate = Path(os.fsdecode(encoded))
+        try:
+            if not candidate.is_absolute():
+                raise ValueError("partition is not absolute")
+            candidate.relative_to(root)
+            metadata = os.lstat(candidate)
+        except (OSError, ValueError) as exc:
+            record.update(
+                {
+                    "detail": f"unsafe partition {candidate}: {type(exc).__name__}: {exc}",
+                    "status": "error",
+                }
+            )
+            return [], record
+        if time.monotonic() >= deadline:
+            record["status"] = "timeout"
+            return [], record
+        if candidate in seen:
+            record.update(
+                {"detail": f"duplicate partition: {candidate}", "status": "error"}
+            )
+            return [], record
+        seen.add(candidate)
+        if not stat.S_ISDIR(metadata.st_mode) or stat.S_ISLNK(metadata.st_mode):
+            record.update(
+                {"detail": f"partition is not a real directory: {candidate}", "status": "error"}
+            )
+            return [], record
+        if metadata.st_dev != root_device:
+            skipped_mounts += 1
+            continue
+        partitions.append((candidate, metadata.st_dev, metadata.st_ino))
+    record["inventory_entries"] = inventory_entries
+    record["skipped_mounts"] = skipped_mounts
+    record["partitions"] = len(partitions)
+    return sorted(partitions, key=lambda value: os.fspath(value[0])), record
+
+
+def _assert_no_preexisting_identity_files(
+    root: Path = Path("/"),
+    *,
+    partition_depth: int = IDENTITY_SCAN_PARTITION_DEPTH,
+    workers: int = IDENTITY_SCAN_WORKERS,
+    timeout_seconds: float = IDENTITY_SCAN_TIMEOUT_SECONDS,
+    max_partitions: int = IDENTITY_SCAN_MAX_PARTITIONS,
+    inventory_output_limit: int = IDENTITY_SCAN_MAX_INVENTORY_BYTES,
+) -> None:
+    """Reject root-device objects that a newly provisioned identity would own.
+
+    A shallow, bounded pass covers every object through ``partition_depth``.
+    Every root-device directory at that depth is then scanned independently;
+    nested mount points retain GNU find's ``-xdev`` semantics.  A final
+    inventory must reproduce the initial partition boundary before the fixed
+    identity can be provisioned.
+    """
+    if (
+        partition_depth < 1
+        or workers < 1
+        or workers > IDENTITY_SCAN_WORKERS
+        or timeout_seconds <= 0
+        or max_partitions < 1
+        or inventory_output_limit < 1
+    ):
+        raise BootstrapError("invalid identity ownership scan configuration")
+    root = Path(root)
+    try:
+        root_status = os.lstat(root)
+    except OSError as exc:
+        raise BootstrapError(f"cannot stat identity scan root: {root}") from exc
+    if (
+        not root.is_absolute()
+        or not stat.S_ISDIR(root_status.st_mode)
+        or stat.S_ISLNK(root_status.st_mode)
+    ):
+        raise BootstrapError("identity scan root is not a real absolute directory")
+
+    started = time.monotonic()
+    deadline = started + timeout_seconds
+    shallow, shallow_record = _run_identity_command(
+        _identity_find_command(root, max_depth=partition_depth),
+        deadline=deadline,
+        phase="shallow",
+        partition=root,
+    )
+    if shallow is not None and shallow_record["status"] == "clean" and shallow.stdout:
+        shallow_record["finding"] = os.fsdecode(shallow.stdout.split(b"\0", 1)[0])
+        shallow_record["status"] = "collision"
+    _emit_identity_scan(shallow_record)
+    _raise_identity_scan_failure(shallow_record)
+
+    partitions, inventory_record = _identity_partitions(
+        root,
+        root_device=root_status.st_dev,
+        depth=partition_depth,
+        deadline=deadline,
+        phase="inventory-before",
+        max_partitions=max_partitions,
+        output_limit=inventory_output_limit,
+    )
+    _emit_identity_scan(inventory_record)
+    _raise_identity_scan_failure(inventory_record)
+
+    partition_paths = [partition[0] for partition in partitions]
+    records: list[dict[str, Any]] = []
+    executor = concurrent.futures.ThreadPoolExecutor(max_workers=workers)
+    futures: dict[concurrent.futures.Future[dict[str, Any]], Path] = {}
+    next_partition = 0
+    deadline_exhausted = False
+    try:
+        while next_partition < len(partition_paths) and len(futures) < workers:
+            if time.monotonic() >= deadline:
+                deadline_exhausted = True
+                break
+            path = partition_paths[next_partition]
+            futures[executor.submit(_scan_identity_partition, path, deadline)] = path
+            next_partition += 1
+        while futures and not deadline_exhausted:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                deadline_exhausted = True
+                break
+            done, _ = concurrent.futures.wait(
+                futures,
+                timeout=remaining,
+                return_when=concurrent.futures.FIRST_COMPLETED,
+            )
+            if not done:
+                deadline_exhausted = True
+                break
+            for future in done:
+                path = futures.pop(future)
+                try:
+                    record = future.result()
+                except Exception as exc:  # pragma: no cover - defensive fail-closed guard
+                    record = {
+                        "detail": f"{type(exc).__name__}: {exc}",
+                        "elapsed_ms": 0,
+                        "partition": os.fspath(path),
+                        "phase": "partition",
+                        "status": "error",
+                    }
+                records.append(record)
+                _emit_identity_scan(record)
+            while next_partition < len(partition_paths) and len(futures) < workers:
+                if time.monotonic() >= deadline:
+                    deadline_exhausted = True
+                    break
+                path = partition_paths[next_partition]
+                futures[executor.submit(_scan_identity_partition, path, deadline)] = path
+                next_partition += 1
+        if next_partition < len(partition_paths):
+            deadline_exhausted = True
+    finally:
+        for future in futures:
+            future.cancel()
+        executor.shutdown(wait=True, cancel_futures=True)
+
+    if deadline_exhausted:
+        record = {
+            "detail": f"{len(partition_paths) - next_partition + len(futures)} partitions remained",
+            "elapsed_ms": round((time.monotonic() - started) * 1000),
+            "partition": os.fspath(root),
+            "phase": "scheduler",
+            "status": "timeout",
+        }
+        records.append(record)
+        _emit_identity_scan(record)
+
+    final_partitions, final_inventory_record = _identity_partitions(
+        root,
+        root_device=root_status.st_dev,
+        depth=partition_depth,
+        deadline=deadline,
+        phase="inventory-after",
+        max_partitions=max_partitions,
+        output_limit=inventory_output_limit,
+    )
+    if final_inventory_record["status"] == "clean" and (
+        final_partitions != partitions
+        or final_inventory_record["skipped_mounts"]
+        != inventory_record["skipped_mounts"]
+    ):
+        final_inventory_record.update(
+            {"detail": "partition inventory changed during scan", "status": "error"}
+        )
+    _emit_identity_scan(final_inventory_record)
+
+    summary = {
+        "elapsed_ms": round((time.monotonic() - started) * 1000),
+        "partition": os.fspath(root),
+        "partitions": len(partitions),
+        "phase": "summary",
+        "status": "clean",
+        "workers": workers,
+    }
+    failures = [record for record in records if record["status"] != "clean"]
+    if final_inventory_record["status"] != "clean":
+        failures.append(final_inventory_record)
+    if failures:
+        summary["status"] = "error"
+    _emit_identity_scan(summary)
+    if failures:
+        _raise_identity_scan_failure(
+            sorted(failures, key=lambda value: os.fspath(value["partition"]))[0]
         )
 
 
@@ -191,8 +674,8 @@ def _ensure_fixed_identity() -> None:
         raise BootstrapError("fixed untrusted user has the wrong uid/gid")
 
     if group is None or account is None:
-        # One bounded traversal preserves the preexisting-ownership guarantee
-        # without the two full-root scans that made v0.2 time out.
+        # Partitioned root-device scans preserve the preexisting-ownership
+        # guarantee without a single long-tail traversal.
         _assert_no_preexisting_identity_files()
     if group is None:
         subprocess.run(
