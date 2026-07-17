@@ -39,3 +39,6 @@ binding claims, labels, corpus digest, and evaluator separation before
 execution. It must publish new outputs under a new round identifier. It must
 not edit, overwrite, reinterpret, or retarget existing tags, manifests, or
 results.
+
+The operational plan and public/private evidence boundary for that new round
+are recorded in [`NEXT_ROUND.md`](NEXT_ROUND.md).

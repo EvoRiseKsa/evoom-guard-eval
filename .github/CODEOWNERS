@@ -1,0 +1,15 @@
+# Ownership of evaluation protocol and evidence paths.
+# This is a technical separation-of-roles control only. @MANA-awam and
+# @EvoRiseKsa are controlled by the same project owner; it is not independent
+# labeling, review, or validation.
+/.github/CODEOWNERS @MANA-awam
+/.github/workflows/ @MANA-awam
+/PROTOCOL.md @MANA-awam
+/LABELING.md @MANA-awam
+/STATUS.md @MANA-awam
+/NEXT_ROUND.md @MANA-awam
+/cases/ @MANA-awam
+/manifests/ @MANA-awam
+/results/ @MANA-awam
+/studies/ @MANA-awam
+/harness/ @MANA-awam
