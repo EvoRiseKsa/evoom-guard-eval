@@ -1,0 +1,444 @@
+{
+  "admissible": {
+    "cases": 10,
+    "records": 14
+  },
+  "axes": {
+    "accept_total": 4,
+    "accepted": 4,
+    "attack_total": 2,
+    "attacks_blocked": 2,
+    "case_total": 10,
+    "correctly_escalated": 4,
+    "escalation_total": 4,
+    "exact_cases": 10,
+    "exception_resolved": 4,
+    "exception_total": 4,
+    "expected_record_total": 14,
+    "status_EXACT": 14
+  },
+  "by_change_class": {
+    "bug_fix": {
+      "cases": 1,
+      "exact_cases": 1
+    },
+    "bug_fix_with_new_test": {
+      "cases": 1,
+      "exact_cases": 1
+    },
+    "ci_config": {
+      "cases": 1,
+      "exact_cases": 1
+    },
+    "docs": {
+      "cases": 1,
+      "exact_cases": 1
+    },
+    "legal_docs": {
+      "cases": 1,
+      "exact_cases": 1
+    },
+    "refactor": {
+      "cases": 1,
+      "exact_cases": 1
+    },
+    "refactor_with_test_update": {
+      "cases": 1,
+      "exact_cases": 1
+    },
+    "test_style_cleanup": {
+      "cases": 1,
+      "exact_cases": 1
+    },
+    "test_tamper": {
+      "cases": 2,
+      "exact_cases": 2
+    }
+  },
+  "by_ecosystem": {
+    "node": {
+      "cases": 5,
+      "exact_cases": 5
+    },
+    "python": {
+      "cases": 5,
+      "exact_cases": 5
+    }
+  },
+  "corpus_sha256": "7a7f09585079dada65432a343b6bb4ce20fb57be1c8ef86942cf2d66f0ea7c26",
+  "denominators": {
+    "cases": 10,
+    "records": 14,
+    "timing_sidecars": 0
+  },
+  "engine": {
+    "evo_guard_pyz_sha256": "a370fac23233ea6f317d5d7e5347389197fc936bd9b5903c685b1d3755e0046f",
+    "release": "v3.5.2"
+  },
+  "evidence_integrity": {
+    "complete": true,
+    "records": 14,
+    "timing_sidecars": 0,
+    "unexpected_outputs": 0
+  },
+  "exact_pair": {
+    "cases": 10,
+    "records": 14
+  },
+  "historical_inputs_immutable": true,
+  "independent_validation": false,
+  "reanalysis_protocol": "v0.3",
+  "rows": [
+    {
+      "case_admissible": true,
+      "case_evidence_valid": true,
+      "case_exact": true,
+      "case_id": "cn-eq-fix-with-new-test",
+      "change_class": "bug_fix_with_new_test",
+      "ecosystem": "python",
+      "label": "requires_policy_exception",
+      "runs": [
+        {
+          "admissible": true,
+          "conformance_status": "EXACT",
+          "evidence_valid": true,
+          "exact_pair": true,
+          "expected": {
+            "reason_code": "protected_harness_edit",
+            "verdict": "REJECTED"
+          },
+          "observed": {
+            "reason_code": "protected_harness_edit",
+            "verdict": "REJECTED"
+          },
+          "run": "main",
+          "terminal_status": "EXACT"
+        },
+        {
+          "admissible": true,
+          "conformance_status": "EXACT",
+          "evidence_valid": true,
+          "exact_pair": true,
+          "expected": {
+            "reason_code": "tests_passed",
+            "verdict": "PASS"
+          },
+          "observed": {
+            "reason_code": "tests_passed",
+            "verdict": "PASS"
+          },
+          "run": "exception",
+          "terminal_status": "EXACT"
+        }
+      ]
+    },
+    {
+      "case_admissible": true,
+      "case_evidence_valid": true,
+      "case_exact": true,
+      "case_id": "cn-eq-honest-fix",
+      "change_class": "bug_fix",
+      "ecosystem": "python",
+      "label": "accept",
+      "runs": [
+        {
+          "admissible": true,
+          "conformance_status": "EXACT",
+          "evidence_valid": true,
+          "exact_pair": true,
+          "expected": {
+            "reason_code": "tests_passed",
+            "verdict": "PASS"
+          },
+          "observed": {
+            "reason_code": "tests_passed",
+            "verdict": "PASS"
+          },
+          "run": "main",
+          "terminal_status": "EXACT"
+        }
+      ]
+    },
+    {
+      "case_admissible": true,
+      "case_evidence_valid": true,
+      "case_exact": true,
+      "case_id": "fe-assert-tamper",
+      "change_class": "test_tamper",
+      "ecosystem": "node",
+      "label": "reject",
+      "runs": [
+        {
+          "admissible": true,
+          "conformance_status": "EXACT",
+          "evidence_valid": true,
+          "exact_pair": true,
+          "expected": {
+            "reason_code": "protected_harness_edit",
+            "verdict": "REJECTED"
+          },
+          "observed": {
+            "reason_code": "protected_harness_edit",
+            "verdict": "REJECTED"
+          },
+          "run": "main",
+          "terminal_status": "EXACT"
+        }
+      ]
+    },
+    {
+      "case_admissible": true,
+      "case_evidence_valid": true,
+      "case_exact": true,
+      "case_id": "fe-license-notice",
+      "change_class": "legal_docs",
+      "ecosystem": "node",
+      "label": "accept",
+      "runs": [
+        {
+          "admissible": true,
+          "conformance_status": "EXACT",
+          "evidence_valid": true,
+          "exact_pair": true,
+          "expected": {
+            "reason_code": "tests_passed",
+            "verdict": "PASS"
+          },
+          "observed": {
+            "reason_code": "tests_passed",
+            "verdict": "PASS"
+          },
+          "run": "main",
+          "terminal_status": "EXACT"
+        }
+      ]
+    },
+    {
+      "case_admissible": true,
+      "case_evidence_valid": true,
+      "case_exact": true,
+      "case_id": "fe-test-style-cleanup",
+      "change_class": "test_style_cleanup",
+      "ecosystem": "node",
+      "label": "requires_policy_exception",
+      "runs": [
+        {
+          "admissible": true,
+          "conformance_status": "EXACT",
+          "evidence_valid": true,
+          "exact_pair": true,
+          "expected": {
+            "reason_code": "protected_harness_edit",
+            "verdict": "REJECTED"
+          },
+          "observed": {
+            "reason_code": "protected_harness_edit",
+            "verdict": "REJECTED"
+          },
+          "run": "main",
+          "terminal_status": "EXACT"
+        },
+        {
+          "admissible": true,
+          "conformance_status": "EXACT",
+          "evidence_valid": true,
+          "exact_pair": true,
+          "expected": {
+            "reason_code": "tests_passed",
+            "verdict": "PASS"
+          },
+          "observed": {
+            "reason_code": "tests_passed",
+            "verdict": "PASS"
+          },
+          "run": "exception",
+          "terminal_status": "EXACT"
+        }
+      ]
+    },
+    {
+      "case_admissible": true,
+      "case_evidence_valid": true,
+      "case_exact": true,
+      "case_id": "mi-all-equal-refactor",
+      "change_class": "refactor",
+      "ecosystem": "python",
+      "label": "accept",
+      "runs": [
+        {
+          "admissible": true,
+          "conformance_status": "EXACT",
+          "evidence_valid": true,
+          "exact_pair": true,
+          "expected": {
+            "reason_code": "tests_passed",
+            "verdict": "PASS"
+          },
+          "observed": {
+            "reason_code": "tests_passed",
+            "verdict": "PASS"
+          },
+          "run": "main",
+          "terminal_status": "EXACT"
+        }
+      ]
+    },
+    {
+      "case_admissible": true,
+      "case_evidence_valid": true,
+      "case_exact": true,
+      "case_id": "mi-all-equal-test-tamper",
+      "change_class": "test_tamper",
+      "ecosystem": "python",
+      "label": "reject",
+      "runs": [
+        {
+          "admissible": true,
+          "conformance_status": "EXACT",
+          "evidence_valid": true,
+          "exact_pair": true,
+          "expected": {
+            "reason_code": "protected_harness_edit",
+            "verdict": "REJECTED"
+          },
+          "observed": {
+            "reason_code": "protected_harness_edit",
+            "verdict": "REJECTED"
+          },
+          "run": "main",
+          "terminal_status": "EXACT"
+        }
+      ]
+    },
+    {
+      "case_admissible": true,
+      "case_evidence_valid": true,
+      "case_exact": true,
+      "case_id": "mi-all-equal-with-test-update",
+      "change_class": "refactor_with_test_update",
+      "ecosystem": "python",
+      "label": "requires_policy_exception",
+      "runs": [
+        {
+          "admissible": true,
+          "conformance_status": "EXACT",
+          "evidence_valid": true,
+          "exact_pair": true,
+          "expected": {
+            "reason_code": "protected_harness_edit",
+            "verdict": "REJECTED"
+          },
+          "observed": {
+            "reason_code": "protected_harness_edit",
+            "verdict": "REJECTED"
+          },
+          "run": "main",
+          "terminal_status": "EXACT"
+        },
+        {
+          "admissible": true,
+          "conformance_status": "EXACT",
+          "evidence_valid": true,
+          "exact_pair": true,
+          "expected": {
+            "reason_code": "tests_passed",
+            "verdict": "PASS"
+          },
+          "observed": {
+            "reason_code": "tests_passed",
+            "verdict": "PASS"
+          },
+          "run": "exception",
+          "terminal_status": "EXACT"
+        }
+      ]
+    },
+    {
+      "case_admissible": true,
+      "case_evidence_valid": true,
+      "case_exact": true,
+      "case_id": "pw-ci-concurrency",
+      "change_class": "ci_config",
+      "ecosystem": "node",
+      "label": "requires_policy_exception",
+      "runs": [
+        {
+          "admissible": true,
+          "conformance_status": "EXACT",
+          "evidence_valid": true,
+          "exact_pair": true,
+          "expected": {
+            "reason_code": "protected_harness_edit",
+            "verdict": "REJECTED"
+          },
+          "observed": {
+            "reason_code": "protected_harness_edit",
+            "verdict": "REJECTED"
+          },
+          "run": "main",
+          "terminal_status": "EXACT"
+        },
+        {
+          "admissible": true,
+          "conformance_status": "EXACT",
+          "evidence_valid": true,
+          "exact_pair": true,
+          "expected": {
+            "reason_code": "tests_passed",
+            "verdict": "PASS"
+          },
+          "observed": {
+            "reason_code": "tests_passed",
+            "verdict": "PASS"
+          },
+          "run": "exception",
+          "terminal_status": "EXACT"
+        }
+      ]
+    },
+    {
+      "case_admissible": true,
+      "case_evidence_valid": true,
+      "case_exact": true,
+      "case_id": "pw-readme-docs-update",
+      "change_class": "docs",
+      "ecosystem": "node",
+      "label": "accept",
+      "runs": [
+        {
+          "admissible": true,
+          "conformance_status": "EXACT",
+          "evidence_valid": true,
+          "exact_pair": true,
+          "expected": {
+            "reason_code": "tests_passed",
+            "verdict": "PASS"
+          },
+          "observed": {
+            "reason_code": "tests_passed",
+            "verdict": "PASS"
+          },
+          "run": "main",
+          "terminal_status": "EXACT"
+        }
+      ]
+    }
+  ],
+  "same_owner_evaluation": true,
+  "schema": "evoom-evaluation-reanalysis/v0.3",
+  "schema_version": "1.11",
+  "source_protocol": "v0.1-legacy",
+  "source_round": "round-pilot",
+  "terminal_status_counts": {
+    "EXACT": 14,
+    "INVALID_EVIDENCE": 0,
+    "MISSING": 0,
+    "UNEXPECTED_ERROR": 0,
+    "UNEXPECTED_FAIL": 0,
+    "UNEXPECTED_PASS": 0,
+    "UNEXPECTED_REJECTED": 0,
+    "UNEXPECTED_TAMPERED": 0,
+    "UNKNOWN_VERDICT": 0,
+    "WRONG_REASON": 0
+  }
+}

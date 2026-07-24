@@ -1,0 +1,42 @@
+name: Evaluator protocol v0.3
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  evaluator-v03:
+    name: ${{ matrix.os }} / Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Compile evaluator sources
+        run: python -m compileall -q harness tests
+      - name: Evaluator unit and adversarial tests
+        run: >-
+          python -m unittest
+          tests.test_harness
+          tests.test_evaluator_v03
+          -v
+      - name: Verify historical pilot under protocol v0.3
+        run: >-
+          python harness/evaluate.py
+          --round round-pilot
+          --check

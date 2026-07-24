@@ -1,4 +1,4 @@
-# Next evaluation round: v3.7+ boundary
+# Next evaluation round: current-release boundary
 
 The public material in this repository is immutable historical evidence for
 the v3.5.2 engine. It must not be retargeted, relabelled, or used to claim a
@@ -16,7 +16,8 @@ claim that private data makes the public engine unreviewable.
 
 ## Preconditions before execution
 
-Before the first v3.7+ evaluation run, record and freeze:
+Before the first evaluation of a successor to the historical v3.5.2 engine,
+record and freeze:
 
 1. the exact released Guard asset and SHA-256;
 2. the exact policy and verifier-pack identity/digest for each track;
@@ -24,10 +25,13 @@ Before the first v3.7+ evaluation run, record and freeze:
 4. independent human `truth` labels and rationales created before a runner sees
    Guard results; and
 5. the identity and role separation of labeler, runner, and reviewer.
+6. the protocol-v0.3 evaluator commit and the exact closed terminal-status
+   contract used to classify every required run.
 
-The MANA account is controlled by the project owner. It can provide a
-technical review role, but it does not satisfy an independent-labeler or
-independent-evaluator requirement.
+The MANA and EvoRiseKsa accounts have the same human controller. Either can
+provide a technical or branch-protection review role, but separation between
+those accounts does not satisfy an independent-labeler, independent-reviewer,
+or independent-evaluator requirement.
 
 ## Public output after a round
 
