@@ -5,11 +5,15 @@
 /.github/CODEOWNERS @MANA-awam
 /.github/workflows/ @MANA-awam
 /PROTOCOL.md @MANA-awam
+/ERRATA.md @MANA-awam
 /LABELING.md @MANA-awam
 /STATUS.md @MANA-awam
 /NEXT_ROUND.md @MANA-awam
+/README.md @MANA-awam
 /cases/ @MANA-awam
 /manifests/ @MANA-awam
 /results/ @MANA-awam
+/reanalysis/ @MANA-awam
 /studies/ @MANA-awam
 /harness/ @MANA-awam
+/tests/ @MANA-awam

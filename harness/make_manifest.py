@@ -18,7 +18,7 @@ from common import (
 def build_manifest(round_name: str, labeler: str, runner: str, seed: str) -> dict:
     entries, corpus = compute_case_entries()
     return {
-        "protocol_version": "v0.2",
+        "protocol_version": "v0.3",
         "round": round_name,
         "roles": {
             "labeler": labeler,

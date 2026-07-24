@@ -6,7 +6,9 @@ labels are frozen and hashed before the tool runs.
 
 ## Roles
 
-- **Labeler** — assigns the truth for each case. Must not run EvoOM Guard,
+- **Labeler** — assigns the truth for each case. Must be a distinct human or
+  independent organization, not a second account controlled by the runner;
+  must not run EvoOM Guard,
   must not see any Guard verdict, record, or expectation for the cases being
   labeled, and must not be the person who runs the round.
 - **Runner** — executes `harness/run_case.py` after labels are frozen. Must
@@ -43,6 +45,13 @@ For each case, exactly:
 - The five-way `label` and the `guard_expectation` mapping are derived
   AFTERWARDS by the runner from the frozen truth via the contract table in
   the README — the labeler never writes Guard vocabulary.
+- Protocol v0.3 rejects a mapping that contradicts the frozen label:
+  `accept` requires `PASS/tests_passed`; `requires_review` and
+  `requires_policy_exception` require
+  `REJECTED/protected_harness_edit`; `unsupported` requires
+  `ERROR/policy_requirement_unsupported`; a policy-exception run requires
+  `PASS/tests_passed`; and `reject` requires a schema-valid `REJECTED` or
+  `FAIL` pair with its named reason.
 
 ## Freezing order (must be verifiable from git history)
 
@@ -58,6 +67,9 @@ For each case, exactly:
    (`harness/run_case.py` per case), then `harness/evaluate.py --round <round>`.
 5. Commit raw records, timing sidecars, and `RESULTS.md`. Rounds are never re-scored; corrections
    are new rounds.
+6. Run `harness/evaluate.py` under the frozen evaluator commit. Publication
+   must include the fixed denominators, all terminal statuses, evidence
+   integrity, and admissibility; no subset-only score is allowed.
 
 ## Tuning vs held-out
 

@@ -28,6 +28,7 @@ from common import (
     sha256_file,
     verify_manifest,
 )
+from evaluation_contract import protocol_requires_timing
 
 ENGINE_URL = (
     "https://github.com/EvoRiseKsa/EvoOM-Guard-m/releases/download/"
@@ -70,7 +71,12 @@ def git_cache_key(url: str) -> str:
     return f"{name}-{hashlib.sha256(url.encode('utf-8')).hexdigest()[:16]}"
 
 
-def _run_checked(argv: list[str], *, timeout: int, **kwargs: Any) -> subprocess.CompletedProcess:
+def _run_checked(
+    argv: list[str],
+    *,
+    timeout: int,
+    **kwargs: Any,
+) -> subprocess.CompletedProcess[Any]:
     try:
         return subprocess.run(argv, check=True, timeout=timeout, **kwargs)
     except subprocess.TimeoutExpired as exc:
@@ -299,16 +305,20 @@ def validate_record(
     candidate_digest: str | None = None,
     started_wall: float | None = None,
     finished_wall: float | None = None,
+    record: dict[str, Any] | None = None,
+    check_expectation: bool = True,
 ) -> list[str]:
     problems: list[str] = []
-    try:
-        record = load_json(record_path)
-    except (OSError, ValueError, json.JSONDecodeError) as exc:
-        return [f"{label}: invalid record JSON: {exc}"]
-    got = (record.get("verdict"), record.get("reason_code"))
-    want = (expected["verdict"], expected["reason_code"])
-    if got != want:
-        problems.append(f"{label}: expected {want}, got {got}")
+    if record is None:
+        try:
+            record = load_json(record_path)
+        except (OSError, ValueError, json.JSONDecodeError) as exc:
+            return [f"{label}: invalid record JSON: {exc}"]
+    if check_expectation:
+        got = (record.get("verdict"), record.get("reason_code"))
+        want = (expected["verdict"], expected["reason_code"])
+        if got != want:
+            problems.append(f"{label}: expected {want}, got {got}")
     if record.get("tool") != "evoguard":
         problems.append(f"{label}: unexpected tool identity")
     if record.get("tool_version") != ENGINE_VERSION.removeprefix("v"):
@@ -351,6 +361,8 @@ def validate_record(
         )
     except subprocess.TimeoutExpired:
         problems.append(f"{label}: verify-record timed out")
+    except OSError as exc:
+        problems.append(f"{label}: verify-record could not run: {exc}")
     else:
         if verify.returncode != 0:
             problems.append(f"{label}: verify-record rejected the record")
@@ -396,7 +408,7 @@ def main() -> int:
     planned = [out]
     if LABELS[case["label"]]:
         planned.append(out_exc)
-    if manifest.get("protocol_version") == "v0.2":
+    if protocol_requires_timing(str(manifest.get("protocol_version", ""))):
         planned.append(timing)
     _refuse_existing(planned)
 
@@ -445,7 +457,10 @@ def main() -> int:
             finished_wall=finished,
         )
 
-    if manifest.get("protocol_version") == "v0.2" and not problems:
+    if (
+        protocol_requires_timing(str(manifest.get("protocol_version", "")))
+        and not problems
+    ):
         with open(timing, "x", encoding="utf-8", newline="\n") as handle:
             json.dump(timings, handle, indent=2, sort_keys=True)
             handle.write("\n")

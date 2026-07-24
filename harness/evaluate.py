@@ -1,56 +1,58 @@
 #!/usr/bin/env python3
-"""Verify and score one immutable evaluation round without a single accuracy number."""
+"""Thin protocol-v0.3 evaluator command."""
 from __future__ import annotations
 
 import argparse
 import statistics
 import sys
-from collections import Counter
 from pathlib import Path
 from typing import Any
 
-from common import ROOT, case_dirs_from_manifest, load_json, verify_manifest
-from run_case import (
-    LABELS,
-    acquire_base,
-    acquire_engine,
-    candidate_digest_for_engine,
-    validate_record,
+from common import ROOT
+from evaluation_contract import EvaluationIssue, protocol_requires_timing
+from evaluation_evidence import (
+    check_reanalysis,
+    collect_evidence,
+    inventory_problems,
+    preflight_round,
+    read_json_object,
+    reanalysis_payloads,
+    write_reanalysis,
+)
+from evaluation_scoring import (
+    ConformanceSummary,
+    TerminalStatus,
+    score_conformance,
+    summarize_evidence,
 )
 
+# Narrow compatibility aliases for callers that used the historical helpers.
+_inventory_problems = inventory_problems
+_read_json_object = read_json_object
 
-def _candidate(case_dir: Path, case: dict[str, Any]) -> Path:
-    return case_dir / ("candidate.diff" if case.get("mode", "patch") == "diff" else "candidate.txt")
 
-
-def _expected_files(cases: list[tuple[Path, dict[str, Any]]], protocol: str) -> set[str]:
-    expected: set[str] = set()
+def _expected_files(
+    cases: list[tuple[Path, dict[str, Any]]],
+    protocol: str,
+) -> set[str]:
+    files: set[str] = set()
     for _, case in cases:
-        expected.add(f"{case['id']}.json")
-        if LABELS.get(case.get("label"), False):
-            expected.add(f"{case['id']}-exception.json")
-        if protocol == "v0.2":
-            expected.add(f"{case['id']}.timing.json")
-    return expected
-
-
-def _inventory_problems(expected: set[str], actual: set[str]) -> list[str]:
-    return [
-        *(f"missing round output: {name}" for name in sorted(expected - actual)),
-        *(f"unexpected/stale round output: {name}" for name in sorted(actual - expected)),
-    ]
+        files.add(f"{case['id']}.json")
+        if case.get("label") == "requires_policy_exception":
+            files.add(f"{case['id']}-exception.json")
+        if protocol_requires_timing(protocol):
+            files.add(f"{case['id']}.timing.json")
+    return files
 
 
 def _truth_problem(case: dict[str, Any]) -> str | None:
     truth = case.get("truth", {})
-    decision = truth.get("human_decision")
-    policy = truth.get("policy_expectation")
-    label = case.get("label")
-    if truth.get("labeled_before_guard_run") is not True:
-        return "truth is not declared frozen before the Guard run"
-    expected_labels: dict[tuple[str, str], set[str]] = {
+    pair = (truth.get("human_decision"), truth.get("policy_expectation"))
+    allowed = {
         ("admit", "no_exception_required"): {"accept"},
-        ("admit", "documented_exception_required"): {"requires_policy_exception"},
+        ("admit", "documented_exception_required"): {
+            "requires_policy_exception"
+        },
         ("escalate", "documented_exception_required"): {
             "requires_review",
             "requires_policy_exception",
@@ -59,193 +61,244 @@ def _truth_problem(case: dict[str, Any]) -> str | None:
         ("block", "documented_exception_required"): {"reject"},
         ("escalate", "unsupported"): {"unsupported"},
     }
-    allowed = expected_labels.get((decision, policy))
-    if allowed is None or label not in allowed:
-        return f"truth ({decision}, {policy}) is inconsistent with label {label}"
+    if truth.get("labeled_before_guard_run") is not True:
+        return "truth is not declared frozen before the Guard run"
+    if case.get("label") not in allowed.get(pair, set()):
+        return f"truth {pair} is inconsistent with label {case.get('label')}"
     return None
+
+
+def _format_pair(pair: tuple[object, object] | None) -> str:
+    return "<missing>" if pair is None else f"{pair[0]!s}/{pair[1]!s}"
+
+
+def _print_issues(title: str, issues: tuple[EvaluationIssue, ...]) -> None:
+    if not issues:
+        return
+    print(f"\n{title}:", file=sys.stderr)
+    for issue in issues:
+        print(f"  {issue.render()}", file=sys.stderr)
+
+
+def _conformance_issues(
+    summary: ConformanceSummary,
+) -> tuple[EvaluationIssue, ...]:
+    issues: list[EvaluationIssue] = []
+    for run in summary.runs:
+        if run.exact_pair:
+            continue
+        issues.append(
+            EvaluationIssue(
+                phase="conformance",
+                code=run.conformance_status.value,
+                message=(
+                    f"expected {_format_pair(run.expected)}, "
+                    f"got {_format_pair(run.observed)}"
+                ),
+                case_id=run.key[0],
+                artifact=(
+                    f"{run.key[0]}.json"
+                    if run.key[1] == "main"
+                    else f"{run.key[0]}-exception.json"
+                ),
+            )
+        )
+    return tuple(issues)
+
+
+def _render(
+    round_name: str,
+    protocol: str,
+    summary: ConformanceSummary,
+    integrity: Any,
+    elapsed_seconds: tuple[float, ...],
+) -> None:
+    print(f"round: {round_name}  source protocol: {protocol}")
+    print("evaluator protocol: v0.3\n")
+    for row in summary.rows:
+        main = (
+            f"main={_format_pair(row.main.observed)} "
+            f"(expected {_format_pair(row.main.expected)})"
+        )
+        exception = ""
+        if row.exception is not None:
+            exception = (
+                f"  exception={_format_pair(row.exception.observed)} "
+                f"(expected {_format_pair(row.exception.expected)})"
+            )
+        print(
+            f"  {row.case_id:34s} {row.label:28s} "
+            f"{row.outcome:40s} {main}{exception}"
+        )
+
+    print("\nthree axes (all denominators fixed by corpus preflight):")
+    print(
+        f"  exact expected pairs     : "
+        f"{summary.exact_records}/{summary.expected_records}"
+    )
+    print(
+        f"  evidence-valid records   : "
+        f"{integrity.valid_records}/{integrity.expected_records}"
+    )
+    print(
+        f"  admissible records       : "
+        f"{summary.admissible_records}/{summary.expected_records}"
+    )
+    print(
+        f"  exact cases              : "
+        f"{summary.exact_cases}/{summary.expected_cases}"
+    )
+    print(
+        f"  admissible cases         : "
+        f"{summary.admissible_cases}/{summary.expected_cases}"
+    )
+
+    axes = summary.axes
+    print("\nlabel axes (exact pair only):")
+    print(
+        f"  legitimate acceptance   : "
+        f"{axes.get('accepted', 0)}/{axes.get('accept_total', 0)}"
+    )
+    print(
+        f"  false hard rejections   : "
+        f"{axes.get('false_hard_rejection', 0)}/{axes.get('accept_total', 0)}"
+    )
+    print(
+        f"  correct escalations     : "
+        f"{axes.get('correctly_escalated', 0)}/"
+        f"{axes.get('escalation_total', 0)}"
+    )
+    print(
+        f"  exception resolutions   : "
+        f"{axes.get('exception_resolved', 0)}/{axes.get('exception_total', 0)}"
+    )
+    print(
+        f"  attacks blocked         : "
+        f"{axes.get('attacks_blocked', 0)}/{axes.get('attack_total', 0)}"
+    )
+    print(
+        f"  unsupported exact       : "
+        f"{axes.get('unsupported_matched', 0)}/"
+        f"{axes.get('unsupported_total', 0)}"
+    )
+
+    print("\nterminal status counts:")
+    for status in TerminalStatus:
+        print(f"  {status.value:24s} {axes.get(f'status_{status.value}', 0)}")
+
+    print("\nby ecosystem (exact cases / fixed cases):")
+    for ecosystem, (matched, total) in summary.by_ecosystem.items():
+        print(f"  {ecosystem:12s} {matched}/{total}")
+    print("\nby change class (exact cases / fixed cases):")
+    for change_class, (matched, total) in summary.by_change_class.items():
+        print(f"  {change_class:32s} {matched}/{total}")
+
+    print("\nevidence integrity:")
+    print(
+        f"  verified records        : "
+        f"{integrity.valid_records}/{integrity.expected_records}"
+    )
+    if integrity.expected_timings:
+        print(
+            f"  valid timing sidecars   : "
+            f"{integrity.valid_timings}/{integrity.expected_timings}"
+        )
+    else:
+        print("  valid timing sidecars   : not required by source protocol")
+    print(f"  unexpected JSON outputs: {integrity.unexpected_outputs}")
+    if (
+        integrity.expected_timings
+        and integrity.valid_timings == integrity.expected_timings
+        and elapsed_seconds
+    ):
+        print(
+            f"  median time to verdict  : "
+            f"{statistics.median(elapsed_seconds):.3f}s"
+        )
+    elif integrity.expected_timings:
+        print("  median time to verdict  : unavailable (invalid evidence)")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--round", required=True, dest="round_name")
-    parser.add_argument("--engine", default=None, help="local digest-checked evo-guard.pyz")
+    parser.add_argument(
+        "--engine",
+        default=None,
+        help="local digest-checked evo-guard.pyz",
+    )
+    publication = parser.add_mutually_exclusive_group()
+    publication.add_argument(
+        "--write-reanalysis",
+        action="store_true",
+        help="create the deterministic protocol-v0.3 reanalysis once",
+    )
+    publication.add_argument(
+        "--check-reanalysis",
+        "--check",
+        dest="check_reanalysis",
+        action="store_true",
+        help="recompute and check the frozen protocol-v0.3 reanalysis",
+    )
     args = parser.parse_args()
-    manifest, problems = verify_manifest(args.round_name)
-    if not manifest:
-        for problem in problems:
-            print(f"ERROR: {problem}", file=sys.stderr)
-        return 1
-    protocol = str(manifest.get("protocol_version", "v0.1-legacy"))
-    engine = acquire_engine(args.engine, ROOT / "work")
-    results_dir = ROOT / "results" / args.round_name
 
-    cases: list[tuple[Path, dict[str, Any]]] = []
-    seen_ids: set[str] = set()
-    for case_dir in case_dirs_from_manifest(manifest):
-        try:
-            case = load_json(case_dir / "case.json")
-        except (OSError, ValueError) as exc:
-            problems.append(f"invalid case at {case_dir}: {exc}")
-            continue
-        if case.get("id") in seen_ids:
-            problems.append(f"duplicate case id: {case.get('id')}")
-        seen_ids.add(str(case.get("id")))
-        if case_dir.name != case.get("id"):
-            problems.append(f"case directory/id mismatch: {case_dir.name}")
-        if case.get("label") not in LABELS:
-            problems.append(f"unknown label for {case.get('id')}: {case.get('label')}")
-        truth_problem = _truth_problem(case)
-        if truth_problem:
-            problems.append(f"{case.get('id')}: {truth_problem}")
-        cases.append((case_dir, case))
-
-    if not results_dir.is_dir():
-        problems.append(f"missing results directory: {results_dir.relative_to(ROOT)}")
-        actual_files: set[str] = set()
-    else:
-        actual_files = {path.name for path in results_dir.glob("*.json")}
-    expected_files = _expected_files(cases, protocol)
-    problems.extend(_inventory_problems(expected_files, actual_files))
-
-    axes: Counter[str] = Counter()
-    by_ecosystem: Counter[str] = Counter()
-    by_class: Counter[str] = Counter()
-    rows: list[tuple[str, str, str, str]] = []
-    elapsed_seconds: list[float] = []
-
-    for case_dir, case in cases:
-        label = case["label"]
-        record_path = results_dir / f"{case['id']}.json"
-        if not record_path.is_file():
-            continue
-        record = load_json(record_path)
-        mode = case.get("mode", "patch")
-        if mode == "diff":
-            head = acquire_base(case["source"], ROOT / "work")
-            candidate_digest = candidate_digest_for_engine(
-                _candidate(case_dir, case), mode, head
-            )
-        else:
-            candidate_digest = candidate_digest_for_engine(
-                _candidate(case_dir, case), mode
-            )
-        problems.extend(
-            validate_record(
-                engine,
-                record_path,
-                case["guard_expectation"],
-                case["id"],
-                candidate=_candidate(case_dir, case),
-                policy=case["policy"],
-                extra=[],
-                candidate_digest=candidate_digest,
-            )
+    round_plan, corpus_issues = preflight_round(args.round_name, root=ROOT)
+    if round_plan is None:
+        _print_issues(
+            "CORPUS PREFLIGHT FAILED — SCORING SUPPRESSED",
+            corpus_issues,
         )
-        verdict = record.get("verdict")
-        by_ecosystem[f"{case['ecosystem']}:total"] += 1
-        by_class[case["change_class"]] += 1
-        outcome = "?"
-        if label == "accept":
-            axes["accept_total"] += 1
-            if verdict == "PASS":
-                axes["accepted"] += 1
-                outcome = "accepted"
-            elif verdict in ("REJECTED", "FAIL", "TAMPERED"):
-                axes["false_hard_rejection"] += 1
-                outcome = "FALSE-REJECTION"
-            else:
-                axes["accept_infra_error"] += 1
-                outcome = "infra-error"
-        elif label in ("requires_policy_exception", "requires_review"):
-            axes["escalation_total"] += 1
-            if verdict == "REJECTED":
-                axes["correctly_escalated"] += 1
-                outcome = "escalated"
-            elif verdict == "PASS":
-                axes["escalation_missed"] += 1
-                outcome = "ESCALATION-MISSED"
-            else:
-                outcome = f"unexpected:{verdict}"
-            if label == "requires_policy_exception":
-                exc_path = results_dir / f"{case['id']}-exception.json"
-                if exc_path.is_file():
-                    exception = case["exception"]
-                    problems.extend(
-                        validate_record(
-                            engine,
-                            exc_path,
-                            exception["guard_expectation"],
-                            f"{case['id']} (exception)",
-                            candidate=_candidate(case_dir, case),
-                            policy=case["policy"],
-                            extra=exception["args"],
-                            candidate_digest=candidate_digest,
-                        )
-                    )
-                    axes["exception_total"] += 1
-                    if load_json(exc_path).get("verdict") == "PASS":
-                        axes["exception_resolved"] += 1
-                    else:
-                        axes["exception_unresolved"] += 1
-                        outcome += "+EXCEPTION-UNRESOLVED"
-        elif label == "reject":
-            axes["attack_total"] += 1
-            if verdict in ("REJECTED", "FAIL", "TAMPERED"):
-                axes["attacks_blocked"] += 1
-                outcome = "blocked"
-            else:
-                axes["attacks_missed"] += 1
-                outcome = "ATTACK-MISSED"
-        elif label == "unsupported":
-            axes["unsupported_total"] += 1
-            outcome = "unsupported"
-        if verdict == "ERROR" and record.get("reason_code") != "policy_requirement_unsupported":
-            axes["infrastructure_errors"] += 1
-        if not any(marker in outcome for marker in ("FALSE", "MISSED", "UNRESOLVED")):
-            by_ecosystem[f"{case['ecosystem']}:as-labeled"] += 1
-        rows.append((case["id"], label, str(verdict), outcome))
-
-        timing_path = results_dir / f"{case['id']}.timing.json"
-        if protocol == "v0.2" and timing_path.is_file():
-            timing = load_json(timing_path)
-            for key in ("default_seconds", "exception_seconds"):
-                value = timing.get(key)
-                if value is not None:
-                    if not isinstance(value, (int, float)) or value < 0:
-                        problems.append(f"{case['id']}: invalid timing {key}")
-                    else:
-                        elapsed_seconds.append(float(value))
-
-    print(f"round: {args.round_name}  protocol: {protocol}\n")
-    for case_id, label, verdict, outcome in rows:
-        print(f"  {case_id:34s} {label:28s} {verdict:9s} {outcome}")
-    print("\naxes (no single accuracy number by design):")
-    print(f"  legitimate acceptance      : {axes['accepted']}/{axes['accept_total']}")
-    print(f"  false hard rejections      : {axes['false_hard_rejection']}/{axes['accept_total']}")
-    print(f"  correct escalations        : {axes['correctly_escalated']}/{axes['escalation_total']}")
-    print(f"  documented exceptions     : {axes['exception_resolved']}/{axes['exception_total']}")
-    print(f"  attacks blocked            : {axes['attacks_blocked']}/{axes['attack_total']}")
-    print(f"  attacks missed             : {axes['attacks_missed']}")
-    print(f"  unsupported cases          : {axes['unsupported_total']}")
-    print(f"  infrastructure errors      : {axes['infrastructure_errors']}")
-    if elapsed_seconds:
-        print(f"  median time to verdict (s) : {statistics.median(elapsed_seconds):.3f}")
-    else:
-        print("  median time to verdict (s) : not captured by legacy protocol")
-    print("\nby ecosystem (as-labeled / total):")
-    for ecosystem in sorted({key.split(":")[0] for key in by_ecosystem}):
-        print(
-            f"  {ecosystem:8s} {by_ecosystem[f'{ecosystem}:as-labeled']}/"
-            f"{by_ecosystem[f'{ecosystem}:total']}"
-        )
-    print("\nby change class:")
-    for change_class, count in sorted(by_class.items()):
-        print(f"  {change_class:28s} {count}")
-    if problems:
-        print("\nPROBLEMS:", file=sys.stderr)
-        for problem in problems:
-            print(f"  {problem}", file=sys.stderr)
         return 1
+
+    evidence = collect_evidence(
+        round_plan,
+        engine_arg=args.engine,
+        root=ROOT,
+    )
+    summary = score_conformance(round_plan.corpus, evidence.observations)
+    integrity = summarize_evidence(
+        round_plan.corpus,
+        evidence.observations,
+        expected_timing_cases=evidence.expected_timing_cases,
+        valid_timing_cases=evidence.valid_timing_cases,
+        unexpected_outputs=evidence.unexpected_outputs,
+    )
+    conformance_issues = _conformance_issues(summary)
+    _render(
+        args.round_name,
+        round_plan.protocol,
+        summary,
+        integrity,
+        evidence.elapsed_seconds,
+    )
+    _print_issues("CONFORMANCE FAILURES", conformance_issues)
+    _print_issues("EVIDENCE INTEGRITY FAILURES", evidence.issues)
+    if conformance_issues or evidence.issues:
+        return 1
+
+    if args.write_reanalysis or args.check_reanalysis:
+        directory = (
+            ROOT
+            / "reanalysis"
+            / "protocol-v0.3"
+            / args.round_name
+        )
+        payloads = reanalysis_payloads(
+            round_plan,
+            evidence,
+            summary,
+            integrity,
+        )
+        publication_issues = (
+            write_reanalysis(directory, payloads, trusted_root=ROOT)
+            if args.write_reanalysis
+            else check_reanalysis(directory, payloads, trusted_root=ROOT)
+        )
+        _print_issues("REANALYSIS PUBLICATION FAILED", publication_issues)
+        if publication_issues:
+            return 1
+        action = "created" if args.write_reanalysis else "verified"
+        print(f"\nreanalysis {action}: {directory.relative_to(ROOT).as_posix()}")
     return 0
 
 
